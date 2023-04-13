@@ -8,7 +8,7 @@ class CalenkitApplicationTests {
 
 	@Test
 	void contextLoads() {
-		System.out.println("dddd");
+		System.out.println("확인");
 	}
 
 }
