@@ -1,4 +1,4 @@
-# calenkit
+# Calenkit
 ## Team Member
 - 김민재
 - 라재희
