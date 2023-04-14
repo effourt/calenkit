@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper>
+    <!-- SAVE -->
+    <insert id="save">
+        INSERT INTO MEMBER(MEM_ID,
+        <trim suffixOverrides=","><if test="memPw != null or memPw = ''">MEM_PW,</if></trim>
+        MEM_NAME, MEM_IMAGE, MEM_STATUS, MEM_LOGIN,
+        <trim suffixOverrides=","><if test="memAuthId != null or memAuthId = ''">MEM_AUTH_ID,</if></trim>
+        ) VALUES(#{memId},
+        <trim suffixOverrides=","><if test="memPw != null or memPw = ''">#{memPw},</if></trim>
+        #{memName}, #{memImage}, 1, SYSDATE,
+        <trim suffixOverrides=","><if test="memAuthId != null or memAuthId = ''">#{memAuthId},</if></trim>
+        )
+    </insert>
+
+    <!-- UPDATE -->
+    <!-- 비밀번호 변경 시 호출 -->
+    <!-- 소셜 회원가입의 기본값 = null , 이메일 회원가입의 기본값 = 사용자입력값 -->
+    <update id="updatePassword">
+        UPDATE MEMBER SET MEM_PW=#{memPw} WHERE MEM_ID=#{memId}
+    </update>
+
+    <!-- UPDATE -->
+    <!-- 회원정보변경 시 호출 -->
+    <!-- 로그인 처리 후 마지막로그인날짜 업데이트 처리 시 호출 -->
+    <update id="update">
+        UPDATE MEMBER
+        <set>
+            <if test="memPw != null and memPw != ''">
+                MEM_PW=#{memPw},
+            </if>
+            <if test="memName != null and memName != ''">
+                MEM_NAME=#{memName},
+            </if>
+            <if test="memImage != null and memImage != ''">
+                MEM_IMAGE=#{memImage},
+            </if>
+            <if test="memStatus != null and memStatus != ''">
+                MEM_STATUS=#{memStatus},
+            </if>
+            <if test="memLogin != null and memLogin != ''">
+                MEM_LOGIN=SYSDATE,
+            </if>
+            <if test="memAuthId != null and memAuthId != ''">
+                MEM_AUTH_ID=#{memAuthId}
+            </if>
+        </set>
+        WHERE MEM_ID=#{memId}
+    </update>
+
+    <!-- DELETE -->
+    <!-- 회원 정보 말소 시 호출 -->
+    <delete id="delete">
+        DELETE FROM MEMBER WHERE MEM_ID=#{memId}
+    </delete>
+
+    <!-- SELECT -->
+    <!-- 검색행 1개 -->
+    <select id="findByMemId" resultType="Member">
+        SELECT * FROM MEMBER WHERE MEM_ID=#{memId}
+    </select>
+
+
+    <!-- SELECT -->
+    <!-- 검색행 0개 이상 -->
+    <select id="findAll" resultType="Member">
+        SELECT * FROM MEMBER
+        <where>
+            <if test="memId != null and memId != ''">
+                <bind name="memId" value="'%' + memId + '%'"/>
+                MEM_ID LIKE #{memId}
+            </if>
+        </where>
+        ORDER BY MEM_ID
+    </select>
+</mapper>
