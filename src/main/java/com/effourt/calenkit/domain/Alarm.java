@@ -7,7 +7,7 @@ import lombok.Setter;
 @Setter
 public class Alarm {
     private Integer alNo;
-    private String alScNo;
+    private String alScno;
     private String alMid;
     private Integer alStatus;
     private String alTime;
