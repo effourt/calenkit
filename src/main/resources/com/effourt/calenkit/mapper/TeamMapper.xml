@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.effourt.calenkit.mapper.TeamMapper">
+    <!-- INSERT -->
+    <!-- 일정상세 삽입 시 함께 호출 - 권한레벨로 호스트와 동행 구분(1,0,9) -->
+    <insert id="save">
+        INSERT INTO TEAM VALUES( #{teamMid}, #{teamSno}, #{teamLevel}, 0)
+    </insert>
+
+    <!-- UPDATE -->
+    <!-- 일정번호와 아이디를 전달받아 팀의 권한레벨, 즐겨찾기 변경 -->
+    <update id="update">
+        UPDATE TEAM
+        <set>
+            <if test="teamLevel == 0 or teamLevel == 1">
+                TEAM_LEVEL=#{teamLevel},
+            </if>
+            <if test="teamBookmark == 0 and teamBookmark == 1">
+                TEAM_BOOKMARK=#{teamBookmark},
+            </if>
+        </set>
+        WHERE TEAM_SNO=#{teamSno} AND TEAM_MID=#{teamMid}
+    </update>
+
+    <!-- DELETE -->
+    <delete id="delete">
+        DELETE FROM TEAM WHERE TEAM_SNO=#{teamSno} AND TEAM_MID=#{teamMid}
+    </delete>
+
+    <!-- Team(1) : Schedule(1) -->
+    <!-- 팀별 일정을 출력하기 위한 Mapper 설정 -->
+<!--    <resultMap type="Team" id="TeamResultMap" autoMapping="true"/>-->
+<!--    <resultMap type="Schedule" id="ScheduleResultMap" autoMapping="true"/>-->
+<!--    <resultMap type="TeamScheduleMember" id="TeamScheduleResultMap" autoMapping="true">-->
+<!--        <association property="Schedule" resultMap="ScheduleResultMap" autoMapping="true"/>-->
+<!--        <association property="Team" resultMap="TeamResultMap" autoMapping="true"/>-->
+<!--    </resultMap>-->
+
+    <!-- SELECT -->
+    <!-- 일정 공유 팝업창-팀 멤버리스트(회원아이디,닉네임) 및 팀 정보(권한정보) 출력-->
+<!--    <select id="findBySno" resultMap="Team">-->
+<!--        SELECT TEAM_LEVEL, MEM_ID, MEM_NAME, MEM_IMAGE-->
+<!--        FROM TEAM-->
+<!--        JOIN MEMBER-->
+<!--        ON TEAM_MID=MEM_ID-->
+<!--        WHERE TEAM_SNO=#{teamSno} AND MEM_STATUS=1-->
+<!--    </select>-->
+
+    <!-- 일정 초대 팝업창 검색 - 회원아이디 검색 후 닉네임 출력 (팀 정보 확인 필요)-->
+
+
+    <!-- SELECT -->
+    <!-- 권한 테이블의 아이디와 현재 아이디가 일치한 / 일정번호를 모두 출력 -->
+<!--    <select id="findAllByMemId" resultMap="TeamScheduleResultMap">-->
+<!--        SELECT-->
+<!--        SC_NO, SC_TITLE, SC_SDATE, SC_EDATE, SC_STATUS, SC_PROGRESS-->
+<!--        FROM TEAM-->
+<!--        JOIN SCHEDULE-->
+<!--        ON TEAM_SNO = SC_NO-->
+<!--        WHERE TEAM_MID=#{memId}-->
+<!--        ORDER BY SC_SDATE-->
+<!--    </select>-->
+
+<!--    <select id="findAllByMemId" resultMap="TeamScheduleResultMap">-->
+<!--        SELECT-->
+<!--        TEAM_NO, TEAM_MID, TEAM_SNO, TEAM_LEVEL, TEAM_BOOKMARK-->
+<!--        FROM TEAM-->
+<!--        WHERE TEAM_MID=#{memId}-->
+<!--        ORDER BY SC_SDATE-->
+<!--    </select>-->
+</mapper>
