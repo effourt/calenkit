@@ -2,15 +2,15 @@
 <html>
 <head>
     <meta charset='utf-8' />
-    <link href='/packages/core/main.css' rel='stylesheet' />
-    <link href='/packages/daygrid/main.css' rel='stylesheet' />
-    <link href='/packages/timegrid/main.css' rel='stylesheet' />
-    <link href='/packages/list/main.css' rel='stylesheet' />
-    <script src='/packages/core/main.js'></script>
-    <script src='/packages/interaction/main.js'></script>
-    <script src='/packages/daygrid/main.js'></script>
-    <script src='/packages/timegrid/main.js'></script>
-    <script src='/packages/list/main.js'></script>
+    <link href='/static/packages/core/main.css' rel='stylesheet' />
+    <link href='/static/packages/daygrid/main.css' rel='stylesheet' />
+    <link href='/static/packages/timegrid/main.css' rel='stylesheet' />
+    <link href='/static/packages/list/main.css' rel='stylesheet' />
+    <script src='/static/packages/core/main.js'></script>
+    <script src='/static/packages/interaction/main.js'></script>
+    <script src='/static/packages/daygrid/main.js'></script>
+    <script src='/static/packages/timegrid/main.js'></script>
+    <script src='/static/packages/list/main.js'></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             var calendarEl = document.getElementById('calendar');
@@ -83,10 +83,23 @@
                         url: 'http://google.com/',
                         start: '2020-02-28'
                     }
-                ]
+                ],
             });
+            calendar.on('dateClick', function(info) {
+                alert("날짜 셀 Click Event");
+            });
+
+            calendar.on('eventClick', function(info) {
+                let scheduleTitle = 'testSchedule';
+                let startDay = '2023-03-17';
+                let endDay = '2023-05-24';
+                alert(info.event.scNo);
+                calendar.addEvent({'title': scheduleTitle, 'start': startDay, 'end': endDay, 'scNo': 1});
+            });
+
             calendar.render();
         });
+
     </script>
     <style>
 
@@ -94,8 +107,6 @@
             overflow: hidden; /* don't do scrollbars */
             font-family: Arial, Helvetica Neue, Helvetica, sans-serif;
             font-size: 14px;
-            width: 1000px;
-            margin: 0 auto;
         }
 
         #calendar-container {

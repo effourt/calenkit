@@ -41,13 +41,42 @@
     </delete>
 
     <!-- SELECT -->
-    <!-- 본문 내용 출력 -->
-<!--    <select id="findByScNo" resultType="Schedule">-->
-<!--        SELECT SC_NO, SC_TITLE, SC_CONTENT, SC_SDATE, SC_EDATE, SC_STATUS, SC_PROGRESS-->
-<!--        FROM SCHEDULE WHERE SC_NO=#{scNo}-->
-<!--    </select>-->
+    <!-- 일정 하나 출력 -->
+    <select id="findByScNo" resultType="Schedule">
+        SELECT SC_NO, SC_TITLE, SC_CONTENT, SC_SDATE, SC_EDATE, SC_STATUS, SC_PROGRESS
+        FROM SCHEDULE WHERE SC_NO IN (
+        <!-- sNoList를 sNo를 구분자로하여 출력. 정수sNo만 출력되게했음. -->
+        <foreach collection="scNoList" item="scNo" separator=",">
+            <if test="scNo instanceof Integer">
+                #{scNo}
+            </if>
+        </foreach> )
+    </select>
 
 
+
+    <!-- (연월에 따른) 캘린더 일정 출력 -->
+
+    <!-- 휴지통 일정 전체 & 일부 검색 (일정 제목 문자열 검색)-->
+
+    <!-- 즐겨찾기 일정 전체 출력-->
+
+
+    <!-- SELECT -->
+    <!-- 일정 검색 (일정 제목, 내용 문자열 검색)-->
+    <!--    <select id="findByFilter" resultType="Schedule">-->
+    <!--        SELECT SC_CONTENT-->
+    <!--        FROM SCHEDULE-->
+    <!--        WHERE-->
+    <!--        <if test="scContent != null and scContent != ''">-->
+    <!--            <bind name="scContent" value="'%' + scContent + '%'"/>-->
+    <!--            SC_CONTENT LIKE #{scContent}-->
+    <!--        </if>-->
+    <!--        <if test="scTitle != null and scTitle != ''">-->
+    <!--            <bind name="scTitle" value="'%' + scTitle + '%'"/>-->
+    <!--            SC_TITLE LIKE #{scTitle}-->
+    <!--        </if>-->
+    <!--    </select>-->
 
 
     <!--
@@ -94,26 +123,7 @@
     WHERE SC_SDATE >= #{scSdate}
     -->
 
-    <!-- SELECT -->
-    <!-- 일정 검색 (일정 제목, 내용 문자열 검색)-->
-<!--    <select id="findByFilter" resultType="Schedule">-->
-<!--        SELECT SC_CONTENT-->
-<!--        FROM SCHEDULE-->
-<!--        WHERE-->
-<!--        <if test="scContent != null and scContent != ''">-->
-<!--            <bind name="scContent" value="'%' + scContent + '%'"/>-->
-<!--            SC_CONTENT LIKE #{scContent}-->
-<!--        </if>-->
-<!--        <if test="scTitle != null and scTitle != ''">-->
-<!--            <bind name="scTitle" value="'%' + scTitle + '%'"/>-->
-<!--            SC_TITLE LIKE #{scTitle}-->
-<!--        </if>-->
-<!--    </select>-->
 
-    <!-- (연월에 따른) 캘린더 일정 출력 -->
 
-    <!-- 휴지통 일정 전체 & 일부 검색 (일정 제목 문자열 검색)-->
-
-    <!-- 즐겨찾기 일정 전체 출력-->
 
 </mapper>
