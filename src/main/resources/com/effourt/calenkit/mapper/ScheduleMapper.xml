@@ -37,7 +37,7 @@
     <!-- DELETE -->
     <!-- 수동 일정 삭제 -->
     <delete id="delete">
-        DELETE FROM SCHEDULE WHERE SC_NO=#{scNo} CASCADE
+        DELETE FROM SCHEDULE WHERE SC_NO=#{scNo}
     </delete>
 
     <!-- SELECT -->
