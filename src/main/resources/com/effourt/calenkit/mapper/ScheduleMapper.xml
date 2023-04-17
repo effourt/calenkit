@@ -50,7 +50,7 @@
             <if test="scNo instanceof Integer">
                 #{scNo}
             </if>
-        </foreach> )
+        </foreach>)
     </select>
 
 
