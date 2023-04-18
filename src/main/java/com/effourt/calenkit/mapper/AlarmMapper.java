@@ -7,7 +7,6 @@ import java.util.List;
 
 @Mapper
 public interface AlarmMapper {
-
     Integer save(Alarm alarm);
     Integer update(Alarm alarm);
     Integer delete(Integer alNo);

@@ -25,4 +25,5 @@
     <select id="findByAlMid" resultType="Alarm">
         SELECT * FROM ALARM WHERE AL_MID=#{alMid} AND AL_STATUS=1
     </select>
+
 </mapper>
