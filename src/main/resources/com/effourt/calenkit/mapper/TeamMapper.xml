@@ -49,17 +49,14 @@
         </if>
     </select>
 
-    <!-- 일정 공유 팝업창-팀 멤버리스트(회원아이디,닉네임) 및 팀 정보(권한정보) 출력-->
-<!--    <select id="findBySno" resultMap="Team">-->
-<!--        SELECT TEAM_LEVEL, MEM_ID, MEM_NAME, MEM_IMAGE-->
-<!--        FROM TEAM-->
-<!--        JOIN MEMBER-->
-<!--        ON TEAM_MID=MEM_ID-->
-<!--        WHERE TEAM_SNO=#{teamSno} AND MEM_STATUS=1-->
-<!--    </select>-->
-
-    <!-- 일정 초대 팝업창 검색 - 회원아이디 검색 후 닉네임 출력 (팀 정보 확인 필요)-->
-
+    <!-- 일정 공유 팝업창-팀 멤버리스트(회원아이디,닉네임) 및 팀 정보(권한정보) 출력 -->
+    <select id="findBySno" resultMap="Team">
+        SELECT TEAM_LEVEL, MEM_ID, MEM_NAME, MEM_IMAGE
+        FROM TEAM
+        JOIN MEMBER
+        ON TEAM_MID=MEM_ID
+        WHERE TEAM_SNO=#{teamSno} AND MEM_STATUS=1
+    </select>
 
     <!-- SELECT -->
     <!-- 권한 테이블의 아이디와 현재 아이디가 일치한 / 일정번호를 모두 출력 -->

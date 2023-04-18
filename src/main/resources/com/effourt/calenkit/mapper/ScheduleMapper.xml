@@ -41,8 +41,9 @@
     </delete>
 
     <!-- SELECT -->
-    <!-- 일정 하나 출력 -->
-    <select id="findByScNo" resultType="Schedule">
+    <!-- (연월에 따른) 캘린더 일정 출력 -->
+    <!-- date : 캘린더 연월 설정 변수 -->
+    <select id="findAllByScNo" resultType="Schedule">
         SELECT SC_NO, SC_TITLE, SC_CONTENT, SC_SDATE, SC_EDATE, SC_STATUS, SC_PROGRESS
         FROM SCHEDULE
         WHERE SC_NO IN (

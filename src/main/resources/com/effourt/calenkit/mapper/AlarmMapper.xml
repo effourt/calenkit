@@ -20,14 +20,15 @@
     </delete>
 
     <!-- SELECT -->
-    <!-- 검색행 1개 -->
     <select id="findByAlNo" resultType="Alarm">
-        SELECT * FROM ALARM WHERE AL_NO=#{alNo} AND AL_STATUS=1
-    </select>
-
-    <!-- SELECT -->
-    <!-- 검색행 0개 이상 -->
-    <select id="findByAlMid" resultType="Alarm">
-        SELECT * FROM ALARM WHERE AL_MID=#{alMid} AND AL_STATUS=1
+        SELECT * FROM ALARM WHERE
+        <!-- 검색행 1개 -->
+        <if test="alNo != null and alNo != ''">
+            AL_NO=#{alNo}
+        </if>
+        <!-- 검색행 0개 이상 -->
+        <if test="alMid != null and alMid != ''">
+            AL_MID=#{alMid}
+        </if> AND AL_STATUS=1
     </select>
 </mapper>
