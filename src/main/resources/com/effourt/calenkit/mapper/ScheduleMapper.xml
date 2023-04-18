@@ -79,7 +79,7 @@
     <!-- SELECT -->
     <!-- 일정 검색 (일정 제목, 내용 문자열 검색)-->
     <!-- scNo: 일정 번호, filter : 검색 조건(title / content), keyword : 검색어 -->
-    <select id="findByFilter" parameterType="Map" resultType="Schedule">
+    <select id="findByFilter" resultType="Schedule">
         SELECT *
         FROM SCHEDULE
         WHERE SC_NO=#{scNo}
@@ -91,6 +91,7 @@
             <bind name="keyword" value="'%' + keyword + '%'"/>
             AND SC_CONTENT LIKE #{keyword}
         </if>
+        AND SC_STATUS=1
     </select>
 
 

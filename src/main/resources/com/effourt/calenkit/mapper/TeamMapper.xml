@@ -58,23 +58,52 @@
         WHERE TEAM_SNO=#{teamSno} AND MEM_STATUS=1
     </select>
 
-    <!-- SELECT -->
-    <!-- 권한 테이블의 아이디와 현재 아이디가 일치한 / 일정번호를 모두 출력 -->
-<!--    <select id="findAllByMemId" resultMap="TeamScheduleResultMap">-->
-<!--        SELECT-->
-<!--        SC_NO, SC_TITLE, SC_SDATE, SC_EDATE, SC_STATUS, SC_PROGRESS-->
-<!--        FROM TEAM-->
-<!--        JOIN SCHEDULE-->
-<!--        ON TEAM_SNO = SC_NO-->
-<!--        WHERE TEAM_MID=#{memId}-->
-<!--        ORDER BY SC_SDATE-->
-<!--    </select>-->
+    <!--
+    List<Team> teamList = TeamRepository.findBySno(teamSno);
+    Map<String ,object> selectTeamMap = new HashMap<>();
+    int size = 0;
+    for(int i=0; i<teamList.size(); i++){
+        Member member = MemberRepository.findByMid(teamList[i].getTeamMid);
+        Integer level= teamList[i].getTeamLevel;
+        if(member.getMemStatus()==1){
+            selectTeamMap.put("member" + i, member);
+            selectTeamMap.put("level" + i, level);
+            size++;
+        }
+    }
+    selectTeamMap.put("size", size);
+    selectTeamMap = {"member0" : member, "level0": level, "member1" : member, "level1": level, "size" :2}
 
-<!--    <select id="findAllByMemId" resultMap="TeamScheduleResultMap">-->
-<!--        SELECT-->
-<!--        TEAM_NO, TEAM_MID, TEAM_SNO, TEAM_LEVEL, TEAM_BOOKMARK-->
-<!--        FROM TEAM-->
-<!--        WHERE TEAM_MID=#{memId}-->
-<!--        ORDER BY SC_SDATE-->
-<!--    </select>-->
+    private Team team;
+    private Member member;
+
+
+    List<Team> selectTeamList = new ArrayList<>();
+selectteam : [team,member]
+    }
+    New Member
+    for(Team team:selectTeamList){
+        (team.getTeamMid());
+        team.get();
+        team
+    }
+
+
+    private Team team;
+    private Member member;
+
+    List<Team> teamList = TeamRepository.findBySno(teamSno);
+    Map<String, Object> map = new HashMap<>();
+    List<Map<String, Object>> memberList = new ArrayList<>();
+    for (Team team : teamList) {
+        Member member = findByMemId(team.getTeamMid());
+        if (member.getStatus == 1) {
+            map.put("member", member);
+            map.put("team", team);
+            memberList.add(map);
+        }
+    }
+
+    map.put("teamMap", teamList);
+    -->
 </mapper>

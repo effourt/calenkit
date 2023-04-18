@@ -66,7 +66,7 @@
     <!-- 회원아이디 검색 - 검색행 0개 이상 -->
     <!-- 관리자페이지 - 회원 검색 -->
     <!-- 일정 초대 팝업창 - 회원 검색 -->
-    <select id="findAllMemId" resultType="Member">
+    <select id="findAllByMemId" resultType="Member">
         SELECT * FROM MEMBER
         <where>
             <if test="keyword != null and keyword != ''">

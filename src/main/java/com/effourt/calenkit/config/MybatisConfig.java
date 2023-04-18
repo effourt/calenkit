@@ -2,6 +2,8 @@ package com.effourt.calenkit.config;
 
 import com.effourt.calenkit.repository.AuthRepository;
 import com.effourt.calenkit.repository.AuthRepositoryImpl;
+import com.effourt.calenkit.repository.MemberRepository;
+import com.effourt.calenkit.repository.MemberRepositoryImpl;
 import com.effourt.calenkit.service.AuthService;
 import com.effourt.calenkit.service.AuthServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -21,8 +23,13 @@ public class MybatisConfig {
     }
 
     @Bean
+    public MemberRepository memberRepository() {
+        return new MemberRepositoryImpl(sqlSessionTemplate);
+    }
+
+    @Bean
     public AuthService authService() {
-        return new AuthServiceImpl(authRepository());
+        return new AuthServiceImpl(authRepository(), memberRepository());
     }
 
 }

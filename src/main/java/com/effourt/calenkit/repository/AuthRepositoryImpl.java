@@ -17,7 +17,7 @@ public class AuthRepositoryImpl implements AuthRepository {
     }
 
     @Override
-    public Auth save(Auth auth) {
+    public Integer save(Auth auth) {
         log.info("refresh={}", auth.getAuthRefresh());
         log.info("access={}", auth.getAuthAccess());
         return sqlSessionTemplate.getMapper(AuthMapper.class).save(auth);

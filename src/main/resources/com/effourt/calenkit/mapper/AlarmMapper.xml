@@ -3,7 +3,7 @@
 <mapper namespace="com.effourt.calenkit.mapper.AlarmMapper">
     <!-- INSERT -->
     <!-- 일정 수정(1),초대(2),삭제(0) 시 호출 -->
-    <insert id="save">
+    <insert id="save" parameterType="Alarm" useGeneratedKeys="true" keyProperty="alNo">
         INSERT INTO ALARM(AL_SCNO, AL_MID, AL_STATUS, AL_TIME, AL_CATE) VALUES(#{alScno}, #{alMid}, 1, SYSDATE, #{alCate})
     </insert>
 
@@ -18,17 +18,11 @@
     <delete id="delete">
         DELETE FROM ALARM WHERE AL_NO=#{alNo}
     </delete>
-
+    
     <!-- SELECT -->
-    <select id="findByAlNo" resultType="Alarm">
-        SELECT * FROM ALARM WHERE
-        <!-- 검색행 1개 -->
-        <if test="alNo != null and alNo != ''">
-            AL_NO=#{alNo}
-        </if>
-        <!-- 검색행 0개 이상 -->
-        <if test="alMid != null and alMid != ''">
-            AL_MID=#{alMid}
-        </if> AND AL_STATUS=1
+    <!-- 알람 목록 출력 -->
+    <!-- 검색행 0개 이상 : 사이드 메뉴 알람 출력을 위한 SELECT -->
+    <select id="findByAlMid" resultType="Alarm">
+        SELECT * FROM ALARM WHERE AL_MID=#{alMid} AND AL_STATUS=1
     </select>
 </mapper>
