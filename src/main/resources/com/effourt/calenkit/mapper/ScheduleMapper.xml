@@ -3,8 +3,8 @@
 <mapper namespace="com.effourt.calenkit.mapper.ScheduleMapper">
     <!-- INSERT -->
     <!-- 상세페이지 내용 최초 입력 -->
-    <insert id="save">
-        INSERT INTO SCHEDULE VALUES( #{scTitle}, #{scContent}, #{scSdate}, #{scEdate}, #{scStatus}, #{scProgress})
+    <insert id="save" parameterType="Schedule" useGeneratedKeys="true" keyProperty="scNo">
+        INSERT INTO SCHEDULE VALUES(#{scTitle}, #{scContent}, #{scSdate}, #{scEdate}, #{scStatus}, #{scProgress})
     </insert>
 
     <!-- UPDATE -->
@@ -41,89 +41,71 @@
     </delete>
 
     <!-- SELECT -->
-    <!-- 일정 하나 출력 -->
-    <select id="findByScNo" resultType="Schedule">
+    <!-- (연월에 따른) 캘린더 일정 출력 -->
+    <!-- date : 캘린더 연월 설정 변수 -->
+    <select id="findAllByScNo" resultType="Schedule">
         SELECT SC_NO, SC_TITLE, SC_CONTENT, SC_SDATE, SC_EDATE, SC_STATUS, SC_PROGRESS
-        FROM SCHEDULE WHERE SC_NO IN (
-        <!-- sNoList를 sNo를 구분자로하여 출력. 정수sNo만 출력되게했음. -->
+        FROM SCHEDULE
+        WHERE SC_NO IN (
+        <!-- scNoList를 scNo를 구분자로하여 출력. 정수(Integer)인 scNo만 출력되게했음. -->
         <foreach collection="scNoList" item="scNo" separator=",">
             <if test="scNo instanceof Integer">
                 #{scNo}
             </if>
         </foreach>)
+        <if test="date != null">
+        AND DATE_FORMAT(SC_SDATE, '%Y-%m') &lt;= DATE_FORMAT(#{date}, '%Y-%m')
+        AND DATE_FORMAT(SC_EDATE, '%Y-%m') &gt;= DATE_FORMAT(#{date}, '%Y-%m')
+        </if>
     </select>
 
-
-
-    <!-- (연월에 따른) 캘린더 일정 출력 -->
-
     <!-- 휴지통 일정 전체 & 일부 검색 (일정 제목 문자열 검색)-->
-
-    <!-- 즐겨찾기 일정 전체 출력-->
-
+    <select id="findByStatus" resultType="Schedule">
+        SELECT SC_NO, SC_TITLE, SC_CONTENT, SC_SDATE, SC_EDATE, SC_STATUS, SC_PROGRESS
+        FROM SCHEDULE WHERE SC_NO IN (
+        <!-- scNoList를 scNo를 구분자로하여 출력. 정수인 scNo만 출력되게했음. -->
+        <foreach collection="scNoList" item="scNo" separator=",">
+            <if test="scNo instanceof Integer">
+                #{scNo}
+            </if>
+        </foreach>)
+        <if test="keyword != null and keyword != ''">
+            <bind name="keyword" value="'%' + keyword + '%'"/>
+            AND SC_TITLE LIKE #{keyword}
+        </if>
+        AND SC_STATUS=0
+    </select>
 
     <!-- SELECT -->
     <!-- 일정 검색 (일정 제목, 내용 문자열 검색)-->
+    <!-- scNo: 일정 번호, filter : 검색 조건(title / content), keyword : 검색어 -->
+    <select id="findByFilter" parameterType="Map" resultType="Schedule">
+        SELECT *
+        FROM SCHEDULE
+        WHERE SC_NO=#{scNo}
+        <if test="filter == 'title'">
+            <bind name="keyword" value="'%' + keyword + '%'"/>
+            AND SC_TITLE LIKE #{keyword}
+        </if>
+        <if test="filter == 'content'">
+            <bind name="keyword" value="'%' + keyword + '%'"/>
+            AND SC_CONTENT LIKE #{keyword}
+        </if>
+    </select>
+
+
     <!--    <select id="findByFilter" resultType="Schedule">-->
-    <!--        SELECT SC_CONTENT-->
+    <!--        SELECT *-->
     <!--        FROM SCHEDULE-->
-    <!--        WHERE-->
+    <!--        WHERE SC_NO=#{scNo}-->
     <!--        <if test="scContent != null and scContent != ''">-->
     <!--            <bind name="scContent" value="'%' + scContent + '%'"/>-->
-    <!--            SC_CONTENT LIKE #{scContent}-->
+    <!--            AND SC_CONTENT LIKE #{scContent}-->
     <!--        </if>-->
     <!--        <if test="scTitle != null and scTitle != ''">-->
     <!--            <bind name="scTitle" value="'%' + scTitle + '%'"/>-->
-    <!--            SC_TITLE LIKE #{scTitle}-->
+    <!--            AND SC_TITLE LIKE #{scTitle}-->
     <!--        </if>-->
     <!--    </select>-->
-
-
-    <!--
-    SELECT *
-    FROM SCHEDULE
-    WHERE
-    SC_CONTENT LIKE #{scContent}
-
-
-    SELECT *
-    FROM SCHEDULE
-    WHERE
-    SC_TITLE LIKE #{scTitle}
-
-    SELECT *
-    FROM SCHEDULE
-    WHERE
-
-
-
-    4.1 ~ 5.1
-    3.1 ~ 6.20
-
-    SELECT * FROM SCHEDULE
-    WHERE TO_CHAR(SC_SDATE, 'YYYY-MM') LIKE '%' || #{tempDate} || '%'
-    OR TO_CHAR(SC_EDATE, 'YYYY-MM') LIKE '%' || #{tempDate} || '%'
-
-
-    SELECT * FROM SCHEDULE WHERE SC_SDATE >= #{scSdate}  1,2,3,4,5,6
-    INTERSECT
-    SELECT * FROM SCHEDULE WHERE SC_EDATE <= #{scEdate} 4,5,6,7,8,9
-
-    4,5,6
-
-    SELECT NAME FROM SUPER_HERO UNION SELECT NAME FROM MARVEL_HERO;
-
-
-    SELECT *
-    FROM SCHEDULE
-    WHERE SC_SDATE > #{scEdate} OR SC_EDATE < #{scSdate}
-
-    SELECT *
-    FROM SCHEDULE
-    WHERE SC_SDATE >= #{scSdate}
-    -->
-
-
-
 
 </mapper>

@@ -19,6 +19,7 @@
         DELETE FROM AUTH WHERE AUTH_ID=#{authId}
     </delete>
 
+    <!-- SELECT -->
     <select id="findByAuthId" resultType="Auth">
         SELECT AUTH_ID, AUTH_REFRESH, AUTH_ACCESS FROM AUTH WHERE AUTH_ID=#{authId}
     </select>
