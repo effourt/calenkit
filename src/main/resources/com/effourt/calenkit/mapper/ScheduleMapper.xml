@@ -54,8 +54,8 @@
             </if>
         </foreach>)
         <if test="date != null">
-        AND DATE_FORMAT(SC_SDATE, '%Y-%m') &lt;= DATE_FORMAT(#{date}, '%Y-%m')
-        AND DATE_FORMAT(SC_EDATE, '%Y-%m') &gt;= DATE_FORMAT(#{date}, '%Y-%m')
+            AND DATE_FORMAT(SC_SDATE, '%Y-%m') &lt;= DATE_FORMAT(#{date}, '%Y-%m')
+            AND DATE_FORMAT(SC_EDATE, '%Y-%m') &gt;= DATE_FORMAT(#{date}, '%Y-%m')
         </if>
     </select>
 
@@ -82,7 +82,13 @@
     <select id="findByFilter" resultType="Schedule">
         SELECT *
         FROM SCHEDULE
-        WHERE SC_NO=#{scNo}
+        WHERE SC_NO IN (
+        <!-- scNoList를 scNo를 구분자로하여 출력. 정수인 scNo만 출력되게했음. -->
+        <foreach collection="scNoList" item="scNo" separator=",">
+            <if test="scNo instanceof Integer">
+                #{scNo}
+            </if>
+        </foreach>)
         <if test="filter == 'title'">
             <bind name="keyword" value="'%' + keyword + '%'"/>
             AND SC_TITLE LIKE #{keyword}
