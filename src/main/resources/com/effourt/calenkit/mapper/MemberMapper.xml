@@ -68,9 +68,9 @@
     <select id="findAll" resultType="Member">
         SELECT * FROM MEMBER
         <where>
-            <if test="memId != null and memId != ''">
-                <bind name="memId" value="'%' + memId + '%'"/>
-                MEM_ID LIKE #{memId}
+            <if test="keyword != null and keyword != ''">
+                <bind name="keyword" value="keyword + '%'"/>
+                MEM_ID LIKE #{keyword}
             </if>
         </where>
         ORDER BY MEM_ID

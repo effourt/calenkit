@@ -37,9 +37,16 @@
 <!--    </resultMap>-->
 
     <!-- SELECT -->
-    <!-- id를 기준으로 일정 번호를 검색 -->
-    <select id="findyByMid">
-        SELECT TEAM_SNO FROM TEAM WHERE TEAM_MID=#{memId}
+    <!-- id를 기준으로 일정 번호를 검색, 즐겨찾기 일정 전체 출력-->
+    <!-- 1. TEAM_ID를 입력해 TEAM_SNO를 가져오고 -->
+    <!-- 2. findAllByScNo 통해 TEAM_TITLE 출력 -->
+    <!--  -->
+    <select id="findByMid" resultType="Team">
+        SELECT TEAM_SNO FROM TEAM
+        WHERE TEAM_MID=#{teamMid}
+        <if test="teamBookmark=1">
+            AND TEAM_BOOKMARK=1
+        </if>
     </select>
 
     <!-- 일정 공유 팝업창-팀 멤버리스트(회원아이디,닉네임) 및 팀 정보(권한정보) 출력-->
