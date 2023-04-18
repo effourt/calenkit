@@ -6,7 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface AuthRepository {
 
-    Auth save(Auth auth);
+    Integer save(Auth auth);
     Integer update(Auth auth);
     Integer delete(Integer authId);
     Auth findByAuthId(Integer authId);

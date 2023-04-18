@@ -11,6 +11,7 @@ public interface MemberMapper {
     Integer save(Member member);
     Integer updatePassword(Member member);
     Integer update(Member member);
-    Integer delete(Integer memId);
-    List<Member> findAll(Integer memId);
+    Integer delete(String memId);
+    Member findByMemId(String memId);
+    List<Member> findAllByMemId(String keyword);
 }
