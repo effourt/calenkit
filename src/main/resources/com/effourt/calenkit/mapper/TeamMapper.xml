@@ -51,7 +51,7 @@
         List<Team> result = service.findBySno(scNo);
 
         for(i=0; result.length; i++) {
-            //SELECT MEM_ID, MEM_NAME, MEM_IMAGE FROM MEMBER WHERE MEM_STATUS=1 AND MEM_ID=#{teamMid}; -- findByMid
+            //SELECT MEM_ID, MEM_NAME, MEM_IMAGE FROM MEMBER WHERE MEM_STATUS=1 AND MEM_ID=#{teamMid}; - findByMid
             model.addattribute("Level[+"i"+]", result[i].team_level);
             model.addattribute("id[+"i"+]", service.findByMid(result[i].getTeamMid).getMid);
             model.addattribute("name[+"i"+]", service.findByMid(result[i].getTeamMid).getMname);
