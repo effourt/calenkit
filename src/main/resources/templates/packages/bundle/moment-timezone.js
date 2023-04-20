@@ -5,8 +5,8 @@ Docs & License: https://fullcalendar.io/
 */
 
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('moment'), require('moment-timezone/builds/moment-timezone-with-data'), require('fullcalendar')) :
-    typeof define === 'function' && define.amd ? define(['exports', 'moment', 'moment-timezone/builds/moment-timezone-with-data', 'fullcalendar'], factory) :
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('templates/packages/bundle/moment'), require('moment-timezone/builds/moment-timezone-with-data'), require('fullcalendar')) :
+    typeof define === 'function' && define.amd ? define(['exports', 'templates/packages/bundle/moment', 'moment-timezone/builds/moment-timezone-with-data', 'fullcalendar'], factory) :
     (global = global || self, factory(global.FullCalendar = global.FullCalendar || {}, global.moment, global.moment, global.FullCalendar));
 }(this, (function (exports, momentNs, momentTimezoneWithData, fullcalendar) { 'use strict';
 
