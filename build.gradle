@@ -35,6 +35,10 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testCompileOnly 'org.projectlombok:lombok'
 	testAnnotationProcessor 'org.projectlombok:lombok'
+
+	// Spring Security Crypto 라이브러리 추가
+	implementation 'org.springframework.security:spring-security-crypto:5.5.1' // 최신 버전으로 업데이트 가능
+
 }
 
 tasks.named('test') {
