@@ -2,15 +2,15 @@
 <html>
 <head>
     <meta charset='utf-8' />
-    <link href='/static/packages/core/main.css' rel='stylesheet' />
-    <link href='/static/packages/daygrid/main.css' rel='stylesheet' />
-    <link href='/static/packages/timegrid/main.css' rel='stylesheet' />
-    <link href='/static/packages/list/main.css' rel='stylesheet' />
-    <script src='/static/packages/core/main.js'></script>
-    <script src='/static/packages/interaction/main.js'></script>
-    <script src='/static/packages/daygrid/main.js'></script>
-    <script src='/static/packages/timegrid/main.js'></script>
-    <script src='/static/packages/list/main.js'></script>
+    <link th:href="@{/packages/core/main.css}" href='packages/core/main.css' rel='stylesheet' />
+    <link th:href="@{/packages/daygrid/main.css}" href='packages/daygrid/main.css' rel='stylesheet' />
+    <link th:href="@{/packages/timegrid/main.css}" href='packages/timegrid/main.css' rel='stylesheet' />
+    <link th:href="@{/packages/list/main.css}" href='packages/list/main.css' rel='stylesheet' />
+    <script th:href="@{./packages/core/main.js}" src='./packages/core/main.js'></script>
+    <script th:href="@{./packages/interaction/main.js}" src='./packages/interaction/main.js'></script>
+    <script th:href="@{./packages/daygrid/main.js}" src='./packages/daygrid/main.js'></script>
+    <script th:href="@{./packages/timegrid/main.js}" src='./packages/timegrid/main.js'></script>
+    <script th:href="@{./packages/list/main.js}" src='./packages/list/main.js'></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             var calendarEl = document.getElementById('calendar');
