@@ -15,5 +15,5 @@ public interface TeamMapper {
 
     List<Team> findByMid(String teamMid);
 
-    List<TeamMember> findBySno(String teamSno);
+    List<TeamMember> findBySno(Integer teamSno);
 }
