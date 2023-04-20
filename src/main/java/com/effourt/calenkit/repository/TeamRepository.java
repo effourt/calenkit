@@ -11,5 +11,5 @@ public interface TeamRepository {
     Integer update(Team team);
     Integer delete(Integer teamSno, String teamMid);
     List<Team> findByMid(String teamMid);
-    List<TeamMember> findBySno(String teamSno);
+    List<TeamMember> findBySno(Integer teamSno);
 }
