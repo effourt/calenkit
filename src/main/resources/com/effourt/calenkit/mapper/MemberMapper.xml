@@ -4,15 +4,8 @@
 <mapper namespace="com.effourt.calenkit.mapper.MemberMapper">
     <!-- SAVE -->
     <insert id="save">
-        INSERT INTO MEMBER(MEM_ID,
-        <trim suffixOverrides=","><if test="memPw != null or memPw = ''">MEM_PW,</if></trim>
-        MEM_NAME, MEM_IMAGE, MEM_STATUS, MEM_LOGIN,
-        <trim suffixOverrides=","><if test="memAuthId != null or memAuthId = ''">MEM_AUTH_ID,</if></trim>
-        ) VALUES(#{memId},
-        <trim suffixOverrides=","><if test="memPw != null or memPw = ''">#{memPw},</if></trim>
-        #{memName}, #{memImage}, 1, SYSDATE,
-        <trim suffixOverrides=","><if test="memAuthId != null or memAuthId = ''">#{memAuthId},</if></trim>
-        )
+        INSERT INTO MEMBER(MEM_ID, MEM_PW, MEM_NAME, MEM_IMAGE, MEM_STATUS, MEM_LOGIN, MEM_AUTH_ID )
+        VALUES(#{memId}, #{memPw}, #{memName}, #{memImage}, 1, NOW(), #{memAuthId})
     </insert>
 
     <!-- UPDATE -->
