@@ -38,7 +38,7 @@ public class MyScheduleService {
     //    // => ScheduleRepository.delete
     // => AlarmRepository.delete
     public void removeSchedule(Team team) {
-        teamRepository.findBySno();
+//        teamRepository.findBySno();
         teamRepository.findByMid(team.getTeamMid());
     }
 
