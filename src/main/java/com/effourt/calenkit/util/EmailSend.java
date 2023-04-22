@@ -35,6 +35,7 @@ public class EmailSend {
         }
     }
 
+    //로그인/회원가입 코드 생성
     public String createAccessCode(String id, HttpSession session) {
         String accessCode = UUID.randomUUID().toString();
         session.setAttribute(accessCode, id + "ACCESS");
