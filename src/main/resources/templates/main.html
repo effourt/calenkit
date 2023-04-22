@@ -1,17 +1,19 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout (~{::link}, ~{::script}, ~{::style}, ~{::title}, ~{::div})}">
 <head>
     <meta charset='utf-8' />
-    <link th:href="@{/packages/core/main.css}" href='packages/core/main.css' rel='stylesheet' />
-    <link th:href="@{/packages/daygrid/main.css}" href='packages/daygrid/main.css' rel='stylesheet' />
-    <link th:href="@{/packages/timegrid/main.css}" href='packages/timegrid/main.css' rel='stylesheet' />
-    <link th:href="@{/packages/list/main.css}" href='packages/list/main.css' rel='stylesheet' />
-    <script th:href="@{./packages/core/main.js}" src='./packages/core/main.js'></script>
-    <script th:href="@{./packages/interaction/main.js}" src='./packages/interaction/main.js'></script>
-    <script th:href="@{./packages/daygrid/main.js}" src='./packages/daygrid/main.js'></script>
-    <script th:href="@{./packages/timegrid/main.js}" src='./packages/timegrid/main.js'></script>
-    <script th:href="@{./packages/list/main.js}" src='./packages/list/main.js'></script>
+    <title>메인 페이지</title>
+    <link th:href="@{/packages/core/main.css}" href='../static/packages/core/main.css' rel='stylesheet' />
+    <link th:href="@{/packages/daygrid/main.css}" href='../static/packages/daygrid/main.css' rel='stylesheet' />
+    <link th:href="@{/packages/timegrid/main.css}" href='../static/packages/timegrid/main.css' rel='stylesheet' />
+    <link th:href="@{/packages/list/main.css}" href='../static/packages/list/main.css' rel='stylesheet' />
+    <script th:src="@{/packages/core/main.js}" src='../static/packages/core/main.js'></script>
+    <script th:src="@{/packages/interaction/main.js}" src='../static/packages/interaction/main.js'></script>
+    <script th:src="@{/packages/daygrid/main.js}" src='../static/packages/daygrid/main.js'></script>
+    <script th:src="@{/packages/timegrid/main.js}" src='../static/packages/timegrid/main.js'></script>
+    <script th:src="@{packages/list/main.js}" src='../static/packages/list/main.js'></script>
     <script>
+
         document.addEventListener('DOMContentLoaded', function() {
             var calendarEl = document.getElementById('calendar');
 
@@ -130,10 +132,8 @@
     </style>
 </head>
 <body>
-
 <div id='calendar-container'>
     <div id="calendar"></div>
 </div>
-
 </body>
 </html>
