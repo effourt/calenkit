@@ -23,19 +23,19 @@ public class MyScheduleService {
     //[메인에서 내 스케줄 추가 행위] : addMySchedule()
     // => ScheduleRepository.save
     // => TeamRepository.save
-    // => AlarmService.save
-
-    //[메인이나 사이드바에서 내 스케줄 작성 행위] : modifyMySchedule()
-    // => ScheduleRepository.update
-
-    //[상세에서 내 스케줄 삭제 행위] : goToRecycleBin()
-    // => TeamRepository.update
-    // => AlarmRepository.update
-    // => ScheduleRepository.update
-
-    // [휴지통에서 내 스케줄 완전삭제 행위] : removeSchedule()
-    // => TeamRepository.delete
-    // => ScheduleRepository.delete
+    //    // => AlarmService.save
+    //
+    //    //[메인이나 사이드바에서 내 스케줄 작성 행위] : modifyMySchedule()
+    //    // => ScheduleRepository.update
+    //
+    //    //[상세에서 내 스케줄 삭제 행위] : goToRecycleBin()
+    //    // => TeamRepository.update
+    //    // => AlarmRepository.update
+    //    // => ScheduleRepository.update
+    //
+    //    // [휴지통에서 내 스케줄 완전삭제 행위] : removeSchedule()
+    //    // => TeamRepository.delete
+    //    // => ScheduleRepository.delete
     // => AlarmRepository.delete
     public void removeSchedule(Team team) {
         teamRepository.findBySno();
