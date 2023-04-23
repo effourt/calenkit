@@ -12,6 +12,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/*
+DOMAIN	REPOSITORY(mybatis3, JPA)	SERVICE
+        INSERT	SAVE	ADD
+        UPDATE	UPDATE	MODIFY
+        DELETE	DELETE	REMOVE
+        SELECT	FIND	GET
+*/
 @Service
 @RequiredArgsConstructor
 public class TeamScheduleService {
@@ -37,12 +44,17 @@ public class TeamScheduleService {
     }
    */
 
-    public void 공유할사람을찾아서_추가하는서비스(String 공유받을아이디, int scNo){
-        Member 공유받을회원 = memberRepository.findByMemId(공유받을아이디);
+    /**
+     * 공유할사람을찾아서 추가하는서비스
+     * @param mId : 공유받을 아이디
+     * @param scNo : 일정 번호
+     */
+    public void addTeam(String mId, int scNo){
+        Member findMember = memberRepository.findByMemId(mId);
         int teamSno=scNo;
 
         Team team = new Team();
-        team.setTeamMid(공유받을회원.getMemId());
+        team.setTeamMid(findMember.getMemId());
         team.setTeamSno(teamSno);
         team.setTeamLevel(0); //처음 insert 시는 권한레벨을 읽기로 준다(후에 수정 가능) - 읽기권한:0, 수정권한:1
 
@@ -52,20 +64,26 @@ public class TeamScheduleService {
         teamRepository.save(team);
     }
 
-
+    /**
+     * 공유된 일정의 권한 정보를 변경하는서비스
+     * @param teamMid : 공유받은아이디
+     * @param scNo : 일정 번호
+     * @param updateTeamLevel : 변경할권한레밸
+     */
     //=> 컨트롤러에서 API로 요청 사용 [사용자가 드롭다운으로 권한을 변경할 때 페이지 리로드 없이 비동기 처리로 변경되게 만들 것임 - [부분변경:PATCH]
-    public void 공유된일정의권한정보를_변경하는서비스(String 공유받은아이디, int scNo, int 변경할권한레밸) {
+    public void modifyTeamLevel(String teamMid, int scNo, int updateTeamLevel) {
         //전달받은 아이디로 팀 테이블 검색
-        List<Team> teamList = teamRepository.findByMid(공유받은아이디);
+        List<Team> teamList = teamRepository.findByMid(teamMid);
 
-        Team 변경할team = new Team();
+        Team updateTeam = new Team();
         for(Team team:teamList){
             if(team.getTeamSno().equals(scNo)){
-                변경할team.setTeamLevel(변경할권한레밸);
+                updateTeam.setTeamLevel(updateTeamLevel);
             }
         }
+
         //team에 최종적으로 권한레벨 변경
-        teamRepository.update(변경할team);
+        teamRepository.update(updateTeam);
     }
 
 }
