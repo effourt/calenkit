@@ -67,7 +67,7 @@ public class TeamScheduleService {
     /**
      * 공유된 일정의 권한 정보를 변경하는서비스
      * @param teamMid : 공유받은아이디
-     * @param scNo : 일정번호
+     * @param scNo : 일정 번호
      * @param updateTeamLevel : 변경할권한레밸
      */
     //=> 컨트롤러에서 API로 요청 사용 [사용자가 드롭다운으로 권한을 변경할 때 페이지 리로드 없이 비동기 처리로 변경되게 만들 것임 - [부분변경:PATCH]
