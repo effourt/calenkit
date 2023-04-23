@@ -8,6 +8,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
 import javax.mail.MessagingException;
+import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpSession;
 import java.util.UUID;
@@ -23,8 +24,11 @@ public class EmailSend {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
 
         try {
-            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
-            mimeMessageHelper.setTo(emailMessage.getRecipient());
+            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+            InternetAddress[] toAddress = new InternetAddress[1];
+            toAddress[0] = new InternetAddress(emailMessage.getRecipient());
+
+            mimeMessageHelper.setTo(toAddress);
             mimeMessageHelper.setSubject(emailMessage.getSubject());
             mimeMessageHelper.setText(emailMessage.getMessage());
             javaMailSender.send(mimeMessage);
