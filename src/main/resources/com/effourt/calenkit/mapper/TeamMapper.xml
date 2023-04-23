@@ -28,15 +28,13 @@
     </delete>
 
     <!-- SELECT -->
-    <!-- id를 기준으로 권한있는 일정의 일정 번호를 검색, teamBookmark가 1일 경우 즐겨찾기 일정 번호 출력-->
-    <!-- 1. TEAM_MID를 입력해 TEAM_SNO를 가져오고 -->
-    <!-- 2. (ScheduleMapper)findAllByScNo 통해 일정 제목 출력 -->
-    <!--  -->
+    <!-- id를 기준으로 권한있는 일정의 일정 번호를 검색 -->
     <select id="findByMid" resultType="Team">
         SELECT TEAM_SNO FROM TEAM
         WHERE TEAM_MID=#{teamMid}
     </select>
 
+    <!-- teamBookmark가 1일 경우 즐겨찾기 일정 번호 출력 -->
     <select id="findByBookmark" resultType="Team">
         SELECT TEAM_SNO FROM TEAM
         WHERE TEAM_MID=#{teamMid} AND TEAM_BOOKMARK=1
@@ -72,11 +70,11 @@
 
     <!-- 일정 공유 팝업창-팀 멤버리스트(회원아이디,닉네임) 및 팀 정보(권한정보) 출력 -->
     <select id="findBySno" resultMap="TeamMemberResultMap">
-    SELECT TEAM_LEVEL, MEM_ID, MEM_NAME, MEM_IMAGE
-    FROM TEAM
-    JOIN MEMBER
-    ON TEAM_MID=MEM_ID
-    WHERE TEAM_SNO=#{teamSno} AND MEM_STATUS=1
+        SELECT TEAM_LEVEL, MEM_ID, MEM_NAME, MEM_IMAGE
+        FROM TEAM
+        JOIN MEMBER
+        ON TEAM_MID=MEM_ID
+        WHERE TEAM_SNO=#{teamSno} AND MEM_STATUS=1
     </select>
 
 
