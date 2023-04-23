@@ -27,5 +27,4 @@ class EmailSendTest {
 
         emailSend.sendMail(emailMessage);
     }
-
 }
