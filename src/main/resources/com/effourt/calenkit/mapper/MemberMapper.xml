@@ -49,8 +49,15 @@
         DELETE FROM MEMBER WHERE MEM_ID=#{memId}
     </delete>
 
+
     <!-- SELECT -->
-    <!-- 검색행 1개 -->
+    <!-- 닉네임 검색행 1개 -->
+    <select id="findByMemName" resultType="Member">
+        SELECT * FROM MEMBER WHERE MEM_NAME=#{memName}
+    </select>
+
+    <!-- SELECT -->
+    <!-- 회원아이디 검색행 1개 -->
     <select id="findByMemId" resultType="Member">
         SELECT * FROM MEMBER WHERE MEM_ID=#{memId}
     </select>
