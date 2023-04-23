@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Calenkit</title>
+</head>
+<body>
+<div>
+    <div class="mb-3">
+        <div>
+            <a href="https://kauth.kakao.com/oauth/authorize?client_id=6d49b86907e3887ab27ba34050122bd1&redirect_uri=http://localhost:8080/&response_type=code&scope=">
+                <img th:src="@{/img/kakao_login_medium_wide.png}" src="../static/img/kakao_login_medium_wide.png"/>
+            </a>
+        </div>
+        <label for="id" class="form-label">Email address</label>
+        <input type="email" class="form-control" id="id">
+    </div>
+</div>
+</body>
+</html>
