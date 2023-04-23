@@ -19,13 +19,13 @@ import java.util.List;
 
 //@Controller
 @RequiredArgsConstructor
-public class MemberController {
+    public class MemberController {
 
-    private final LoginService loginService;
-    private final JoinService joinService;
-    private MyPageService myPageService;
-    private AdminService adminService;
-    private MemberRepository memberRepository;
+        private final LoginService loginService;
+        private final JoinService joinService;
+        private final MyPageService myPageService;
+        private final AdminService adminService;
+        private final MemberRepository memberRepository;
 
     //DB에서 아이디 체크
     //아이디 존재 O, 비밀번호 O : PASSWORD_LOGIN
@@ -154,17 +154,17 @@ public class MemberController {
     // MyPage
     // 멤버 정보변경(PATCH)
     // Form태그를 통해 전달받은 값들을 member 객체에 update 후 member_modify 페이지로 이동
-    @PatchMapping(value ="/myPage_modify")
-    public String MemberModify(HttpSession session) throws MemberNotFoundException {
-        Member member=(Member)session.getAttribute("loginMember");
-        myPageService.modifyMe(member);
-        return "redirect:/member_modify";
-    }
-
-
-    // MyPage
-    // 멤버 비밀번호 정보변경(PATCH)
-    // 로그인세션에서 아이디값을 전달받아 member_modify 페이지로 이동처리.
+    //    @PatchMapping(value ="/myPage_modify")
+    //    public String MemberModify(HttpSession session) throws MemberNotFoundException {
+    //        Member member=(Member)session.getAttribute("loginMember");
+    //        myPageService.modifyMe(member);
+    //        return "redirect:/member_modify";
+    //    }
+    //
+    //
+    //    // MyPage
+    //    // 멤버 비밀번호 정보변경(PATCH)
+    //    // 로그인세션에서 아이디값을 전달받아 member_modify 페이지로 이동처리.
     @PatchMapping(value ="/myPage_pwModify")
     public String MemberPwModify(Model model, HttpSession session) throws MemberNotFoundException {
         Member member=(Member)session.getAttribute("loginMember");
