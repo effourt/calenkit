@@ -2,15 +2,13 @@ package com.effourt.calenkit.controller;
 
 import com.effourt.calenkit.domain.Member;
 import com.effourt.calenkit.dto.EmailMessage;
+import com.effourt.calenkit.dto.SocialRequest;
 import com.effourt.calenkit.service.JoinService;
 import com.effourt.calenkit.service.LoginService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 
@@ -63,8 +61,10 @@ public class MemberController {
     }
 
     //소셜 로그인
-    @PostMapping("")
-    public String loginBySocial(String id, HttpSession session) {
+    @PostMapping("/kakao-login")
+    @ResponseBody
+    public String loginByKakao(@RequestBody SocialRequest socialRequest) {
+
         return "";
     }
 
