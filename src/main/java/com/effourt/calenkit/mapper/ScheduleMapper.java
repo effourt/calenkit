@@ -21,7 +21,7 @@ public interface ScheduleMapper {
     List<Schedule> findAllByScNo(Map<String, Object> map);
 
     //map 요소 : keyword, List 객체(일정번호)
-    List<Schedule> findByStatus(Map<String, Object> map);
+    List<Schedule> findByRecycleBin(Map<String, Object> map);
 
     //map 요소 : keyword, Filter, List 객체(일정번호)
     List<Schedule> findByFilter(List<Integer> scNoList, String filter, String keyword);
