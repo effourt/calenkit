@@ -1,38 +1,51 @@
 package com.effourt.calenkit.service;
 
 import com.effourt.calenkit.domain.Alarm;
-import com.effourt.calenkit.domain.Member;
 import com.effourt.calenkit.domain.Schedule;
 import com.effourt.calenkit.domain.Team;
 import com.effourt.calenkit.repository.*;
-import lombok.Value;
-import org.springframework.context.MessageSource;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class MyScheduleService {
-    private TeamRepositoryImpl teamRepository;
     private ScheduleRepository scheduleRepository;
+    private TeamRepository teamRepository;
     private AlarmRepository alarmRepository;
 
-    //[사이드바에서 내 스케줄 검색 행위] : findMySchedule()
-    // => TeamRepository.find
-    // => ScheduleRepository.find
+    //[사이드바에서 내 스케줄 검색 행위]
+    public List<Schedule> findMySchedule(String id, String keyword) {
+        Map<String, Object> map=new HashMap<>();
+        map.put("ScNo", teamRepository.findByMid(id));
+        map.put("keyword", keyword);
 
-    //[메인에서 내 스케줄 추가 행위] : addMySchedule()
-    // => ScheduleRepository.save
-    // => TeamRepository.save
-    // => AlarmService.save
+        return scheduleRepository.findAllByScNo(map);
+    }
+
+    //[메인에서 내 스케줄 추가 행위]
+    public void addMySchedule(Schedule schedule, Team team, Alarm alarm) {
+        scheduleRepository.save(schedule);
+        teamRepository.save(team);
+        alarmRepository.save(alarm);
+    }
 
     //[메인이나 사이드바에서 내 스케줄 작성 행위] : modifyMySchedule()
     // => ScheduleRepository.update
 
+    //[휴지통 출력]
+    // => 팝업창에서 출력(10개씩 출력, 스크롤 로딩)
+    // => 검색어(keyword)가 없을 경우 null로 전달 받아야 함(필수 매개변수)
+    public List<Schedule> getRecycleBin(String id, String keyword) {
+        Map<String, Object> map=new HashMap<>();
+
+        map.put("scNoList", teamRepository.findByMid(id));
+        map.put("keyword", keyword);
+
+        return scheduleRepository.findByRecycleBin(map);
+    }
+
     //[상세에서 내 스케줄 삭제(휴지통으로 이동) 행위] : goToRecycleBin()
-    // => AlarmRepository.update
-    // => ScheduleRepository.update
-    // => AlarmRepository.save
     public void goToRecycleBin(Schedule schedule, Alarm alarm) {
         schedule.setScStatus(0);
         scheduleRepository.update(schedule);
@@ -41,13 +54,7 @@ public class MyScheduleService {
         alarmRepository.save(alarm); //삭제 알림 출력 메세지 내용 properties 파일 - MessageSource, @Value
     }
 
-    //[휴지통 출력]
-    // =>
-    // =>
-
     //[휴지통에서 내 스케줄 복원 행위]
-    // => AlarmRepository.update
-    // => ScheduleRepository.update
     public void restoreSchedule(Schedule schedule, Alarm alarm) {
         schedule.setScStatus(1);
         scheduleRepository.update(schedule);
@@ -56,9 +63,6 @@ public class MyScheduleService {
     }
 
     //[휴지통에서 내 스케줄 완전 삭제 행위]
-    // => TeamRepository.delete
-    // => ScheduleRepository.delete
-    // => AlarmRepository.delete
     public void removeSchedule(Integer scNo, String id, Integer alNo) {
        scheduleRepository.delete(scNo);
        teamRepository.delete(scNo, id);
