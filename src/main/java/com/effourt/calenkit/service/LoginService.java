@@ -1,22 +1,38 @@
 package com.effourt.calenkit.service;
 
+import com.effourt.calenkit.client.KakaoFeignClient;
+import com.effourt.calenkit.domain.Auth;
 import com.effourt.calenkit.domain.Member;
+import com.effourt.calenkit.dto.AuthUserInfoResponse;
 import com.effourt.calenkit.dto.EmailMessage;
+import com.effourt.calenkit.dto.AccessTokenRequest;
+import com.effourt.calenkit.dto.AccessTokenResponse;
+import com.effourt.calenkit.repository.AuthRepository;
 import com.effourt.calenkit.repository.MemberRepository;
 import com.effourt.calenkit.util.EmailSend;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
-import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class LoginService {
 
     private final MemberRepository memberRepository;
+    private final AuthRepository authRepository;
     private final EmailSend emailSend;
+    private final KakaoFeignClient kakaoFeignClient;
 
+    //Member 테이블에 회원 정보 저장
+    public void saveMember(Member member) {
+        memberRepository.save(member);
+    }
+
+    //Member 테이블에서 이메일에 해당하는 회원 정보 조회
     public Member getMemberById(String id) {
         return memberRepository.findByMemId(id);
     }
@@ -59,9 +75,39 @@ public class LoginService {
         emailSend.sendMail(emailMessage);
     }
 
-    //[sns로 로그인 행위] : loginBySNS()
-    // => MemberRepository.save
-    // => AuthRepository.save
-    // => AuthRepository.update
-    // => 세션 값 저장
+    //인가 코드로 Access 토큰 발급
+    public AccessTokenResponse getAccessToken(AccessTokenRequest accessTokenRequest) {
+        AccessTokenResponse accessToken = kakaoFeignClient.getAccessToken(
+                accessTokenRequest.getClientId(),
+                "authorization_code",
+                accessTokenRequest.getRedirectUri(),
+                accessTokenRequest.getCode());
+        log.info("accessToken={}", accessToken.getAccessToken());
+        log.info("refreshToken={}", accessToken.getRefreshToken());
+        return accessToken;
+    }
+
+
+    //인가 코드로 Access 토큰을 받아온 뒤, Access 토큰으로 카카오 리소스 서버에서 유저 정보 가져오기
+    public AuthUserInfoResponse getAuthUserInfo(String accessToken) {
+        return kakaoFeignClient.getAuthUserInfo("Bearer " + accessToken);
+    }
+
+    //Access 토큰과 Refresh 토큰 저장
+    public Auth saveToken(AccessTokenResponse accessToken) {
+        Auth auth = new Auth();
+        auth.setAuthAccess(accessToken.getAccessToken());
+        auth.setAuthRefresh(accessToken.getRefreshToken());
+        authRepository.save(auth);
+        return auth;
+    }
+
+    //Access 토큰과 Refresh 토큰 UPDATE
+    public void updateToken(String memberId, Integer authId) {
+        Member member = new Member();
+        member.setMemId(memberId);
+        member.setMemAuthId(authId);
+        memberRepository.update(member);
+    }
+
 }
