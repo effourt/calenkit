@@ -47,8 +47,8 @@ public class ScheduleRepositoryImpl implements ScheduleRepository{
     }
 
     @Override
-    public List<Schedule> findByStatus(Map<String, Object> map) {
-        return sqlSessionTemplate.getMapper(ScheduleMapper.class).findByStatus(map);
+    public List<Schedule> findByRecycleBin(Map<String, Object> map) {
+        return sqlSessionTemplate.getMapper(ScheduleMapper.class).findByRecycleBin(map);
     }
 
     @Override

@@ -66,7 +66,7 @@
     </select>
 
     <!-- 휴지통 일정 전체 & 일부 검색 (일정 제목 문자열 검색)-->
-    <select id="findByStatus" resultType="Schedule">
+    <select id="findByRecycleBin" resultType="Schedule">
         SELECT SC_NO, SC_TITLE, SC_CONTENT, SC_SDATE, SC_EDATE, SC_STATUS, SC_PROGRESS
         FROM SCHEDULE WHERE SC_NO IN (
         <!-- scNoList를 scNo를 구분자로하여 출력. 정수인 scNo만 출력되게했음. -->
