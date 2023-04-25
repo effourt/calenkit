@@ -4,6 +4,7 @@ import com.effourt.calenkit.domain.Alarm;
 import com.effourt.calenkit.domain.Schedule;
 import com.effourt.calenkit.domain.Team;
 import com.effourt.calenkit.repository.*;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
@@ -24,6 +25,7 @@ public class MyScheduleService {
     }
 
     //[메인에서 내 스케줄 추가 행위]
+    @Transactional
     public void addMySchedule(Schedule schedule, Team team, Alarm alarm) {
         scheduleRepository.save(schedule);
         teamRepository.save(team);
@@ -46,6 +48,7 @@ public class MyScheduleService {
     }
 
     //[상세에서 내 스케줄 삭제(휴지통으로 이동) 행위] : goToRecycleBin()
+    @Transactional
     public void goToRecycleBin(Schedule schedule, Alarm alarm) {
         schedule.setScStatus(0);
         scheduleRepository.update(schedule);
@@ -55,6 +58,7 @@ public class MyScheduleService {
     }
 
     //[휴지통에서 내 스케줄 복원 행위]
+    @Transactional
     public void restoreSchedule(Schedule schedule, Alarm alarm) {
         schedule.setScStatus(1);
         scheduleRepository.update(schedule);
@@ -63,6 +67,7 @@ public class MyScheduleService {
     }
 
     //[휴지통에서 내 스케줄 완전 삭제 행위]
+    @Transactional
     public void removeSchedule(Integer scNo, String id, Integer alNo) {
        scheduleRepository.delete(scNo);
        teamRepository.delete(scNo, id);
@@ -71,6 +76,7 @@ public class MyScheduleService {
 
     // [내 스케줄 즐겨찾기 버튼 클릭 행위]
     // => 즐겨찾기 상태(teamBookmark) 변경
+    @Transactional
     public void addBookmark(Team team) {
         team.setTeamBookmark(1); //즐겨찾기 등록
         teamRepository.update(team);
