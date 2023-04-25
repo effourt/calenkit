@@ -1,7 +1,6 @@
 package com.effourt.calenkit.service;
 
 import com.effourt.calenkit.domain.Alarm;
-import com.effourt.calenkit.domain.Member;
 import com.effourt.calenkit.domain.Schedule;
 import com.effourt.calenkit.domain.Team;
 import com.effourt.calenkit.repository.*;
