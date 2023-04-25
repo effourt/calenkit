@@ -17,19 +17,19 @@ public class AlarmController {
 
     //알람 조회
     //[GET] : http://localhost:8080/alarms
-//    @GetMapping
+    @GetMapping
     public String a(){
         //
         return "teamPopup";
     }
 
     //알람
-//    @PostMapping
+    @PostMapping
     //[POST] : http://localhost:8080/alarms
     public String b(){
         return "teamPopup";
     }
-//    @GetMapping
+    @GetMapping
     public String c(){
         return "teamPopup";
     }
