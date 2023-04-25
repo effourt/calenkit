@@ -14,6 +14,7 @@ public interface ScheduleMapper {
     Integer save(Schedule schedule);
     Integer update(Schedule schedule);
     Integer delete(Integer scNo);
+    Schedule findByScNo(Integer scNo);
 
     //map 요소 : date, List 객체(일정번호) - map(date, "2020-12-12") , map(scNoList, List<Integer>)
     //map.put("date", "2020-10")
