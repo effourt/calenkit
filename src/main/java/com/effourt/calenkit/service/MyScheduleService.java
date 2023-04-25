@@ -4,12 +4,16 @@ import com.effourt.calenkit.domain.Alarm;
 import com.effourt.calenkit.domain.Schedule;
 import com.effourt.calenkit.domain.Team;
 import com.effourt.calenkit.repository.*;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Service
+@RequiredArgsConstructor
 public class MyScheduleService {
     private ScheduleRepository scheduleRepository;
     private TeamRepository teamRepository;
