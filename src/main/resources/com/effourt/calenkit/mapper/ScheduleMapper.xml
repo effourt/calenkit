@@ -41,6 +41,12 @@
     </delete>
 
     <!-- SELECT -->
+    <!-- 일정 검색행 1개 -->
+    <select id="findByScNo" resultType="Schedule">
+        SELECT * FROM SCHEDULE WHERE SC_NO=#{scNo}
+    </select>
+
+    <!-- SELECT -->
     <!-- (연월에 따른) 캘린더 일정 출력 -->
     <!-- date : 캘린더 연월 설정 변수 -->
     <select id="findAllByScNo" resultType="Schedule">
