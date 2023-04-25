@@ -1,7 +1,6 @@
 package com.effourt.calenkit.service;
 
 import com.effourt.calenkit.domain.Member;
-import com.effourt.calenkit.dto.AccessTokenRequest;
 import com.effourt.calenkit.repository.MemberRepository;
 import com.effourt.calenkit.repository.MemberRepositoryImpl;
 import lombok.RequiredArgsConstructor;
@@ -73,18 +72,7 @@ class LoginServiceTest {
     }
 
     @Test
-    void getAccessToken() {
-    }
+    void sendCode() {
 
-    @Test
-    void getAuthUserInfo() {
-    }
-
-    @Test
-    void saveToken() {
-    }
-
-    @Test
-    void updateToken() {
     }
 }
