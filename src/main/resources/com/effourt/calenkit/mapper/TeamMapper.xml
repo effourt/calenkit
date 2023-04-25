@@ -61,14 +61,16 @@
 
 
 
+    <!--
     <resultMap type="Team" id="teamResultMap" autoMapping="true"/>
     <resultMap type="Member" id="memberResultMap" autoMapping="true"/>
     <resultMap type="TeamMember" id="TeamMemberResultMap" autoMapping="true">
         <association property="team" resultMap="teamResultMap" autoMapping="true"/>
         <collection property="memberList" resultMap="memberResultMap" autoMapping="true"/>
     </resultMap>
-
+    -->
     <!-- 일정 공유 팝업창-팀 멤버리스트(회원아이디,닉네임) 및 팀 정보(권한정보) 출력 -->
+    <!--
     <select id="findBySno" resultMap="TeamMemberResultMap">
         SELECT TEAM_LEVEL, MEM_ID, MEM_NAME, MEM_IMAGE
         FROM TEAM
@@ -76,14 +78,16 @@
         ON TEAM_MID=MEM_ID
         WHERE TEAM_SNO=#{teamSno} AND MEM_STATUS=1
     </select>
+    -->
 
+    <!-- SELECT -->
+    <!-- Sno를 기준으로 디수의 행 출력 -->
+    <select id="findBySno" resultType="Team">
+        SELECT TEAM_NO,TEAM_MID,TEAM_SNO,TEAM_LEVEL,TEAM_BOOKMARK
+        FROM TEAM
+        WHERE TEAM_SNO=#{teamSno}
+    </select>
 
-
-
-    <!-- 일정 공유 팝업창-팀 멤버리스트(회원아이디,닉네임) 및 팀 정보(권한정보) 출력 -->
-    <!--    <select id="findBySno" resultType="Team">-->
-    <!--        SELECT TEAM_MID, TEAM_LEVEL FROM TEAM WHERE TEAM_SNO=#{teamSno}-->
-    <!--    </select>-->
     <!--
     List<Team> teamList = TeamRepository.findBySno(teamSno);
     Map<String ,object> selectTeamMap = new HashMap<>();

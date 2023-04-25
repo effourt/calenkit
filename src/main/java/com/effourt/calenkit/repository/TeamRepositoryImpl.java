@@ -46,7 +46,7 @@ public class TeamRepositoryImpl implements TeamRepository {
     }
 
     @Override
-    public List<TeamMember> findBySno(Integer teamSno) {
+    public List<Team> findBySno(Integer teamSno) {
         return sqlSessionTemplate.getMapper(TeamMapper.class).findBySno(teamSno);
     }
 }
