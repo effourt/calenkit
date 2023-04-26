@@ -37,7 +37,7 @@ public class AlarmService {
             Alarm alarm = new Alarm();
             //1. 알람 번호 - 자동증가값
             alarm.setAlMid(idList[i]); //2. 알람 울릴 아이디
-            alarm.setAlStatus(scNo); //3. 알람 울릴 스케줄번호
+            alarm.setAlScno(scNo); //3. 알람 울릴 스케줄번호
             //4. 알람 상태 - 1(고정해놨음)
             //5. 알람 추가한 시간 - sysdate
             alarm.setAlCate(1); //6. 알람의 종류(1) - 일정 수정 [scNo 스케줄이 수정되었습니다.라고 출력할 것임]
@@ -46,25 +46,46 @@ public class AlarmService {
     }
 
     /**
-     * 일정 삭제 시 울릴 알람 서비스 - 일괄처리 save
-     * 단, 동행이 있다면 함께 일괄 처리 되어야하므로 호출 시 다수의 알람 객체가 DB에 저장될 것임
+     * 일정 삭제 시 울릴 알람 서비스
+     * 1. 모든 동행이 가지고 있던 그동안 출력해온 해당 일정에 대한 알람을 모두 삭제해서 모두에게 출력이 안되게끔 제공 - 일괄처리 update
+     * 2. 일정 삭제의 다수의 알람 객체가 DB에 저장될 것임 - 일괄처리 save
      * @param scNo : 일정 번호
      */
     @Transactional
-    public void addAlarmDeleteSchedule(Integer scNo){
+    public void addAlarmByDeleteSchedule(Integer scNo){
         //확실한 검증 - 일정번호가 삭제상태일 때만 아래의 로직 실행
         if(scheduleRepository.findByScNo(scNo).getScStatus()==0){
+            //1.
+            List<Alarm> findAlarmList = alarmRepository.findByAlScno(scNo);
+            for(Alarm alarm:findAlarmList){
+                alarm.setAlStatus(0);
+                alarmRepository.update(alarm);
+            }
+            //2.
             String[] idList = findIdList(scNo); //idList[0] , idList[1], idList[2] ...
             for(int i=0; i<idList.length; i++){
                 Alarm alarm = new Alarm();
                 //1. 알람 번호 - 자동증가값
                 alarm.setAlMid(idList[i]); //2. 알람 울릴 아이디
-                alarm.setAlStatus(scNo); //3. 알람 울릴 스케줄번호
+                alarm.setAlScno(scNo); //3. 알람 울릴 스케줄번호
                 //4. 알람 상태 - 1(고정해놨음)
                 //5. 알람 추가한 시간 - sysdate
                 alarm.setAlCate(0); //6. 알람의 종류(0) - 일정 삭제 [scNo 스케줄이 삭제되었습니다.라고 출력할 것임]
                 alarmRepository.save(alarm); //idList의 갯수 만큼 save(alarm) 호출
             }
+        }
+    }
+
+    /**
+     * 호스트가 휴지통에서 일정(스케줄)을 완전 삭제하면 DB에 저장된 알람 객체도 완전 삭제
+     * @param scNo : 일정 번호
+     */
+    @Transactional
+    public void removeAlarmByScno(Integer scNo){
+        List<Alarm> findAlarmList = alarmRepository.findByAlScno(scNo);
+        for(Alarm alarm:findAlarmList){
+            alarm.setAlStatus(0);
+            alarmRepository.delete(alarm.getAlNo());
         }
     }
 
@@ -76,11 +97,11 @@ public class AlarmService {
      * @param scNo : 일정 번호
      */
     @Transactional
-    public Alarm addAlarmSaveTeam(String addId, Integer scNo){
+    public Alarm addAlarmBySaveTeam(String addId, Integer scNo){
         Alarm alarm = new Alarm();
         //1. 알람 번호 - 자동증가값
         alarm.setAlMid(addId); //2. 알람 울릴 아이디
-        alarm.setAlStatus(scNo); //3. 알람 울릴 스케줄
+        alarm.setAlScno(scNo); //3. 알람 울릴 스케줄
         //4. 알람 상태 - 1(고정해놨음)
         //5. 알람 추가한 시간 - sysdate
         alarm.setAlCate(1); //6. 알람의 종류(2) - 권한 변경 [scNo 스케줄에 최대되엇습니다.라고 출력할 것임]
@@ -102,7 +123,7 @@ public class AlarmService {
                 Alarm alarm = new Alarm();
                 //1. 알람 번호 - 자동증가값
                 alarm.setAlMid(updateId); //2. 알람 울릴 아이디
-                alarm.setAlStatus(scNo); //3. 알람 울릴 스케줄
+                alarm.setAlScno(scNo); //3. 알람 울릴 스케줄
                 //4. 알람 상태 - 1(고정해놨음)
                 //5. 알람 추가한 시간 - sysdate
                 alarm.setAlCate(1); //6. 알람의 종류(3) - 권한 변경 [scNo 스케줄의 권한이 변경되었습니다.라고 출력할 것임]
@@ -111,29 +132,9 @@ public class AlarmService {
         }
     }
 
-    /**
-     * 호스트가 휴지통에서 일정을 완전 삭제할 시,
-     * 모든 동행이 가지고 있던 그동안 출력해온 해당 일정에 대한 알람을 모두 삭제해서 모두애개 출력이 안되게끔 하는 서비스 - 일괄처리 update
-     * @param scNo : 일정 번호
-     */
-    @Transactional
-    public void modifyAlarmByHost(Integer scNo){
-        List<Alarm> findAlarmList = alarmRepository.findByAlScno(scNo);
-        for(Alarm alarm:findAlarmList){
-            alarm.setAlStatus(0);
-            alarmRepository.update(alarm);
-        }
-    }
 
-    /**
-     * 나의 알람을 하나씩 수동으로 삭제하는 행위
-     * @param alNo : 알람 번호
-     */
-    @Transactional
-    public void removeAlarmByme(Integer alNo){
-        //alarmRepository.findByAlno(alNo); - 메소드 없는데 필요하면 만들기 - 해당 알람이 없다면 예외처리해야하니..?!
-        alarmRepository.delete(alNo);
-    }
+
+
 
 
     //동행이 있는지 확인하는 시스템 메소드 - 동행이 있다면 true, 동행이 없다면 false
