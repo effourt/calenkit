@@ -34,27 +34,23 @@ public class AlarmServiceTest {
         //given
         Team team1 = new Team();
         Team team2 = new Team();
-        Team team3 = new Team();
-        team1.setTeamSno(1);//스케줄번호 세팅
-        team2.setTeamSno(1);
-        team3.setTeamSno(1);
-        team1.setTeamMid("abc123");//아이디 세팅
-        team2.setTeamMid("qwe123");
-        team3.setTeamMid("zxc123");
+        team1.setTeamSno(2);//스케줄번호 세팅
+        team2.setTeamSno(2);
+        team1.setTeamMid("member");//아이디 세팅
+        team2.setTeamMid("employee");
         team1.setTeamLevel(1);//권한레벨 세팅
         team2.setTeamLevel(1);
-        team3.setTeamLevel(1);
         teamRepository.save(team1);//레파지토리에 저장
         teamRepository.save(team2);
-        teamRepository.save(team3);
 
         //when - 서비스메소드 호출
-        //alarmService.addAlarmByModifySchedule(1);
+        alarmService.addAlarmByModifySchedule(2);
 
         //then
-        //List<Alarm> findAlarmList = alarmRepository.findByAlScno(1);
-        //System.out.println(findAlarmList.get(0).getAlMid());
-        //System.out.println(findAlarmList.get(1).getAlMid());
-        //System.out.println(findAlarmList.get(2).getAlMid());
+        List<Alarm> findAlarmList = alarmRepository.findByAlScno(1);
+        System.out.println(findAlarmList.get(0).getAlMid());
+        System.out.println(findAlarmList.get(1).getAlMid());
+        System.out.println(findAlarmList.get(2).getAlMid());
+        System.out.println(findAlarmList.size());
     }
 }
