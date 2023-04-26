@@ -1,18 +1,21 @@
 package com.effourt.calenkit.service;
 
+import com.effourt.calenkit.client.KakaoApiClient;
 import com.effourt.calenkit.client.KakaoFeignClient;
 import com.effourt.calenkit.domain.Auth;
 import com.effourt.calenkit.domain.Member;
-import com.effourt.calenkit.dto.AuthUserInfoResponse;
-import com.effourt.calenkit.dto.EmailMessage;
 import com.effourt.calenkit.dto.AccessTokenRequest;
 import com.effourt.calenkit.dto.AccessTokenResponse;
+import com.effourt.calenkit.dto.AuthUserInfoResponse;
+import com.effourt.calenkit.dto.EmailMessage;
 import com.effourt.calenkit.repository.AuthRepository;
 import com.effourt.calenkit.repository.MemberRepository;
 import com.effourt.calenkit.util.EmailSend;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
@@ -26,6 +29,7 @@ public class LoginService {
     private final AuthRepository authRepository;
     private final EmailSend emailSend;
     private final KakaoFeignClient kakaoFeignClient;
+    private final KakaoApiClient kakaoApiClient;
 
     //Member 테이블에 회원 정보 저장
     public void saveMember(Member member) {
@@ -90,7 +94,26 @@ public class LoginService {
 
     //인가 코드로 Access 토큰을 받아온 뒤, Access 토큰으로 카카오 리소스 서버에서 유저 정보 가져오기
     public AuthUserInfoResponse getAuthUserInfo(String accessToken) {
-        return kakaoFeignClient.getAuthUserInfo("Bearer " + accessToken);
+        String propertyKeys = "[\"id\",\"kakao_account.email\",\"kakao_account.profile.nickname\",\"kakao_account.profile.profile_image_url\"]";
+        String userInfoString = kakaoApiClient.getAuthUserInfo("Bearer " + accessToken, propertyKeys);
+        AuthUserInfoResponse userInfo = new AuthUserInfoResponse();
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonNode = null;
+            jsonNode = objectMapper.readTree(userInfoString);
+            userInfo.setId(jsonNode.get("id").asLong());
+            userInfo.setEmail(jsonNode.get("kakao_account").get("email").asText());
+            userInfo.setNickname(jsonNode.get("kakao_account").get("profile").get("nickname").asText());
+            userInfo.setProfileImage(jsonNode.get("kakao_account").get("profile").get("profile_image_url").asText());
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
+        log.info("userId={}", userInfo.getId());
+        log.info("userEmail={}", userInfo.getEmail());
+        log.info("userNickname={}", userInfo.getNickname());
+        log.info("userProfileImage={}", userInfo.getProfileImage());
+        return userInfo;
     }
 
     //Access 토큰과 Refresh 토큰 저장
