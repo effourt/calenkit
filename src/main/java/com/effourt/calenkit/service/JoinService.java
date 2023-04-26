@@ -35,6 +35,7 @@ public class JoinService {
 
         Member member = new Member();
         member.setMemId(authUserInfoResponse.getEmail());
+        member.setMemName(authUserInfoResponse.getNickname());
         member.setMemImage(authUserInfoResponse.getProfileImage());
         member.setMemAuthId(auth.getAuthId());
         memberRepository.save(member);
