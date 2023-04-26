@@ -2,9 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.effourt.calenkit.mapper.AlarmMapper">
     <!-- INSERT -->
-    <!-- 일정 수정(1),초대(2),삭제(0) 시 호출 -->
+    <!-- 일정 삭제(0),수정(1),초대(2),권한변경(3) 시 호출 -->
     <insert id="save" parameterType="Alarm" useGeneratedKeys="true" keyProperty="alNo">
-        INSERT INTO ALARM(AL_SCNO, AL_MID, AL_STATUS, AL_TIME, AL_CATE) VALUES(#{alScno}, #{alMid}, 1, SYSDATE, #{alCate})
+        INSERT INTO ALARM(AL_SCNO, AL_MID, AL_STATUS, AL_TIME, AL_CATE) VALUES(#{alScno}, #{alMid}, 1, NOW(), #{alCate})
     </insert>
 
     <!-- UPDATE -->
@@ -25,6 +25,13 @@
     <!-- 검색행 0개 이상 : 사이드 메뉴 알람 출력을 위한 SELECT -->
     <select id="findByAlMid" resultType="Alarm">
         SELECT * FROM ALARM WHERE AL_MID=#{alMid} AND AL_STATUS=1
+    </select>
+
+    <!-- SELECT -->
+    <!-- 알람 목록 출력 -->
+    <!-- 검색행 0개 이상 : 사이드 메뉴 알람 출력을 위한 SELECT -->
+    <select id="findByAlScno" resultType="Alarm">
+        SELECT * FROM ALARM WHERE AL_SCNO=#{alScno} AND AL_STATUS=1
     </select>
 
 </mapper>
