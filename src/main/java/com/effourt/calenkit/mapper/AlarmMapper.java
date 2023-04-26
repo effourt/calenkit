@@ -11,4 +11,5 @@ public interface AlarmMapper {
     Integer update(Alarm alarm);
     Integer delete(Integer alNo);
     List<Alarm> findByAlMid(String alMid);
+    List<Alarm> findByAlScno(Integer AlScno);
 }
