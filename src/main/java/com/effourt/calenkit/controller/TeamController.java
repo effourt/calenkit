@@ -26,13 +26,13 @@ public class TeamController {
     private final TeamRepository teamRepository;
 
     //[GET] : http://localhost:8080/teams/{}
-    @GetMapping
+//    @GetMapping
     public String showTeamPopup(){
         return "teamPopup";
     }
 
     //[POST] : http://localhost:8080/teams
-    @PostMapping
+//    @PostMapping
     public String searchTeam(){
         //teamRepository.findBySno(scNo);
         return "teamPopup";
