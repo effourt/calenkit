@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>관리자 페이지</title>
@@ -7,6 +6,10 @@
     <link rel="dns-prefetch" href="//cdn.jsdelivr.net" />
     <link rel="stylesheet" href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css">
     <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.js" defer></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
     <style>
         [x-cloak] {
             display: none;
@@ -139,6 +142,8 @@
 </div>
 
 <script>
+    var members = [];
+    console.log(members);
     function datatables() {
         return {
             headings: [
@@ -159,7 +164,8 @@
                     'value': '상태'
                 }
             ],
-                members: [],
+            members:members, // 전역변수 members 배열 사용
+
             selectedRows: [],
 
             open: false,
@@ -199,19 +205,19 @@
     // 가져온 memberList 데이터를   JSON 형식으로 변환하여 members 배열에 넣음
     $.ajax({
         url: '/admin_memberList',
-
         method: 'GET',
         success: function (data) {
-            var members = []; // members 배열 초기화
             data.forEach(function (member) {
-                var memberData = {
-                    memId: member.memId,
-                    memName: member.memName,
-                    memLogin: member.memLogin,
-                    memStatus: member.memStatus
-                };
-                members.push(memberData); // members 배열에 변환된 member 객체 추가
+
+                members.push({
+                    "memId": member.memId,
+                    "memName": member.memName,
+                    "memLogin": member.memLogin,
+                    "memStatus": member.memStatus
+                });
             });
+            console.log(members);
+            console.log(members[0]);
         }
     });
 </script>
