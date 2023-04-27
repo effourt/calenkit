@@ -4,7 +4,6 @@ import com.effourt.calenkit.domain.Alarm;
 import com.effourt.calenkit.repository.AlarmRepository;
 import com.effourt.calenkit.repository.ScheduleRepository;
 import com.effourt.calenkit.service.AlarmService;
-import com.effourt.calenkit.service.MyScheduleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
