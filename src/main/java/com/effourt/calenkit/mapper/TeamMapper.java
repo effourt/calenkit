@@ -14,6 +14,7 @@ public interface TeamMapper {
     Integer delete(Integer teamSno, String teamMid);
 
     List<Team> findByMid(String teamMid);
+    List<Integer> findByid(String teamMid);
 
     List<Team> findBySno(Integer teamSno);
 }
