@@ -15,11 +15,18 @@ import com.effourt.calenkit.service.LoginService;
 import com.effourt.calenkit.service.MyPageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 
 @Slf4j
@@ -186,6 +193,40 @@ public class MemberController {
     }
 
     /** 마이 페이지 */
+
+    //MyPage 이동
+    @GetMapping(value = "/myPage")
+    public String MyPage() {
+        return "myPage";
+    }
+
+    //파일 upload 기본 틀
+    @PostMapping("/upload")
+    public String upload(@RequestParam("file") MultipartFile file, Model model, @ModelAttribute Member member) throws IOException {
+        if (file.isEmpty()) {
+            return "member/upload_fail";
+        }
+
+        String originalFilename = file.getOriginalFilename();
+        String extension = FilenameUtils.getExtension(originalFilename);
+        String uploadFilename = FilenameUtils.getBaseName(originalFilename) + "_" + System.currentTimeMillis() + "." + extension;
+        String uploadDirectory = "/resources/images/member/";
+
+        Path uploadPath = Paths.get(uploadDirectory);
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
+        }
+
+        Path filePath = uploadPath.resolve(uploadFilename);
+        Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+        model.addAttribute("originalFilename", originalFilename);
+        model.addAttribute("uploadFilename", uploadFilename);
+
+        return "";
+    }
+
+
     // MyPage
     // 멤버 닉네임 검색 후 중복 확인(GET)
     // Ajax 처리를 위해 닉네임 값 반환
