@@ -74,12 +74,15 @@ public class LoginService {
     public void sendCode(String id, EmailMessage emailMessage, HttpSession session) {
         //로그인/회원가입 코드 생성
         emailSend.createAccessCode(id, session);
-
         //메일 전송
         emailSend.sendMail(emailMessage);
     }
 
-    //인가 코드로 Access 토큰 발급
+    /**
+     * 인가 코드로 Access 토큰 발급
+     * @param accessTokenRequest 액세스 토큰 요청을 위한 정보를 담은 객체
+     * @return
+     */
     public AccessTokenResponse getAccessToken(AccessTokenRequest accessTokenRequest) {
         AccessTokenResponse accessToken = kakaoFeignClient.getAccessToken(
                 accessTokenRequest.getClientId(),
@@ -92,7 +95,11 @@ public class LoginService {
     }
 
 
-    //인가 코드로 Access 토큰을 받아온 뒤, Access 토큰으로 카카오 리소스 서버에서 유저 정보 가져오기
+    /**
+     * 인가 코드로 Access 토큰을 받아온 뒤, Access 토큰으로 카카오 리소스 서버에서 유저 정보 가져오기
+     * @param accessToken 사용자 정보 조회를 위한 액세스 토큰
+     * @return
+     */
     public AuthUserInfoResponse getAuthUserInfo(String accessToken) {
         String propertyKeys = "[\"id\",\"kakao_account.email\",\"kakao_account.profile.nickname\",\"kakao_account.profile.profile_image_url\"]";
         String userInfoString = kakaoApiClient.getAuthUserInfo("Bearer " + accessToken, propertyKeys);
@@ -116,21 +123,38 @@ public class LoginService {
         return userInfo;
     }
 
-    //Access 토큰과 Refresh 토큰 저장
-    public Auth saveToken(AccessTokenResponse accessToken) {
+    /**
+     * Access 토큰과 Refresh 토큰 저장
+     * @param token DB에 저장할 토큰 정보를 담은 객체
+     * @return 토큰 정보 (Access Token, Refresh Token)
+     */
+    public Auth saveToken(AccessTokenResponse token) {
         Auth auth = new Auth();
-        auth.setAuthAccess(accessToken.getAccessToken());
-        auth.setAuthRefresh(accessToken.getRefreshToken());
+        auth.setAuthAccess(token.getAccessToken());
+        auth.setAuthRefresh(token.getRefreshToken());
         authRepository.save(auth);
         return auth;
     }
 
-    //Access 토큰과 Refresh 토큰 UPDATE
-    public void updateToken(String memberId, Integer authId) {
-        Member member = new Member();
-        member.setMemId(memberId);
-        member.setMemAuthId(authId);
-        memberRepository.update(member);
+    /**
+     * Access 토큰과 Refresh 토큰 UPDATE
+     * @param authId DB에 저장된 토큰 인덱스
+     * @param accessTokenResponse 액세스 토큰, 리프레시 토큰 정보를 담은 객체
+     */
+    public void updateToken(Integer authId, AccessTokenResponse accessTokenResponse) {
+        Auth auth = new Auth();
+        auth.setAuthId(authId);
+        auth.setAuthAccess(accessTokenResponse.getAccessToken());
+        auth.setAuthRefresh(accessTokenResponse.getRefreshToken());
+        authRepository.update(auth);
+    }
+
+    /**
+     * Access Token 유효기간 만료
+     * @param accessToken OAuth 로그아웃을 위한 액세스 토큰
+     */
+    public void expireToken(String accessToken) {
+        kakaoApiClient.logout(accessToken);
     }
 
 }

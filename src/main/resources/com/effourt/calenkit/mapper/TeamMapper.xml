@@ -4,7 +4,7 @@
     <!-- INSERT -->
     <!-- 일정상세 삽입 시 함께 호출 - 권한레벨로 호스트와 동행 구분(1,0,9) -->
     <insert id="save" parameterType="Team" useGeneratedKeys="true" keyProperty="teamNo">
-        INSERT INTO TEAM VALUES( #{teamMid}, #{teamSno}, #{teamLevel}, 0)
+        INSERT INTO TEAM(TEAM_MID, TEAM_SNO, TEAM_LEVEL, TEAM_BOOKMARK) VALUES( #{teamMid}, #{teamSno}, #{teamLevel}, 0)
     </insert>
 
     <!-- UPDATE -->

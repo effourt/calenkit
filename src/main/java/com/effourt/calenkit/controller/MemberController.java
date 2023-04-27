@@ -7,6 +7,7 @@ import com.effourt.calenkit.dto.EmailMessage;
 import com.effourt.calenkit.dto.AccessTokenRequest;
 import com.effourt.calenkit.dto.AccessTokenResponse;
 import com.effourt.calenkit.exception.MemberNotFoundException;
+import com.effourt.calenkit.repository.AuthRepository;
 import com.effourt.calenkit.repository.MemberRepository;
 import com.effourt.calenkit.service.AdminService;
 import com.effourt.calenkit.service.JoinService;
@@ -32,11 +33,15 @@ public class MemberController {
     private final AdminService adminService;
     private final MemberRepository memberRepository;
 
+
+    private final AuthRepository authRepository;
+
+
     //DB에서 아이디 체크
     //아이디 존재 O, 비밀번호 O : PASSWORD_LOGIN
     //아이디 존재 O, 비밀번호 X : CODE_LOGIN
     //아이디 존재 X, 비밀번호 X : JOIN_LOGIN
-//    @PostMapping("")
+    @PostMapping("/check")
     @ResponseBody
     public String checkId(String id, HttpSession session) {
         String loginType = loginService.checkMember(id);
@@ -53,7 +58,7 @@ public class MemberController {
 
 
     /** 로그인 */
-    @GetMapping("login")
+    @GetMapping("/login/pw")
     public String login() {
         return "login";
     }
@@ -69,7 +74,7 @@ public class MemberController {
     }
 
     //로그인 코드로 로그인
-//    @PostMapping("")
+    @PostMapping("/login/code")
     public String loginByCode(String id, String code, HttpSession session) {
         String loginCode = (String) session.getAttribute(code);
         if (loginCode.equals(id + "ACCESS")) {
@@ -109,7 +114,7 @@ public class MemberController {
             loginService.saveMember(member);
         } else if (member.getMemAuthId() != 0) {
             //사용자 이메일이 DB에 존재하고 Access 토큰, Refresh 토큰이 존재하는 경우
-            loginService.updateToken(member.getMemId(), member.getMemAuthId());
+            loginService.updateToken(member.getMemAuthId(), accessToken);
         }
 
         session.setAttribute("loginId", userInfo.getEmail());
@@ -126,10 +131,19 @@ public class MemberController {
         return "";
     }
 
+
     //    @GetMapping("")
+
+    @GetMapping("/logout")
+
     public String logout(HttpSession session) {
+        String id = (String) session.getAttribute("loginId");
+        Integer authId = memberRepository.findByMemId(id).getMemAuthId();
+        if (authId != null && authId != 0) {
+            loginService.expireToken(authRepository.findByAuthId(authId).getAuthAccess());
+        }
         session.invalidate();
-        return "";
+        return "login";
     }
 
     /** 회원가입 */

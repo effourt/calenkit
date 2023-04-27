@@ -49,7 +49,7 @@ public class TeamScheduleService {
      * @param mId : 공유받을 아이디
      * @param scNo : 일정 번호
      */
-    public void addTeam(String mId, int scNo){
+    public Team addTeam(String mId, int scNo){
         Member findMember = memberRepository.findByMemId(mId);
         int teamSno=scNo;
 
@@ -61,7 +61,7 @@ public class TeamScheduleService {
         //이메일을 보내는 객체의 메소드 호출
 
         //만약 사용자가 받은 이메일의 링크를 수락할 경우, team에 최종적으로 추가
-        teamRepository.save(team);
+        return teamRepository.save(team);
     }
 
     /**
