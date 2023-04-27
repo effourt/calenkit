@@ -30,14 +30,16 @@ public class MyScheduleService {
 
     //[메인에서 내 스케줄 추가 행위]
     @Transactional
-    public void addMySchedule(Schedule schedule, Team team, Alarm alarm) {
+    public void addMySchedule(Schedule schedule, Team team) {
         scheduleRepository.save(schedule);
         teamRepository.save(team);
-        alarmRepository.save(alarm);
     }
 
     //[메인이나 사이드바에서 내 스케줄 작성 행위] : modifyMySchedule()
     // => ScheduleRepository.update
+    public void writeMySchdule(Schedule schedule) {
+        scheduleRepository.update(schedule);
+    }
 
     //[휴지통 출력]
     // => 팝업창에서 출력(10개씩 출력, 스크롤 로딩)
@@ -92,7 +94,7 @@ public class MyScheduleService {
         //map 요소 : date, List 객체(일정번호) - map(date, "2020-12-12") , map(scNoList, List<Integer>)
         Map<String, Object> map=new HashMap<>();
 
-        map.put("scNoList",teamRepository.findByMid(id));
+        map.put("scNoList", teamRepository.findByid(id));
         map.put("date", date); //date : 출력 기준이 될 연월(default:defaultDate)
 
         return scheduleRepository.findAllByScNo(map);
