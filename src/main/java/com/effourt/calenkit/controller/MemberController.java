@@ -39,7 +39,10 @@ public class MemberController {
     private final MyPageService myPageService;
     private final AdminService adminService;
     private final MemberRepository memberRepository;
+
+
     private final AuthRepository authRepository;
+
 
     //DB에서 아이디 체크
     //아이디 존재 O, 비밀번호 O : PASSWORD_LOGIN
@@ -135,7 +138,11 @@ public class MemberController {
         return "";
     }
 
+
+    //    @GetMapping("")
+
     @GetMapping("/logout")
+
     public String logout(HttpSession session) {
         String id = (String) session.getAttribute("loginId");
         Integer authId = memberRepository.findByMemId(id).getMemAuthId();
