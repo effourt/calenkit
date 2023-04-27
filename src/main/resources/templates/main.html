@@ -12,9 +12,10 @@
     <script th:src="@{/packages/daygrid/main.js}" src='../static/packages/daygrid/main.js'></script>
     <script th:src="@{/packages/timegrid/main.js}" src='../static/packages/timegrid/main.js'></script>
     <script th:src="@{packages/list/main.js}" src='../static/packages/list/main.js'></script>
-    <script>
 
+    <script>
         document.addEventListener('DOMContentLoaded', function() {
+            var testTitle = "[[${testTitle}]]";
             var calendarEl = document.getElementById('calendar');
 
             var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -26,66 +27,23 @@
                     right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
                 },
                 defaultView: 'dayGridMonth',
-                defaultDate: '2020-02-12',
+                defaultDate: '2023-04-27',
                 navLinks: true, // can click day/week names to navigate views
                 editable: true,
-                eventLimit: true, // allow "more" link when too many events
                 events: [
                     {
-                        title: 'All Day Event',
-                        start: '2020-02-01',
-                    },
-                    {
-                        title: 'Long Event',
-                        start: '2020-03-07',
-                        end: '2020-05-10'
-                     },
-                    {
-                        groupId: 999,
-                        title: 'Repeating Event',
-                        start: '2020-02-09T16:00:00'
-                    },
-                    {
-                        groupId: 999,
-                        title: 'Repeating Event',
-                        start: '2020-02-16T16:00:00'
-                    },
-                    {
-                        title: 'Conference',
-                        start: '2020-02-11',
-                        end: '2020-02-13'
-                    },
-                    {
-                        title: 'Meeting',
-                        start: '2020-02-12T10:30:00',
-                        end: '2020-02-12T12:30:00'
-                    },
-                    {
-                        title: 'Lunch',
-                        start: '2020-02-12T12:00:00'
-                    },
-                    {
-                        title: 'Meeting',
-                        start: '2020-02-12T14:30:00'
-                    },
-                    {
-                        title: 'Happy Hour',
-                        start: '2020-02-12T17:30:00'
-                    },
-                    {
-                        title: 'Dinner',
-                        start: '2020-02-12T20:00:00'
-                    },
-                    {
-                        title: 'Birthday Party',
-                        start: '2020-02-13T07:00:00'
+                        title : testTitle,
+                        start : '2023-04-26',
+                        end : '2023-04-29',
+                        url : 'https://naver.com'
                     },
                     {
                         title: 'Click for Google',
                         url: 'http://google.com/',
-                        start: '2020-02-28'
+                        start: '2023-04-28'
                     }
                 ],
+                eventLimit: true, // allow "more" link when too many events
             });
             calendar.on('dateClick', function(info) {
                 alert("날짜 셀 Click Event");
@@ -101,8 +59,9 @@
 
             calendar.render();
         });
-
     </script>
+
+
     <style>
 
         html, body {

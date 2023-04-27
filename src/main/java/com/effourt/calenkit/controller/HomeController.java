@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class HomeController {
 
     //http://localhost:8080/
-    @GetMapping("/")
+   /* @GetMapping("/")
     public String home(){
         return "main";
-    }
+    }*/
 }

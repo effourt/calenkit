@@ -4,7 +4,6 @@ import com.effourt.calenkit.domain.Alarm;
 import com.effourt.calenkit.repository.AlarmRepository;
 import com.effourt.calenkit.repository.ScheduleRepository;
 import com.effourt.calenkit.service.AlarmService;
-import com.effourt.calenkit.service.MyScheduleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -30,6 +29,23 @@ public class AlarmController {
     //개인알람리스트 조회
     //권한처리(로그인한 회원만 요청 가능)
     //[GET] : http://localhost:8080/alarms
+
+//    @GetMapping
+    public String a(){
+        //
+        return "teamPopup";
+    }
+
+    //알람
+//    @PostMapping
+    //[POST] : http://localhost:8080/alarms
+    public String b(){
+        return "teamPopup";
+    }
+//    @GetMapping
+    public String c(){
+        return "teamPopup";
+
     @GetMapping
     public String showMyAlarmList(Model model){
         String loginId = "member";
