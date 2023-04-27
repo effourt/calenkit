@@ -7,6 +7,7 @@ import com.effourt.calenkit.dto.EmailMessage;
 import com.effourt.calenkit.dto.AccessTokenRequest;
 import com.effourt.calenkit.dto.AccessTokenResponse;
 import com.effourt.calenkit.exception.MemberNotFoundException;
+import com.effourt.calenkit.repository.AuthRepository;
 import com.effourt.calenkit.repository.MemberRepository;
 import com.effourt.calenkit.service.AdminService;
 import com.effourt.calenkit.service.JoinService;
@@ -31,6 +32,7 @@ public class MemberController {
     private final MyPageService myPageService;
     private final AdminService adminService;
     private final MemberRepository memberRepository;
+    private final AuthRepository authRepository;
 
     //DB에서 아이디 체크
     //아이디 존재 O, 비밀번호 O : PASSWORD_LOGIN
@@ -126,10 +128,15 @@ public class MemberController {
         return "";
     }
 
-    //    @GetMapping("")
+    @GetMapping("/logout")
     public String logout(HttpSession session) {
+        String id = (String) session.getAttribute("loginId");
+        Integer authId = memberRepository.findByMemId(id).getMemAuthId();
+        if (authId != null && authId != 0) {
+            loginService.expireToken(authRepository.findByAuthId(authId).getAuthAccess());
+        }
         session.invalidate();
-        return "";
+        return "login";
     }
 
     /** 회원가입 */
