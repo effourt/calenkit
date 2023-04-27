@@ -1,7 +1,6 @@
 package com.effourt.calenkit.service;
 
 import com.effourt.calenkit.domain.Alarm;
-import com.effourt.calenkit.domain.Schedule;
 import com.effourt.calenkit.domain.Team;
 import com.effourt.calenkit.repository.AlarmRepository;
 import com.effourt.calenkit.repository.ScheduleRepository;
@@ -77,7 +76,7 @@ public class AlarmService {
     }
 
     /**
-     * 호스트가 휴지통에서 일정(스케줄)을 완전 삭제하면 DB에 저장된 알람 객체도 완전 삭제
+     * 호스트가 휴지통에서 일정(스케줄)을 완전 삭제하면 DB에 저장된 알람 객체도 완전 삭제해주는 서비스
      * @param scNo : 일정 번호
      */
     @Transactional
@@ -92,7 +91,6 @@ public class AlarmService {
     /**
      * 일정에 초대할 시 울릴 알람 서비스
      * 단, 일정에 초대받은 아이디의 알람 객체만 DB에 저장될 것임 - 일괄처리로 알람객체가 저장되는 것이 아님
-     * 이미 일정에 참여하고 있는 아이디의 알람객체가 추가되지는 않음
      * @param addId : 일정에 초대할 아이디
      * @param scNo : 일정 번호
      */
