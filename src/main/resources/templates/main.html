@@ -12,64 +12,54 @@
     <script th:src="@{/library/packages/daygrid/main.js}" src='../static/library/packages/daygrid/main.js'></script>
     <script th:src="@{/library/packages/timegrid/main.js}" src='../static/library/packages/timegrid/main.js'></script>
     <script th:src="@{/library/packages/list/main.js}" src='../static/library/packages/list/main.js'></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             var calendarEl = document.getElementById('calendar');
-            var ajaxData = [[${mapList}]];
 
             $.ajax({
-                url: '/main_ajax',
-                method: 'GET',
-                success: function (scheduleList) {
-                    scheduleList.forEach(function (schedule) {
-                        ajaxData.push({
-                            "scNo":schedule.scNo,
-                            "scTitle":schedule.scTitle,
-                            "scSdate":schedule.scSdate,
-                            "scEdate":schedule.scEdate
-                        });
-                    });
-                    console.log(ajaxData);
-                    console.log(ajaxData[0]);
-                }
+               type:'GET',
+               url:'main_ajax',
+               success: function (result) {
+                   var events=result;
+
+                   var calendarEl = document.getElementById('calendar');
+
+                   var calendar = new FullCalendar.Calendar(calendarEl, {
+                       plugins: [ 'interaction', 'dayGrid', 'timeGrid', 'list' ],
+                       height: 'parent',
+                       header: {
+                           left: 'prev,next today',
+                           center: 'title',
+                           right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+                       },
+                       defaultView: 'dayGridMonth',
+                       defaultDate: '2023-04-27',
+                       navLinks: true, // can click day/week names to navigate views
+                       editable: true,
+                       events: events,
+                       eventLimit: true, // allow "more" link when too many events
+                   });
+
+                   calendar.on('dateClick', function(info) {
+                       /* 일정 추가
+                       let scheduleTitle = 'testSchedule';
+                       let startDay = '2023-03-17';
+                       let endDay = '2023-05-24';
+                       alert(info.event.scNo);
+                       calendar.addEvent({'title': scheduleTitle, 'start': startDay, 'end': endDay, 'scNo': 1});*/
+                   });
+
+                   calendar.render();
+               },
+               error: function (xhr){
+                   alert(xhr.status);
+               }
             });
 
-            var calendar = new FullCalendar.Calendar(calendarEl, {
-                plugins: [ 'interaction', 'dayGrid', 'timeGrid', 'list' ],
-                height: 'parent',
-                header: {
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
-                },
-                defaultView: 'dayGridMonth',
-                defaultDate: '2023-04-27',
-                navLinks: true, // can click day/week names to navigate views
-                editable: true,
-                events: /*[
-                    for(let i=0;i<ajaxData.length;i++) {
-                        title : ajaxData[i].scTitle,
-                        start : ajaxData[i].scSdate,
-                        end : ajaxData[i].scEdate,
-                        url : 'local:8080/main_'+ajaxData[i].scNo
-                    }
-                ]*/ajaxData,
-                eventLimit: true, // allow "more" link when too many events
-            });
-            calendar.on('dateClick', function(info) {
-                alert("날짜 셀 Click Event");
-            });
 
-            calendar.on('eventClick', function(info) {
-                let scheduleTitle = 'testSchedule';
-                let startDay = '2023-03-17';
-                let endDay = '2023-05-24';
-                alert(info.event.scNo);
-                calendar.addEvent({'title': scheduleTitle, 'start': startDay, 'end': endDay, 'scNo': 1});
-            });
 
-            calendar.render();
         });
     </script>
 

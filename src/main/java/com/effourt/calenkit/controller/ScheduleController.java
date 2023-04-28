@@ -31,7 +31,6 @@ public class ScheduleController {
      */
     @GetMapping(value={"/","/main"})
     public String main(Model model) {
-        model.addAttribute("testTitle", "일정제목");
         return "main";
     }
 
@@ -45,14 +44,14 @@ public class ScheduleController {
 
         List<Schedule> scheduleList = myScheduleService.getMySchedule(id,null);
 
-        Map<String, String> map = new HashMap<>();
         List<Map> mapList=new ArrayList<>();
 
         for(Schedule schedule:scheduleList) {
+        Map<String, String> map=new HashMap<>();
             map.put("title", schedule.getScTitle());
             map.put("start", schedule.getScSdate());
             map.put("end", schedule.getScEdate());
-            map.put("url", "localhost:8080/main_"+schedule.getScNo());
+            map.put("url", "localhost:8080/main_" + schedule.getScNo());
             mapList.add(map);
         }
         return mapList;
