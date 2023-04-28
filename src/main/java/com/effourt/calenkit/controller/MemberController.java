@@ -13,9 +13,11 @@ import com.effourt.calenkit.service.AdminService;
 import com.effourt.calenkit.service.JoinService;
 import com.effourt.calenkit.service.LoginService;
 import com.effourt.calenkit.service.MyPageService;
+import com.effourt.calenkit.util.EmailSend;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -38,59 +40,121 @@ public class MemberController {
     private final JoinService joinService;
 
     private final MemberRepository memberRepository;
-
-
     private final AuthRepository authRepository;
 
+    private final MessageSource ms;
+    private final EmailSend emailSend;
 
-    //DB에서 아이디 체크
-    //아이디 존재 O, 비밀번호 O : PASSWORD_LOGIN
-    //아이디 존재 O, 비밀번호 X : CODE_LOGIN
-    //아이디 존재 X, 비밀번호 X : JOIN_LOGIN
-    @PostMapping("/check")
+
+    /**
+     * 아이디, 비밀번호 존재 여부 체크
+     * 아이디 존재 O, 비밀번호 O : PASSWORD_LOGIN
+     * 아이디 존재 O, 비밀번호 X : CODE_LOGIN
+     * 아이디 존재 X, 비밀번호 X : JOIN_LOGIN
+     * @param memId
+     * @param session
+     * @return
+     */
+    @PostMapping("/login/check")
     @ResponseBody
-    public String checkId(String id, HttpSession session) {
-        String loginType = loginService.checkMember(id);
-        EmailMessage emailMessage = EmailMessage.builder()
-                .recipient("")
-                .subject("")
-                .message("")
-                .build();
+    public String checkId(@RequestBody String memId, HttpSession session) {
+        String loginType = loginService.checkMember(memId);
+        log.info("loginType={}", loginType);
+        //코드로 로그인하거나 회원가입 후 로그인할 때, 랜덤 코드를 이메일로 전송
         if (loginType.equals("CODE_LOGIN") || loginType.equals("JOIN_LOGIN")) {
-            loginService.sendCode(id, emailMessage, session);
+            String subject = ms.getMessage("mail.login-code.subject", null, null);
+            String message = ms.getMessage(
+                    "mail.login-code.message",
+                    new Object[]{emailSend.createAccessCode(memId, session)},
+                    null);
+
+            EmailMessage emailMessage = EmailMessage.builder()
+                    .recipient(memId)
+                    .subject(subject)
+                    .message(message)
+                    .build();
+
+            log.info("email id={}", memId);
+            log.info("subject={}", subject);
+            log.info("message={}", message);
         }
         return loginType;
     }
 
 
-    /** 로그인 */
-    @GetMapping("/login/pw")
+    /**
+     * 로그인창으로 이동
+     */
+    @GetMapping("/login/form")
     public String login() {
         return "login";
     }
 
-    //패스워드로 로그인
-//    @PostMapping("")
+    /**
+     * 패스워드로 로그인
+     * @param member
+     * @param session
+     * @return
+     */
+    @PostMapping("/login/password")
     public String loginByPassword(@ModelAttribute Member member, HttpSession session) {
         Member findMember = loginService.getMemberById(member.getMemId());
         if (findMember.getMemPw().equals(member.getMemPw())) {
             session.setAttribute("loginId", member.getMemId());
         }
-        return "";
+        return "main";
     }
 
-    //로그인 코드로 로그인
-    @PostMapping("/login/code")
-    public String loginByCode(String id, String code, HttpSession session) {
-        String loginCode = (String) session.getAttribute(code);
-        if (loginCode.equals(id + "ACCESS")) {
-            session.setAttribute("loginId", id);
+    /**
+     * 로그인 코드로 로그인
+     * @param memId
+     * @param loginCode
+     * @param session
+     * @return
+     */
+    @PostMapping("/login/login-code")
+    public String loginByCode(String memId, String loginCode, HttpSession session) {
+        String code = (String) session.getAttribute(loginCode);
+        if (code.equals(memId + "ACCESS")) {
+            session.setAttribute("loginId", memId);
         }
-        return "";
+        return "main";
     }
 
+    /**
+     * 회원가입 코드로 회원가입 후 이메일 로그인
+     * @param memId
+     * @param code
+     * @param session
+     * @param model
+     * @return
+     */
+    @PostMapping("/login/register-code")
+    public String loginByJoin(String memId, String code, HttpSession session, Model model) {
+        String joinCode = (String) session.getAttribute(code);
+        if (joinCode.equals(memId + "ACCESS")) {
+            model.addAttribute("memId", memId);
+        }
+        return "register";
+    }
 
-    //소셜 로그인
+    /**
+     * 이메일 회원가입
+     * @param member 아이디(이메일), 비밀번호, 닉네임, 프로필 이미지(선택) 정보 저장 객체
+     * @return
+     */
+    @PostMapping("/join")
+    public String join(@ModelAttribute Member member) {
+        joinService.joinByEmail(member);
+        return "main";
+    }
+
+    /**
+     * 소셜 로그인
+     * @param code
+     * @param session
+     * @return
+     */
     @GetMapping("/login/kakao")
     public String loginByKakao(@RequestParam String code, HttpSession session) {
         log.info("code={}", code);
@@ -127,21 +191,12 @@ public class MemberController {
         return "main";
     }
 
-    //회원가입 후 이메일 로그인
-//    @PostMapping("")
-    public String loginByJoin(String id, String code, HttpSession session, Model model) {
-        String joinCode = (String) session.getAttribute(code);
-        if (joinCode.equals(id + "ACCESS")) {
-            model.addAttribute("id", id);
-        }
-        return "";
-    }
-
-
-    //    @GetMapping("")
-
+    /**
+     * 로그아웃
+     * @param session
+     * @return
+     */
     @GetMapping("/logout")
-
     public String logout(HttpSession session) {
         String id = (String) session.getAttribute("loginId");
         Integer authId = memberRepository.findByMemId(id).getMemAuthId();
@@ -150,15 +205,6 @@ public class MemberController {
         }
         session.invalidate();
         return "login";
-    }
-
-    /** 회원가입 */
-    // 이메일 회원가입
-    // 입력 데이터 : 아이디(이메일), 비밀번호, 닉네임, 프로필 이미지(선택)
-//    @PostMapping("")
-    public String join(@ModelAttribute Member member) {
-        joinService.joinByEmail(member);
-        return "";
     }
 
 
