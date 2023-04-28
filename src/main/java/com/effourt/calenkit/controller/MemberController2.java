@@ -109,8 +109,12 @@ public class MemberController2 {
     @GetMapping(value = "/myPage_name")
     @ResponseBody
     public String MyPageName(@RequestParam String memName) {
-        Member member=memberRepository.findByMemName(memName);
-        return member.getMemName();
+        Member member = memberRepository.findByMemName(memName);
+        if(member != null) {
+            return "사용할 수 없는 닉네임입니다";
+        } else {
+            return "사용할 수 있는 닉네임입니다";
+        }
     }
 
     // MyPage
