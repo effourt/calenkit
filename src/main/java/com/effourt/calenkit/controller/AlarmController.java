@@ -46,8 +46,8 @@ public class AlarmController {
     public String c() {
         return "teamPopup";
     }
-
-//    @GetMapping
+    /*
+    @GetMapping("")
     public String showMyAlarmList(Model model){
         String loginId = "member";
         List<Alarm> alarmList = alarmRepository.findByAlMid(loginId);

@@ -5,8 +5,8 @@ Docs & License: https://fullcalendar.io/
 */
 
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('static/packages/bundle/luxon'), require('fullcalendar')) :
-    typeof define === 'function' && define.amd ? define(['exports', 'static/packages/bundle/luxon', 'fullcalendar'], factory) :
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('static/library/packages/bundle/luxon'), require('fullcalendar')) :
+    typeof define === 'function' && define.amd ? define(['exports', 'static/library/packages/bundle/luxon', 'fullcalendar'], factory) :
     (global = global || self, factory(global.FullCalendar = global.FullCalendar || {}, global.luxon, global.FullCalendar));
 }(this, (function (exports, luxon, fullcalendar) { 'use strict';
 
