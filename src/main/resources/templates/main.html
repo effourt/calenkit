@@ -16,30 +16,38 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            var calendarEl = document.getElementById('calendar');
 
+            //AJAX로 Controller에서 List 받아오기
             $.ajax({
                type:'GET',
                url:'main_ajax',
                success: function (result) {
-                   var events=result;
+                   var events=result; //받아온 list 저장
 
-                   var calendarEl = document.getElementById('calendar');
+                   var year=new Date().getFullYear();
+                   var month=new Date().getMonth();
+                   var date;
+                   if(month<10) { //날짜 형식(yyyy-dd)을 맞추기 위한 조건문
+                       date=year+"-0"+month; //현재 날짜 저장
+                   } else {
+                       date=year+"-"+month; //현재 날짜 저장
+                   }
 
-                   var calendar = new FullCalendar.Calendar(calendarEl, {
+                   var calendarEl = document.getElementById('calendar'); //calendar div 태그 설정
+
+                   var calendar = new FullCalendar.Calendar(calendarEl, { //calendar 설정
                        plugins: [ 'interaction', 'dayGrid', 'timeGrid', 'list' ],
                        height: 'parent',
                        header: {
                            left: 'prev,next today',
                            center: 'title',
-                           right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+                           right: 'dayGridMonth,listWeek' //보기 형식(캘린더, 리스트)
                        },
                        defaultView: 'dayGridMonth',
-                       defaultDate: '2023-04-27',
+                       defaultDate: date,
                        navLinks: true, // can click day/week names to navigate views
                        editable: true,
-                       events: events,
-                       eventLimit: true, // allow "more" link when too many events
+                       events: events, //받아온 List로 일정 등록
                    });
 
                    calendar.on('dateClick', function(info) {
@@ -54,7 +62,7 @@
                    calendar.render();
                },
                error: function (xhr){
-                   alert(xhr.status);
+                   location.href="404"; //에러페이지로 이동
                }
             });
 
