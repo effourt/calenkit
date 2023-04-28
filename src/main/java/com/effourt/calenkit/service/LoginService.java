@@ -7,7 +7,6 @@ import com.effourt.calenkit.domain.Member;
 import com.effourt.calenkit.dto.AccessTokenRequest;
 import com.effourt.calenkit.dto.AccessTokenResponse;
 import com.effourt.calenkit.dto.AuthUserInfoResponse;
-import com.effourt.calenkit.dto.EmailMessage;
 import com.effourt.calenkit.repository.AuthRepository;
 import com.effourt.calenkit.repository.MemberRepository;
 import com.effourt.calenkit.util.EmailSend;
@@ -17,8 +16,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import javax.servlet.http.HttpSession;
 
 @Slf4j
 @Service
@@ -54,7 +51,7 @@ public class LoginService {
             if (member.getMemPw() != null) {
                 //아이디 존재 O, 비밀번호 존재 O
                 loginType = "PASSWORD_LOGIN";
-            } else {
+            } else if (member.getMemPw() == null) {
                 //아이디 존재 O, 비밀번호 존재 X
                 //로그인 코드 생성 및 메일 전송
                 loginType = "CODE_LOGIN";
@@ -66,16 +63,6 @@ public class LoginService {
         }
 
         return loginType;
-    }
-
-    // 로그인 or 회원가입 코드를 생성하고 세션에 저장
-    // 세션키를 쿠키값으로 하는 쿠키를 생성하고 쿠키명을 클라이언트의 메일로 전송
-    // 세션에 저장된 ACCESS KEY : 아이디(이메일) + ACCESS
-    public void sendCode(String id, EmailMessage emailMessage, HttpSession session) {
-        //로그인/회원가입 코드 생성
-        emailSend.createAccessCode(id, session);
-        //메일 전송
-        emailSend.sendMail(emailMessage);
     }
 
     /**
@@ -151,10 +138,10 @@ public class LoginService {
 
     /**
      * Access Token 유효기간 만료
-     * @param accessToken OAuth 로그아웃을 위한 액세스 토큰
+     * @param accessToken OAuth 로그아웃을 위한 액세스 토큰 (Bearer ${accessToken})
      */
     public void expireToken(String accessToken) {
-        kakaoApiClient.logout(accessToken);
+        kakaoApiClient.logout("Bearer " + accessToken);
     }
 
 }
