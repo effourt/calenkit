@@ -4,33 +4,58 @@
 <head>
     <meta charset="UTF-8">
     <title>마이 페이지</title>
-    <link th:href="@{/packages/list/main.css}" href='../static/packages/list/main.css' rel='stylesheet' />
-    <script th:src="@{/packages/core/main.js}" src='../static/packages/core/main.js'></script>
+    <link th:href="@{/packages/list/main.css}" href='../../static/packages/list/main.css' rel='stylesheet' />
+    <script th:src="@{/packages/core/main.js}" src='../../static/packages/core/main.js'></script>
+
 
 </head>
 <body>
 <form>
     <h1>계정 정보</h1>
     <hr>
-    <p>사진</p>
-    <input type="image"></input>
-    <form method="POST" action="/upload" enctype="multipart/form-data">
-        <div>
-            <label for="fileUpload">사진 업로드</label>
-            <input id="fileUpload" type="file" name="file" style="display:none">
-            <button type="button" onclick="document.getElementById('fileUpload').click()">파일 선택</button>
-        </div>
-        <button type="submit">업로드</button>
-    </form>
-    <p>선호하는 이름</p>
-    <input type="text"></input>
+    <p>프로필 사진</p>
+    <img id="previewImage" src="#" alt="Preview Image" style="display:none;">
+    <input type="file" id="fileInput" accept=".jpeg,.jpg,.png">
+    <p>닉네임</p>
+    <input type="text" formaction="/myPage_name" placeholder="닉네임을 입력해주세요."></input>
     <p>비밀번호</p>
     <p>임시 로그인 코드를 사용하고 싶지 않으면 비밀번호를 설정할 수 있습니다.</p>
-    <div><button formaction="/myPage_pwModify">비밀번호 변경</button></div>
+    <div><button id="pwModifyButton" onclick="openPwModifyPopup()">비밀번호 변경</button></div>
     <p>위험 구역</p>
-    <button formaction="/myPage_delete">내 계정 삭제</button>
+    <button id="deleteButton" onclick="openDeletePopup()">내 계정 삭제</button>
     <hr>
     <div><button formaction="/myPage_modify">변경</button><button formaction="/">취소</button></div>
 </form>
 </body>
+<script>
+
+    //파일 미리보기(HTML에서만 동작, 확인 필요)
+    // const fileInput = document.getElementById('fileInput');
+    // const previewImage = document.getElementById('previewImage');
+    // fileInput.addEventListener('change', (event) => {
+    //     const file = event.target.files[0];
+    //     const reader = new FileReader();
+    //     reader.readAsDataURL(file);
+    //     reader.onload = (event) => {
+    //         previewImage.style.display = 'block';
+    //         previewImage.setAttribute('src', event.target.result);
+    //     };
+    // });
+    //삭제 팝업창
+    function openDeletePopup() {
+        var url = "/myPage_delete";
+        var name = "mypageDeletePopup";
+        var specs = "width=500,height=500,resizable=yes";
+        window.open(url, name, specs);
+    }
+
+    //비밀번호 변경 팝업창
+    function openPwModifyPopup() {
+        var url = "/myPage_pwModify";
+        var name = "mypagepwModifyPopup";
+        var specs = "width=500,height=500,resizable=yes";
+        window.open(url, name, specs);
+    }
+
+</script>
 </html>
