@@ -37,23 +37,23 @@ public class ScheduleController {
     @GetMapping("/main_ajax")
     @ResponseBody
     public List<Map> mainAJAX() {
-        String id="member";
-        Date temp=new Date();
+        String id="member"; //session으로 현재 아이디 받아오기
+        Date temp=new Date(); //출력 기준 월 받아오기
         SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM");
         String date=simpleDateFormat.format(temp).toString();
 
-        List<Schedule> scheduleList = myScheduleService.getMySchedule(id,null);
+        List<Schedule> scheduleList = myScheduleService.getMySchedule(id,null); //일정 리스트 저장
 
         List<Map> mapList=new ArrayList<>();
 
-        for(Schedule schedule:scheduleList) {
-        Map<String, String> map=new HashMap<>();
+        for(Schedule schedule:scheduleList) { //일정 리스트에서 일정 뽑아내기
+        Map<String, String> map=new HashMap<>(); //일정 저장할 map
             map.put("title", schedule.getScTitle());
             map.put("start", schedule.getScSdate());
             map.put("end", schedule.getScEdate());
             map.put("url", "localhost:8080/main_" + schedule.getScNo());
-            mapList.add(map);
+            mapList.add(map); //map에 일정 저장
         }
-        return mapList;
+        return mapList; //일정이 저장된 mapList값 보내기
     }
 }
