@@ -15,9 +15,9 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 public class MyScheduleService {
-    private ScheduleRepository scheduleRepository;
-    private TeamRepository teamRepository;
-    private AlarmRepository alarmRepository;
+    private final ScheduleRepository scheduleRepository;
+    private final TeamRepository teamRepository;
+    private final AlarmRepository alarmRepository;
 
     //[사이드바에서 내 스케줄 검색 행위]
     public List<Schedule> findMySchedule(String id, String keyword) {
@@ -94,8 +94,8 @@ public class MyScheduleService {
         //map 요소 : date, List 객체(일정번호) - map(date, "2020-12-12") , map(scNoList, List<Integer>)
         Map<String, Object> map=new HashMap<>();
 
-        map.put("scNoList", teamRepository.findByid(id));
-        map.put("date", date); //date : 출력 기준이 될 연월(default:defaultDate)
+        map.put("scNoList", teamRepository.findByid(id)); //아이디 기준 권한있는 일정번호목록
+        map.put("date", date); //date : 출력 기준이 될 연월(default:현재 연월)
 
         return scheduleRepository.findAllByScNo(map);
     }

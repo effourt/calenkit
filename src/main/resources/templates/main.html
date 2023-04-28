@@ -15,8 +15,25 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            var testTitle = "[[${testTitle}]]";
             var calendarEl = document.getElementById('calendar');
+            var ajaxData = [[${mapList}]];
+
+            $.ajax({
+                url: '/main_ajax',
+                method: 'GET',
+                success: function (scheduleList) {
+                    scheduleList.forEach(function (schedule) {
+                        ajaxData.push({
+                            "scNo":schedule.scNo,
+                            "scTitle":schedule.scTitle,
+                            "scSdate":schedule.scSdate,
+                            "scEdate":schedule.scEdate
+                        });
+                    });
+                    console.log(ajaxData);
+                    console.log(ajaxData[0]);
+                }
+            });
 
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 plugins: [ 'interaction', 'dayGrid', 'timeGrid', 'list' ],
@@ -30,19 +47,14 @@
                 defaultDate: '2023-04-27',
                 navLinks: true, // can click day/week names to navigate views
                 editable: true,
-                events: [
-                    {
-                        title : testTitle,
-                        start : '2023-04-26',
-                        end : '2023-04-29',
-                        url : 'https://naver.com'
-                    },
-                    {
-                        title: 'Click for Google',
-                        url: 'http://google.com/',
-                        start: '2023-04-28'
+                events: /*[
+                    for(let i=0;i<ajaxData.length;i++) {
+                        title : ajaxData[i].scTitle,
+                        start : ajaxData[i].scSdate,
+                        end : ajaxData[i].scEdate,
+                        url : 'local:8080/main_'+ajaxData[i].scNo
                     }
-                ],
+                ]*/ajaxData,
                 eventLimit: true, // allow "more" link when too many events
             });
             calendar.on('dateClick', function(info) {
