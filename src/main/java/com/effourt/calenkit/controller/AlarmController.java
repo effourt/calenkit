@@ -43,10 +43,11 @@ public class AlarmController {
         return "teamPopup";
     }
 //    @GetMapping
-    public String c(){
+    public String c() {
         return "teamPopup";
+    }
 
-    @GetMapping
+//    @GetMapping
     public String showMyAlarmList(Model model){
         String loginId = "member";
         List<Alarm> alarmList = alarmRepository.findByAlMid(loginId);
