@@ -102,9 +102,8 @@ public class AlarmService {
         alarm.setAlScno(scNo); //3. 알람 울릴 스케줄
         //4. 알람 상태 - 1(고정해놨음)
         //5. 알람 추가한 시간 - sysdate
-        alarm.setAlCate(1); //6. 알람의 종류(2) - 권한 변경 [scNo 스케줄에 최대되엇습니다.라고 출력할 것임]
+        alarm.setAlCate(2); //6. 알람의 종류(2) - 권한 변경 [scNo 스케줄에 최대되엇습니다.라고 출력할 것임]
         return alarmRepository.save(alarm);
-
     }
 
     /**
@@ -124,7 +123,7 @@ public class AlarmService {
                 alarm.setAlScno(scNo); //3. 알람 울릴 스케줄
                 //4. 알람 상태 - 1(고정해놨음)
                 //5. 알람 추가한 시간 - sysdate
-                alarm.setAlCate(1); //6. 알람의 종류(3) - 권한 변경 [scNo 스케줄의 권한이 변경되었습니다.라고 출력할 것임]
+                alarm.setAlCate(3); //6. 알람의 종류(3) - 권한 변경 [scNo 스케줄의 권한이 변경되었습니다.라고 출력할 것임]
                 alarmRepository.save(alarm);
             }
         }

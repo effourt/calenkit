@@ -44,7 +44,7 @@ public class MemberRepositoryImpl implements MemberRepository {
     }
 
     @Override
-    public Member findByMemName(String memName) {
+    public int findByMemName(String memName) {
         return sqlSessionTemplate.getMapper(MemberMapper.class).findByMemName(memName);
     }
 
