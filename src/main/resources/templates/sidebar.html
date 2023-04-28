@@ -3,18 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link th:href="@{/css/sidebar.css}" href='../static/css/sidebar.css' rel='stylesheet' />
 </head>
 <body>
-<div th:fragment="sidebar" style="background-color:lightgoldenrodyellow; color:#6c757d;">
-    <div><a href="#">닉네임</a></div>
-    <div>검색</div>
-    <div>즐겨찾기</div>
-    <div>알림</div>
-    <div>휴지통</div>
-    <div class="list-group">
-        <p>일정</p>
-    </div>
-    <div>로그아웃</div>
+<div th:fragment="sidebar" class="menu" tabindex="0">
+    <div class="smartphone-menu-trigger"></div>
+    <header class="avatar">
+        <img src="https://s3.amazonaws.com/uifaces/faces/twitter/kolage/128.jpg" />
+        <h2>닉네임</h2>
+    </header>
+    <ul>
+        <li tabindex="0" class="icon-search"><span>검색</span></li>
+        <li tabindex="0" class="icon-bookmark"><span>즐겨찾기</span></li>
+        <li tabindex="0" class="icon-alarm"><span>알림</span></li>
+        <li tabindex="0" class="icon-trash"><span>휴지통</span></li>
+        <li tabindex="0" class="icon-schedule"><span>일정</span></li>
+        <li tabindex="0" class="icon-logout"><span>로그아웃</span></li>
+    </ul>
 </div>
 </body>
 </html>
