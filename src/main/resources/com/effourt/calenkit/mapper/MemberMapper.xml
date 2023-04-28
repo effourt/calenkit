@@ -52,8 +52,8 @@
 
     <!-- SELECT -->
     <!-- 닉네임 검색행 1개 -->
-    <select id="findByMemName" resultType="Member">
-        SELECT * FROM MEMBER WHERE MEM_NAME=#{memName}
+    <select id="findByMemName" parameterType="String" resultType="int">
+        SELECT COUNT(MEM_NAME) FROM MEMBER WHERE MEM_NAME=#{memName}
     </select>
 
     <!-- SELECT -->
