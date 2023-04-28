@@ -105,16 +105,13 @@ public class MemberController2 {
 
     // MyPage
     // 멤버 닉네임 검색 후 중복 확인(GET)
-    // Ajax 처리를 위해 닉네임 값 반환
-    @GetMapping(value = "/myPage_name")
+    // Ajax 처리를 위해 닉네임 중복 갯수 반환
+    @GetMapping("/nameCheck")
     @ResponseBody
-    public String MyPageName(@RequestParam String memName) {
-        Member member = memberRepository.findByMemName(memName);
-        if(member != null) {
-            return "사용할 수 없는 닉네임입니다";
-        } else {
-            return "사용할 수 있는 닉네임입니다";
-        }
+    public int nameCheck(@RequestParam("memName") String memName) {
+        int cnt = memberRepository.findByMemName(memName);
+        return cnt;
+
     }
 
     // MyPage
