@@ -11,12 +11,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import javax.mail.Session;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Slf4j
 @Controller
@@ -27,14 +26,35 @@ public class ScheduleController {
     private final TeamRepository teamRepository;
     private final ScheduleRepository scheduleRepository;
 
-    /** 달력에 일정 출력(메인페이지)
-     *
+    /**
+     * 달력에 일정 출력(메인페이지)
      */
-    @GetMapping("/")
+    @GetMapping(value={"/","/main"})
     public String main(Model model) {
         model.addAttribute("testTitle", "일정제목");
-        /*model.addAttribute("scheduleList", myScheduleService.getMySchedule("member","2023-04-27"));*/
-
         return "main";
+    }
+
+    @GetMapping("/main_ajax")
+    @ResponseBody
+    public List<Map> mainAJAX() {
+        String id="member";
+        Date temp=new Date();
+        SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM");
+        String date=simpleDateFormat.format(temp).toString();
+
+        List<Schedule> scheduleList = myScheduleService.getMySchedule(id,null);
+
+        Map<String, String> map = new HashMap<>();
+        List<Map> mapList=new ArrayList<>();
+
+        for(Schedule schedule:scheduleList) {
+            map.put("title", schedule.getScTitle());
+            map.put("start", schedule.getScSdate());
+            map.put("end", schedule.getScEdate());
+            map.put("url", "localhost:8080/main_"+schedule.getScNo());
+            mapList.add(map);
+        }
+        return mapList;
     }
 }

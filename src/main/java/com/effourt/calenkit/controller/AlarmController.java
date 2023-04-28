@@ -46,6 +46,7 @@ public class AlarmController {
     public String c() {
         return "teamPopup";
     }
+    /*
     @GetMapping("")
     public String showMyAlarmList(Model model){
         String loginId = "member";
@@ -53,6 +54,7 @@ public class AlarmController {
         model.addAttribute("alarmList", alarmList);
         return "test";
     }
+    */
     /*
     @GetMapping("")
     public String showAlarmList(HttpSession session, Model model){
