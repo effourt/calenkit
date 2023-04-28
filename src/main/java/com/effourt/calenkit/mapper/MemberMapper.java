@@ -13,7 +13,7 @@ public interface MemberMapper {
     Integer update(Member member);
     Integer delete(String memId);
     Member findByMemId(String memId);
-    Member findByMemName(String memName);
+    int findByMemName(String memName);
 
     List<Member> findAllByMemId(String keyword);
 }

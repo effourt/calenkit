@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css">
     <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.js" defer></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 
     <style>
@@ -111,7 +110,7 @@
                 </template>
             </tr>
             </thead>
-            <tbody>
+            <tbody id="adminBody">
             <template x-for="member in members" :key="member.memId">
                 <tr>
                     <td class="border-dashed border-t border-gray-200 px-3">
@@ -220,6 +219,7 @@
             console.log(members[0]);
         }
     });
+
 </script>
 </body>
 <!-- partial -->
