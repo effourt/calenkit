@@ -2,11 +2,18 @@
 <html th:fragment="layout (links, scripts, style, title, content)" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <!-- 개별 -->
     <title th:replace="${title}"></title>
+
+    <!-- 개별 -->
     <th:block th:replace="${links}"></th:block>
     <th:block th:replace="${scripts}"></th:block>
-    <link th:href="@{/bootstrap5/css/bootstrap.css}" href='../static/bootstrap5/css/bootstrap.css' rel='stylesheet' />
+    <th:block th:replace="${style}"></th:block>
+
+    <!-- 공통 -->
+    <link th:href="@{/library/bootstrap/css/bootstrap.css}" href='../static/library/bootstrap/css/bootstrap.css' rel='stylesheet' />
     <link th:href="@{/css/sidebar.css}" href='../static/css/sidebar.css' rel='stylesheet' />
+
 </head>
 <body>
 <div class="d-flex">
@@ -17,6 +24,6 @@
     컨텐츠
 </section>
 </div>
-<script th:src="@{bootstrap5/js/bootstrap.js}" src='../static/bootstrap5/js/bootstrap.js'></script>
+<script th:src="@{/library/bootstrap/js/bootstrap.js}" src='../static/library/bootstrap/js/bootstrap.js'></script>
 </body>
 </html>
