@@ -2,34 +2,25 @@ package com.effourt.calenkit.controller;
 
 import com.effourt.calenkit.domain.Auth;
 import com.effourt.calenkit.domain.Member;
-import com.effourt.calenkit.dto.AuthUserInfoResponse;
-import com.effourt.calenkit.dto.EmailMessage;
 import com.effourt.calenkit.dto.AccessTokenRequest;
 import com.effourt.calenkit.dto.AccessTokenResponse;
-import com.effourt.calenkit.exception.MemberNotFoundException;
+import com.effourt.calenkit.dto.AuthUserInfoResponse;
+import com.effourt.calenkit.dto.EmailMessage;
 import com.effourt.calenkit.repository.AuthRepository;
 import com.effourt.calenkit.repository.MemberRepository;
-import com.effourt.calenkit.service.AdminService;
 import com.effourt.calenkit.service.JoinService;
 import com.effourt.calenkit.service.LoginService;
-import com.effourt.calenkit.service.MyPageService;
 import com.effourt.calenkit.util.EmailSend;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FilenameUtils;
 import org.springframework.context.MessageSource;
+import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Controller
@@ -51,34 +42,44 @@ public class MemberController {
      * 아이디 존재 O, 비밀번호 O : PASSWORD_LOGIN
      * 아이디 존재 O, 비밀번호 X : CODE_LOGIN
      * 아이디 존재 X, 비밀번호 X : JOIN_LOGIN
-     * @param memId
-     * @param session
+     * @param idMap
      * @return
      */
-    @PostMapping("/login/check")
     @ResponseBody
-    public String checkId(@RequestBody String memId, HttpSession session) {
+    @PostMapping("/login/check")
+    public String checkId(@RequestBody Map<String, String> idMap) {
+        String memId = idMap.get("id");
         String loginType = loginService.checkMember(memId);
         log.info("loginType={}", loginType);
         //코드로 로그인하거나 회원가입 후 로그인할 때, 랜덤 코드를 이메일로 전송
         if (loginType.equals("CODE_LOGIN") || loginType.equals("JOIN_LOGIN")) {
-            String subject = ms.getMessage("mail.login-code.subject", null, null);
-            String message = ms.getMessage(
-                    "mail.login-code.message",
-                    new Object[]{emailSend.createAccessCode(memId, session)},
-                    null);
 
-            EmailMessage emailMessage = EmailMessage.builder()
-                    .recipient(memId)
-                    .subject(subject)
-                    .message(message)
-                    .build();
-
-            log.info("email id={}", memId);
-            log.info("subject={}", subject);
-            log.info("message={}", message);
         }
         return loginType;
+    }
+
+    @PostMapping("/login/send-code")
+    @ResponseBody
+    public String sendCode(@RequestBody Map<String, String> idMap, HttpSession session) {
+        String memId = idMap.get("id");
+        String subject = ms.getMessage("mail.login-code.subject", null, null);
+        String message = ms.getMessage(
+                "mail.login-code.message",
+                new Object[]{emailSend.createAccessCode(memId, session)},
+                null);
+
+        EmailMessage emailMessage = EmailMessage.builder()
+                .recipient(memId)
+                .subject(subject)
+                .message(message)
+                .build();
+        //이메일 전송
+        emailSend.sendMail(emailMessage);
+
+        log.info("email id={}", memId);
+        log.info("subject={}", subject);
+        log.info("message={}", message);
+        return "ok";
     }
 
 
@@ -124,14 +125,14 @@ public class MemberController {
     /**
      * 회원가입 코드로 회원가입 후 이메일 로그인
      * @param memId
-     * @param code
+     * @param registerCode
      * @param session
      * @param model
      * @return
      */
     @PostMapping("/login/register-code")
-    public String loginByJoin(String memId, String code, HttpSession session, Model model) {
-        String joinCode = (String) session.getAttribute(code);
+    public String loginByJoin(String memId, String registerCode, HttpSession session, Model model) {
+        String joinCode = (String) session.getAttribute(registerCode);
         if (joinCode.equals(memId + "ACCESS")) {
             model.addAttribute("memId", memId);
         }
