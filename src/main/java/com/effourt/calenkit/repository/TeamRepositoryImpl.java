@@ -20,7 +20,7 @@ public class TeamRepositoryImpl implements TeamRepository {
     private final SqlSessionTemplate sqlSessionTemplate;
 
     @Override
-    public Team save(Team team) {
+    public Integer save(Team team) {
         return sqlSessionTemplate.getMapper(TeamMapper.class).save(team);
     }
 
