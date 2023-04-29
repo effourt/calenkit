@@ -4,7 +4,7 @@
     <!-- INSERT -->
     <!-- 상세페이지 내용 최초 입력 -->
     <insert id="save" parameterType="Schedule" useGeneratedKeys="true" keyProperty="scNo">
-        INSERT INTO SCHEDULE VALUES(#{scTitle}, #{scContent}, #{scSdate}, #{scEdate}, #{scStatus}, #{scProgress})
+        INSERT INTO SCHEDULE VALUES(null, null, null, now(), null, 1, 1)
     </insert>
 
     <!-- UPDATE -->
