@@ -21,9 +21,8 @@ public class ScheduleRepositoryImpl implements ScheduleRepository{
     private final SqlSessionTemplate sqlSessionTemplate;
 
     @Override
-    public Schedule save(Schedule schedule) {
-        sqlSessionTemplate.getMapper(ScheduleMapper.class).save(schedule);
-        return schedule;
+    public void save() {
+        sqlSessionTemplate.getMapper(ScheduleMapper.class).save();
     }
 
     @Override
