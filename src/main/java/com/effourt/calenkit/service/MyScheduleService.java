@@ -30,9 +30,15 @@ public class MyScheduleService {
 
     //[메인에서 내 스케줄 추가 행위]
     @Transactional
-    public void addMySchedule(Schedule schedule, Team team) {
-        scheduleRepository.save(schedule);
+    public Integer addMySchedule(String id) {
+        scheduleRepository.save();
+        Integer scNo=scheduleRepository.findLastInsertScNo();
+
+        Team team=new Team();
+        team.setTeamMid(id);
+        team.setTeamSno(scNo);
         teamRepository.save(team);
+        return scNo;
     }
 
     //[메인이나 사이드바에서 내 스케줄 작성 행위] : modifyMySchedule()
@@ -55,12 +61,10 @@ public class MyScheduleService {
 
     //[상세에서 내 스케줄 삭제(휴지통으로 이동) 행위] : goToRecycleBin()
     @Transactional
-    public void goToRecycleBin(Schedule schedule, Alarm alarm) {
+    public void goToRecycleBin(Integer scNo) {
+        Schedule schedule=scheduleRepository.findByScNo(scNo);
         schedule.setScStatus(0);
         scheduleRepository.update(schedule);
-        alarm.setAlStatus(0);
-        alarmRepository.update(alarm);
-        alarmRepository.save(alarm); //삭제 알림 출력 메세지 내용 properties 파일 - MessageSource, @Value
     }
 
     //[휴지통에서 내 스케줄 복원 행위]
