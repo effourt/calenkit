@@ -20,9 +20,8 @@ public class TeamRepositoryImpl implements TeamRepository {
     private final SqlSessionTemplate sqlSessionTemplate;
 
     @Override
-    public Team save(Team team) {
-        sqlSessionTemplate.getMapper(TeamMapper.class).save(team);
-        return team;
+    public void save(String id, Integer scNo) {
+        sqlSessionTemplate.getMapper(TeamMapper.class).save(id, scNo);
     }
 
     @Override
