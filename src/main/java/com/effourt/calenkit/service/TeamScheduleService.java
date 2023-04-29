@@ -49,7 +49,7 @@ public class TeamScheduleService {
      * @param findId : 공유받을 아이디
      * @param scNo : 일정 번호
      */
-    public Team addTeam(String findId, int scNo){
+   /* public Team addTeam(String findId, int scNo){
         Member findMember = memberRepository.findByMemId(findId);
         Team team = new Team();
         team.setTeamMid(findMember.getMemId());
@@ -60,7 +60,7 @@ public class TeamScheduleService {
 
         //만약 사용자가 받은 이메일의 링크를 수락할 경우, team에 최종적으로 추가
         return teamRepository.save(team);
-    }
+    }*/
 
     /**
      * 공유된 일정의 권한 정보를 변경하는서비스

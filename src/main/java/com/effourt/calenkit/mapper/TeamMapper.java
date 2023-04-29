@@ -9,7 +9,7 @@ import java.util.List;
 @Mapper
 public interface TeamMapper {
 
-    Team save(Team team);
+    Integer save(Team team);
     Integer update(Team team);
     Integer delete(Integer teamSno, String teamMid);
 
