@@ -51,12 +51,7 @@
                    });
 
                    calendar.on('dateClick', function(info) {
-                       /* 일정 추가
-                       let scheduleTitle = 'testSchedule';
-                       let startDay = '2023-03-17';
-                       let endDay = '2023-05-24';
-                       alert(info.event.scNo);
-                       calendar.addEvent({'title': scheduleTitle, 'start': startDay, 'end': endDay, 'scNo': 1});*/
+                       location.href="localhost:8080/main_add";
                    });
 
                    calendar.render();

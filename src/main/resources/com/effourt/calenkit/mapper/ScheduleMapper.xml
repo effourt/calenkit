@@ -3,8 +3,8 @@
 <mapper namespace="com.effourt.calenkit.mapper.ScheduleMapper">
     <!-- INSERT -->
     <!-- 상세페이지 내용 최초 입력 -->
-    <insert id="save" parameterType="Schedule" useGeneratedKeys="true" keyProperty="scNo">
-        INSERT INTO SCHEDULE VALUES(null, null, null, now(), null, 1, 1)
+    <insert id="save">
+        INSERT INTO SCHEDULE(SC_TITLE, SC_CONTENT, SC_SDATE, SC_EDATE, SC_STATUS, SC_PROGRESS) VALUES(null, null, now(), null, 1, 1)
     </insert>
 
     <!-- UPDATE -->
@@ -41,6 +41,10 @@
     </delete>
 
     <!-- SELECT -->
+    <select id="findLastInsertScNo" resultType="java.lang.Integer">
+        SELECT LAST_INSERT_ID()
+    </select>
+
     <!-- 일정 검색행 1개 -->
     <select id="findByScNo" resultType="Schedule">
         SELECT * FROM SCHEDULE WHERE SC_NO=#{scNo}
