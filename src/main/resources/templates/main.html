@@ -3,91 +3,81 @@
 <head>
     <meta charset='utf-8' />
     <title>메인 페이지</title>
-    <link th:href="@{/packages/core/main.css}" href='../static/packages/core/main.css' rel='stylesheet' />
-    <link th:href="@{/packages/daygrid/main.css}" href='../static/packages/daygrid/main.css' rel='stylesheet' />
-    <link th:href="@{/packages/timegrid/main.css}" href='../static/packages/timegrid/main.css' rel='stylesheet' />
-    <link th:href="@{/packages/list/main.css}" href='../static/packages/list/main.css' rel='stylesheet' />
-    <script th:src="@{/packages/core/main.js}" src='../static/packages/core/main.js'></script>
-    <script th:src="@{/packages/interaction/main.js}" src='../static/packages/interaction/main.js'></script>
-    <script th:src="@{/packages/daygrid/main.js}" src='../static/packages/daygrid/main.js'></script>
-    <script th:src="@{/packages/timegrid/main.js}" src='../static/packages/timegrid/main.js'></script>
-    <script th:src="@{packages/list/main.js}" src='../static/packages/list/main.js'></script>
+    <link th:href="@{/library/packages/core/main.css}" href='../static/library/packages/core/main.css' rel='stylesheet' />
+    <link th:href="@{/library/packages/daygrid/main.css}" href='../static/library/packages/daygrid/main.css' rel='stylesheet' />
+    <link th:href="@{/library/packages/timegrid/main.css}" href='../static/library/packages/timegrid/main.css' rel='stylesheet' />
+    <link th:href="@{/library/packages/list/main.css}" href='../static/library/packages/list/main.css' rel='stylesheet' />
+    <script th:src="@{/library/packages/core/main.js}" src='../static/library/packages/core/main.js'></script>
+    <script th:src="@{/library/packages/interaction/main.js}" src='../static/library/packages/interaction/main.js'></script>
+    <script th:src="@{/library/packages/daygrid/main.js}" src='../static/library/packages/daygrid/main.js'></script>
+    <script th:src="@{/library/packages/timegrid/main.js}" src='../static/library/packages/timegrid/main.js'></script>
+    <script th:src="@{/library/packages/list/main.js}" src='../static/library/packages/list/main.js'></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            var testTitle = "[[${testTitle}]]";
-            var calendarEl = document.getElementById('calendar');
 
-            var calendar = new FullCalendar.Calendar(calendarEl, {
-                plugins: [ 'interaction', 'dayGrid', 'timeGrid', 'list' ],
-                height: 'parent',
-                header: {
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
-                },
-                defaultView: 'dayGridMonth',
-                defaultDate: '2023-04-27',
-                navLinks: true, // can click day/week names to navigate views
-                editable: true,
-                events: [
-                    {
-                        title : testTitle,
-                        start : '2023-04-26',
-                        end : '2023-04-29',
-                        url : 'https://naver.com'
-                    },
-                    {
-                        title: 'Click for Google',
-                        url: 'http://google.com/',
-                        start: '2023-04-28'
-                    }
-                ],
-                eventLimit: true, // allow "more" link when too many events
-            });
-            calendar.on('dateClick', function(info) {
-                alert("날짜 셀 Click Event");
+            //AJAX로 Controller에서 List 받아오기
+            $.ajax({
+               type:'GET',
+               url:'main_ajax',
+               success: function (result) {
+                   var events=result; //받아온 list 저장
+
+                   var year=new Date().getFullYear();
+                   var month=new Date().getMonth();
+                   var date;
+                   if(month<10) { //날짜 형식(yyyy-dd)을 맞추기 위한 조건문
+                       date=year+"-0"+month; //현재 날짜 저장
+                   } else {
+                       date=year+"-"+month; //현재 날짜 저장
+                   }
+
+                   var calendarEl = document.getElementById('calendar'); //calendar div 태그 설정
+
+                   var calendar = new FullCalendar.Calendar(calendarEl, { //calendar 설정
+                       plugins: [ 'interaction', 'dayGrid', 'timeGrid', 'list' ],
+                       height: 'parent',
+                       header: {
+                           left: 'prev,next today',
+                           center: 'title',
+                           right: 'dayGridMonth,listWeek' //보기 형식(캘린더, 리스트)
+                       },
+                       defaultView: 'dayGridMonth',
+                       defaultDate: date,
+                       navLinks: true, // can click day/week names to navigate views
+                       editable: true,
+                       events: events, //받아온 List로 일정 등록
+                   });
+
+                   calendar.on('dateClick', function(info) {
+                       location.href="localhost:8080/main_add";
+                   });
+
+                   calendar.render();
+               },
+               error: function (xhr){
+                   location.href="404"; //에러페이지로 이동
+               }
             });
 
-            calendar.on('eventClick', function(info) {
-                let scheduleTitle = 'testSchedule';
-                let startDay = '2023-03-17';
-                let endDay = '2023-05-24';
-                alert(info.event.scNo);
-                calendar.addEvent({'title': scheduleTitle, 'start': startDay, 'end': endDay, 'scNo': 1});
-            });
 
-            calendar.render();
+
         });
     </script>
-
-
     <style>
-
+        /*
         html, body {
-            overflow: hidden; /* don't do scrollbars */
+            overflow: hidden;
             font-family: Arial, Helvetica Neue, Helvetica, sans-serif;
             font-size: 14px;
         }
-
+        */
         #calendar-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            margin: 30px auto;
+            width: 90%;
+            height: 90vh;
         }
-
-        .fc-header-toolbar {
-            /*
-            the calendar will be butting up against the edges,
-            but let's scoot in the header's buttons
-            */
-            padding-top: 1em;
-            padding-left: 1em;
-            padding-right: 1em;
-        }
-
     </style>
 </head>
 <body>

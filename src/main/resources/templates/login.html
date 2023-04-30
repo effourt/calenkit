@@ -5,7 +5,7 @@
     <title>Calenkit</title>
     <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css'>
     <link rel='stylesheet' href='https://unicons.iconscout.com/release/v2.1.9/css/unicons.css'>
-    <link rel="stylesheet" href="../static/bootstrap5/css/login-form-style.css">
+    <link rel="stylesheet" th:href="@{/css/login-form-style.css}" href="../static/css/login-form-style.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 </head>
 <body>
@@ -20,39 +20,37 @@
                                 <div class="card-front">
                                     <div class="center-wrap">
                                         <div class="section text-center">
-                                            <h4 class="mb-4 pb-3">Log In</h4>
-                                            <div>
-                                                <a href="https://kauth.kakao.com/oauth/authorize?client_id=6d49b86907e3887ab27ba34050122bd1&redirect_uri=http://localhost:8080/login/kakao&response_type=code&scope=profile_nickname,profile_image,account_email">
-                                                    <img th:src="@{/img/kakao_login_medium_wide.png}" src="../static/img/kakao_login_medium_wide.png"/>
-                                                </a>
+                                            <h4 class="mb-4 pb-3">로그인</h4>
+                                            <div style="height: 65px;">
+                                                <img id="kakaoLogin" th:src="@{/img/kakao_login_medium_wide.png}" src="../static/img/kakao_login_medium_wide.png" style="cursor: pointer"/>
                                             </div>
                                             <form id="loginForm" method="post">
                                                 <!-- 이메일 입력창 -->
                                                 <div class="form-group">
-                                                    <input type="email" name="memId" class="form-style" placeholder="Your Email" id="loginId" autocomplete="off">
+                                                    <input type="email" name="memId" class="form-style" placeholder="이메일을 입력하세요" id="loginId" autocomplete="off">
                                                     <i class="input-icon uil uil-at"></i>
                                                 </div>
                                                 <!-- 패스워드 입력창 -->
-                                                <div class="form-group mt-2" style="display: none">
+                                                <div id="passwordDiv" class="form-group mt-2" style="display: none">
                                                     <input type="password" name="memPw" class="form-style" placeholder="비밀번호를 입력하세요" id="loginPw" autocomplete="off">
                                                     <i class="input-icon uil uil-lock-alt"></i>
                                                     <button type="button" id="passwordBtn" class="btn mt-4">비밀번호로 로그인</button>
                                                 </div>
                                                 <!-- 로그인 코드 입력창 -->
-                                                <div class="form-group mt-2" style="display: none">
+                                                <div id="loginCodeDiv" class="form-group mt-2" style="display: none">
                                                     <input type="password" name="loginCode" class="form-style" placeholder="로그인 코드를 입력하세요" id="loginCode" autocomplete="off">
                                                     <i class="input-icon uil uil-lock-alt"></i>
                                                     <button type="button" id="loginCodeBtn" class="btn mt-4">로그인 코드로 로그인</button>
                                                 </div>
                                                 <!-- 회원가입 코드 입력창 -->
-                                                <div class="form-group mt-2" style="display: none">
+                                                <div id="registerCodeDiv" class="form-group mt-2" style="display: none">
                                                     <input type="password" name="registerCode" class="form-style" placeholder="회원가입 코드를 입력하세요" id="registerCode" autocomplete="off">
                                                     <i class="input-icon uil uil-lock-alt"></i>
-                                                    <button type="button" id="registerCodeBtn" class="btn mt-4"></button>
+                                                    <button type="button" id="registerCodeBtn" class="btn mt-4">이메일로 회원가입</button>
                                                 </div>
                                                 <button type="button" id="checkIdBtn" class="btn mt-4">Continue with Email</button>
                                             </form>
-                                            <p class="mb-0 mt-4 text-center"><a href="#0" class="link">Forgot your password?</a></p>
+                                            <p class="mb-0 mt-4 text-center"><button type="button">Forgot your password?</button></p>
                                         </div>
                                     </div>
                                 </div>
@@ -65,7 +63,7 @@
     </div>
 </div>
 
-<script src="../static/js/loginFormScript.js"></script>
+<script th:src="@{/js/loginFormScript.js}" src="../static/js/loginFormScript.js"></script>
 <script type="text/javascript">
     //아이디, 비밀번호 존재 여부 체크
     const domainURL = "http://localhost:8080";
@@ -74,54 +72,82 @@
         $.ajax({
             url: domainURL + "/login/check",
             method: "POST",
-            dataType: "json",
-            data: {id: loginId},
+            contentType: "application/json",
+            dataType: "text",
+            data: JSON.stringify({"id": loginId}),
             success: function (result) {
                 if (result == "PASSWORD_LOGIN") {
-                    $("#loginPw").style("display", "block");
-                    $("#loginCode").style("display", "none");
-                    $("#loginId").style("display", "none");
-                    $("#checkIdBtn").style("display", "none");
+                    $("#passwordDiv").css("display", "block");
+                    $("#checkIdBtn").css("display", "none");
                 } else if (result == "CODE_LOGIN") {
-                    $("#loginPw").style("display", "none");
-                    $("#loginCode").style("display", "block");
-                    $("#loginId").style("display", "none");
-                    $("#checkIdBtn").style("display", "none");
+                    sendCode(loginId);
+                    $("#loginCodeDiv").css("display", "block");
+                    $("#checkIdBtn").css("display", "none");
                 } else if (result == "JOIN_LOGIN") {
-                    $("#loginPw").style("display", "none");
-                    $("#loginCode").style("display", "none");
-                    $("#loginId").style("display", "block");
-                    $("#checkIdBtn").style("display", "none");
+                    sendCode(loginId);
+                    $("#registerCodeDiv").css("display", "block");
+                    $("#checkIdBtn").css("display", "none");
                 }
             },
             error: function (error) {
-                alert("ID 체크 중 에러가 발생했습니다.");
+                alert("아이디 체크 중 에러 발생 : " + error.status);
             }
         });
     });
 
-    //이메일 입력창이 비었을 때, 블럭 상태 초기화
+    function sendCode(loginId) {
+        let value = "";
+        $.ajax({
+            url: domainURL + "/login/send-code",
+            method: "POST",
+            contentType: "application/json",
+            dataType: "text",
+            data: JSON.stringify({"id": loginId}),
+            success: function(result) {
+                value = result;
+            },
+            error: function(error) {
+                alert("이메일 전송 API 호출 중 에러 발생 : " + error.status);
+            }
+        });
+        return value;
+    }
+
+    //이메일 입력창이 비었을 때, 입력창 상태 초기화
     $("#loginId").change(function () {
         if ($("#loginId").val() == "") {
             $("#loginPw").val("");
             $("#loginCode").val("");
             $("#loginId").val("");
-            $("#loginPw").style("display", "none");
-            $("#loginCode").style("display", "none");
-            $("#loginId").style("display", "none");
-            $("#checkIdBtn").style("display", "block");
+            $("#passwordDiv").css("display", "none");
+            $("#loginCodeDiv").css("display", "none");
+            $("#registerCodeDiv").css("display", "none");
+            $("#checkIdBtn").css("display", "block");
         }
     });
 
     $("#passwordBtn").click(function () {
-        const loginId = $("#loginId").val();
-        const loginPw = $("#loginPw").val();
-
-        $("#loginForm").style("action", domainURL + "/login/password");
+        $("#loginForm").prop("action", domainURL + "/login/password");
         $("#loginForm").submit();
     });
 
+    $("#loginCodeBtn").click(function () {
+        $("#loginForm").prop("action", domainURL + "/login/login-code");
+        $("#loginForm").submit();
+    });
 
+    $("#registerCodeBtn").click(function () {
+        $("#loginForm").prop("action", domainURL + "/login/register-code");
+        $("#loginForm").submit();
+    });
+
+    $("#kakaoLogin").click(function () {
+        location.href="https://kauth.kakao.com/oauth/authorize" +
+            "?client_id=6d49b86907e3887ab27ba34050122bd1" +
+            "&redirect_uri=http://localhost:8080/login/kakao" +
+            "&response_type=code" +
+            "&scope=profile_nickname,profile_image,account_email";
+    });
 </script>
 </body>
 </html>

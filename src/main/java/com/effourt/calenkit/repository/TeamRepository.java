@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface TeamRepository {
 
-    Team save(Team team);
+    Integer save(Team team);
     Integer update(Team team);
     Integer delete(Integer teamSno, String teamMid);
     List<Team> findByMid(String teamMid);

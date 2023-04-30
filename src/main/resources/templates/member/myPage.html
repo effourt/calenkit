@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout (~{::link}, ~{::script}, ~{::style}, ~{::title}, ~{::form})}">
+
+<head>
+    <meta charset="UTF-8">
+    <title>마이 페이지</title>
+    <link th:href="@{/packages/list/main.css}" href='../../static/packages/list/main.css' rel='stylesheet' />
+    <script th:src="@{/packages/core/main.js}" src='../../static/packages/core/main.js'></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <style></style>
+
+
+</head>
+<body>
+<form>
+    <h1>계정 정보</h1>
+    <hr>
+    <p>프로필 사진</p>
+    <img id="previewImage" src="#" alt="Preview Image" style="display:none;">
+    <input type="file" id="fileInput" accept=".jpeg,.jpg,.png">
+
+
+    <label for="memName">아이디</label>
+    <input type="text" id="memName" name="memName" oninput = "checkName()" >
+
+    <!-- name ajax 중복체크 -->
+    <span class="name_ok" style="display: none">사용 가능한 닉네임입니다.</span>
+    <span class="name_already" style="display: none">사용 중 닉네임입니다.</span>
+
+    <p>비밀번호</p>
+    <p>임시 로그인 코드를 사용하고 싶지 않으면 비밀번호를 설정할 수 있습니다.</p>
+    <div><button id="pwModifyButton" onclick="openPwModifyPopup()" >비밀번호 변경</button></div>
+    <p>위험 구역</p>
+    <button id="deleteButton" onclick="openDeletePopup()">내 계정 삭제</button>
+    <hr>
+    <div><button formaction="/myPage_modify">변경</button><button formaction="/">취소</button></div>
+</form>
+</body>
+<script type="text/javascript">
+
+    //파일 미리보기(HTML에서만 동작, 확인 필요)
+    // const fileInput = document.getElementById('fileInput');
+    // const previewImage = document.getElementById('previewImage');
+    // fileInput.addEventListener('change', (event) => {
+    //     const file = event.target.files[0];
+    //     const reader = new FileReader();
+    //     reader.readAsDataURL(file);
+    //     reader.onload = (event) => {
+    //         previewImage.style.display = 'block';
+    //         previewImage.setAttribute('src', event.target.result);
+    //     };
+    // });
+
+    //삭제 팝업창
+    function openDeletePopup() {
+        var url = "/myPage_delete";
+        var name = "mypageDeletePopup";
+        var specs = "width=500,height=500,resizable=yes";
+        window.open(url, name, specs);
+    }
+
+    //비밀번호 변경 팝업창
+    function openPwModifyPopup() {
+        var url = "/myPage_pwModify";
+        var name = "mypagepwModifyPopup";
+        var specs = "width=500,height=500,resizable=yes";
+        window.open(url, name, specs);
+    }
+
+    function checkName() {
+        var memName = $('#memName').val(); // id 값이 "memName"인 입력란의 값을 저장
+        $.ajax({
+            url: '/nameCheck', // Controller에서 요청 받을 주소
+            type: 'get', // GET 방식으로 전달
+            data: {memName: memName},
+            success: function(cnt) { // Controller에서 넘어온 cnt 값을 받는다
+                if(cnt == 0) { // cnt가 1이 아니면(=0일 경우) -> 사용 가능한 아이디
+                    $('.name_ok').css("display", "inline-block");
+                    $('.name_already').css("display", "none");
+                } else { // cnt가 1일 경우 -> 이미 존재하는 아이디
+                    $('.name_already').css("display", "inline-block");
+                    $('.name_ok').css("display", "none");
+                }
+            },
+            error: function() {
+
+            }
+        });
+    }
+
+
+</script>
+</html>
