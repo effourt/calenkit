@@ -51,10 +51,7 @@ public class MemberController {
         String memId = idMap.get("id");
         String loginType = loginService.checkMember(memId);
         log.info("loginType={}", loginType);
-        //코드로 로그인하거나 회원가입 후 로그인할 때, 랜덤 코드를 이메일로 전송
-        if (loginType.equals("CODE_LOGIN") || loginType.equals("JOIN_LOGIN")) {
 
-        }
         return loginType;
     }
 
