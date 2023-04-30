@@ -51,13 +51,13 @@
                    });
 
                    calendar.on('dateClick', function(info) {
-                       location.href="localhost:8080/main_add";
+                       location.href="localhost:8080/add";
                    });
 
                    calendar.render();
                },
                error: function (xhr){
-                   location.href="404"; //에러페이지로 이동
+                   location.href="localhost:8080/error"; //에러페이지로 이동
                }
             });
 
