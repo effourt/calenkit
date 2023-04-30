@@ -1,19 +1,31 @@
-<!DOCTYPE html>
-<!--<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout (~{::link}, ~{::script}, ~{::style}, ~{::title}, ~{::div})}">-->
-<link>
-<script></script>
-<style></style>
-
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>일정 입력</title>
+  <meta charset="utf-8">
+  <title>CKEditor</title>
+  <style>
+    .ck-editor__editable {
+      height: 400px;
+    }
+
+    .ck-content {
+      font-size: 12px;
+    }
+  </style>
 </head>
+
 <body>
-    <div>
-        <p>일정 제목 : </p>
-        <p>날짜 : </p>
-        <p>동행 : </p>
-        <p>상태 : </p>
-        <p>내용 : </p>
-    </div>
+<h1>메모장</h1>
+<form action="#" method="POST">
+  <textarea name="text" id="editor"></textarea>
+  <p><input type="submit" value="전송"></p>
+</form>
+<script src="https://cdn.ckeditor.com/ckeditor5/34.0.0/classic/ckeditor.js"></script>
+<script src="https://cdn.ckeditor.com/ckeditor5/34.0.0/classic/translations/ko.js"></script>
+<script>
+  ClassicEditor.create(document.querySelector('#editor'), {
+
+  });
+</script>
 </body>
 </html>
