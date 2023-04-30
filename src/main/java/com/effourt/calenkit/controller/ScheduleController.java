@@ -29,8 +29,8 @@ public class ScheduleController {
     /**
      * 달력에 일정 출력(메인페이지)
      */
-    @GetMapping(value={"/","/main"})
-    public String main(Model model) {
+    @GetMapping(value={"/","main"})
+    public String main() {
         return "main";
     }
 
@@ -38,7 +38,7 @@ public class ScheduleController {
      *
      * @return 캘린더 라이브러리에 필요한 필드명 : 일정값 을 매핑한 맵리스트
      */
-    @GetMapping("/main_ajax")
+    @GetMapping("main_ajax")
     @ResponseBody
     public List<Map> mainAJAX() {
         String id="employee"; //session으로 현재 아이디 받아오기
@@ -52,9 +52,6 @@ public class ScheduleController {
 
         for(Schedule schedule:scheduleList) { //일정 리스트에서 일정 뽑아내기
         Map<String, String> map=new HashMap<>(); //일정 저장할 map
-            if(schedule.getScTitle()==null || schedule.getScTitle().equals("null")) {
-                schedule.setScTitle("제목 없음");
-            }
             map.put("title", schedule.getScTitle());
             map.put("start", schedule.getScSdate());
             map.put("end", schedule.getScEdate());
@@ -69,7 +66,7 @@ public class ScheduleController {
      * @param scNo
      * @return 일정 상세 페이지 HTML
      */
-    @GetMapping("/detail/{scNo}")
+    @RequestMapping("detail/{scNo}")
     public String ScheduleDetail(@PathVariable Integer scNo, Model model) {
         model.addAttribute("schdule",scheduleRepository.findByScNo(scNo));
         return "detail";
@@ -79,7 +76,7 @@ public class ScheduleController {
      *
      * @return 일정 상세 페이지 URL
      */
-    @GetMapping("/add")
+    @GetMapping("add")
     public String addSchedule() {
         String id="employee"; //현재 세션 아이디
         Integer scNo=myScheduleService.addMySchedule(id); //일정 추가
@@ -87,9 +84,17 @@ public class ScheduleController {
         return "detail/"+scNo; //추가된 일정 상세 페이지로 이동
     }
 
-   /* @GetMapping("/main_goToRecycleBin")
-    public String goToRecycleBin(@RequestParam Integer scNo) {
+   @GetMapping("detail/goToRecycleBin/{scNo}")
+    public String goToRecycleBin(@PathVariable Integer scNo) {
         myScheduleService.goToRecycleBin(scNo);
+        return "/main";
+    }
+
+    /*@GetMapping("delete/{scNo}")
+    public String deleteSchedule(@PathVariable Integer scNo) {
+        String id="employee"; //현재 세션 아이디
+        myScheduleService.removeSchedule(scNo, id);
+
         return "main";
     }*/
 }

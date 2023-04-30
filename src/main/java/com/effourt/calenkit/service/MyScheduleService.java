@@ -63,8 +63,10 @@ public class MyScheduleService {
     @Transactional
     public void goToRecycleBin(Integer scNo) {
         Schedule schedule=scheduleRepository.findByScNo(scNo);
-        schedule.setScStatus(0);
-        scheduleRepository.update(schedule);
+        if(schedule.getScStatus()!=0) {
+            schedule.setScStatus(0);
+        }
+        scheduleRepository.updateStatus(schedule);
     }
 
     //[휴지통에서 내 스케줄 복원 행위]
@@ -78,10 +80,9 @@ public class MyScheduleService {
 
     //[휴지통에서 내 스케줄 완전 삭제 행위]
     @Transactional
-    public void removeSchedule(Integer scNo, String id, Integer alNo) {
-       scheduleRepository.delete(scNo);
+    public void removeSchedule(Integer scNo, String id) {
        teamRepository.delete(scNo, id);
-       alarmRepository.delete(alNo);
+       scheduleRepository.delete(scNo);
     }
 
     // [내 스케줄 즐겨찾기 버튼 클릭 행위]
