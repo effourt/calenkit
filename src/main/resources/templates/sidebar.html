@@ -3,23 +3,149 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <link th:href="@{/css/sidebar.css}" href='../static/css/sidebar.css' rel='stylesheet' />
+    <link href='../static/css/sidebar.css' rel='stylesheet' />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 </head>
 <body>
-<div th:fragment="sidebar" class="menu" tabindex="0">
-    <div class="smartphone-menu-trigger"></div>
-    <header class="avatar">
-        <img src="https://s3.amazonaws.com/uifaces/faces/twitter/kolage/128.jpg" />
-        <h2>닉네임</h2>
-    </header>
-    <ul>
-        <li tabindex="0" class="icon-search"><span>검색</span></li>
-        <li tabindex="0" class="icon-bookmark"><span>즐겨찾기</span></li>
-        <li tabindex="0" class="icon-alarm"><span>알림</span></li>
-        <li tabindex="0" class="icon-trash"><span>휴지통</span></li>
-        <li tabindex="0" class="icon-schedule"><span>일정</span></li>
-        <li tabindex="0" class="icon-logout"><span>로그아웃</span></li>
-    </ul>
+<div th:fragment="sidebar">
+    <div class="menu text-white" tabindex="0">
+        <header class="avatar">
+            <img class="img-fluid" src="https://images.unsplash.com/photo-1533738363-b7f9aef128ce?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80" />
+            <h2>cat</h2>
+        </header>
+        <div class="ul">
+            <!-- alarm -->
+            <div tabindex="0" class="icon-alarm li" data-bs-toggle="collapse" data-bs-target="#alarm">
+                <span class="w-75">알림</span>&nbsp;&nbsp;&nbsp;
+                <span class="badge bg-secondary">4</span>
+            </div>
+            <div id="alarm" class="collapse">
+                <ul style="height: 80px; overflow: scroll;">
+                    <li th:each="alarm : ${alarmList}">
+                    <a href="sidebar.html#">
+                        <span th:text="'일정이 삭제 되었습니다.'" th:if="${alarm.alCate}==0">알람입니다.</span>
+                        <span th:text="'일정이 수정 되었습니다.'" th:if="${alarm.alCate}==1"/>
+                        <span th:text="'일정에 초대되었습니다.'" th:if="${alarm.alCate}==2"/>
+                        <span th:text="'일정의 권한이 변경되었습니다.'" th:if="${alarm.alCate}==3"/>
+                    </a>
+                    </li>
+                    <li><a href="sidebar.html#">알람입니다.</a></li>
+                    <li><a href="sidebar.html#">알람입니다.</a></li>
+                    <li><a href="sidebar.html#">알람입니다.</a></li>
+                </ul>
+            </div>
+
+            <!-- search -->
+            <div tabindex="0" class="icon-search li" id="search" data-bs-toggle="modal" data-bs-target="#searchbox">
+                <span>검색</span>
+            </div>
+
+            <!-- bookmark -->
+            <div tabindex="0" class="icon-bookmark li" data-bs-toggle="collapse" data-bs-target="#bookmark"><span>즐겨찾기</span></div>
+            <div id="bookmark" class="collapse">
+                <ul style="height: 80px; overflow: scroll;">
+                    <li><a href="#">즐겨찾기한 스케줄입니다.</a></li>
+                    <li><a href="#">즐겨찾기한 스케줄입니다.</a></li>
+                    <li><a href="#">즐겨찾기한 스케줄입니다.</a></li>
+                    <li><a href="#">즐겨찾기한 스케줄입니다.</a></li>
+                </ul>
+            </div>
+
+
+            <!-- schedule -->
+            <div tabindex="0" class="icon-schedule li"data-bs-toggle="collapse" data-bs-target="#schedule"><span>일정</span></div>
+            <div id="schedule" class="collapse">
+                <ul style="height: 80px; overflow: scroll;">
+                    <li><a href="#">스케줄입니다.</a></li>
+                    <li><a href="#">스케줄입니다.</a></li>
+                    <li><a href="#">스케줄입니다.</a></li>
+                    <li><a href="#">스케줄입니다.</a></li>
+                </ul>
+            </div>
+
+
+            <div class="position-absolute bottom-0">
+            <!-- trash -->
+            <div tabindex="0" class="icon-trash li" id="trash" data-bs-toggle="modal" data-bs-target="#trashbox"><span class="m-auto">휴지통</span></div>
+            <!-- login & logout-->
+<!--            <span th:text="로그인" th:if="${loginId}">로그인</span>-->
+            <span tabindex="0" class="icon-login li"><span>로그인</span></span>
+            <span tabindex="0" class="icon-logout li"><span>로그아웃</span></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- searchbox -->
+    <div class="modal" tabindex="-1" id="searchbox" data-bs-backdrop="static" aria-labelledby="search" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">검색어를 입력해주세요</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="input-group">
+                        <input type="text" class="form-control"style="width:80%;" id="inputBox">
+                        <select style="background-color: gray; color:white; width: 20%;" class="form-select" aria-label="Default select example">
+                            <option selected value="1">제목</option>
+                            <option value="2">내용</option>
+                            <option value="3">날짜</option>
+                        </select>
+                    </div>
+                    <div class="alert alert-success" id="resultBox" style="display: none;">
+                        <span id="typedText">sdfsdfsdf</span>
+                    </div>
+                    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+                    <script>
+                        $('#inputBox').on('keyup', function() {
+                            let typedText = $(this).val();
+
+                            //입력값을 typedText 변수에 담아 AJAX 요청으로 DB에 저장된 스케줄 출력될 수 있도록 구현하기
+
+                            $('#typedText').text(typedText);
+                            $('#resultBox').show();
+                        });
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- trashbox -->
+    <div class="modal" tabindex="-1" id="trashbox" aria-labelledby="trash" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">휴지통</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" aria-label="Text input with dropdown button">
+                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Dropdown</button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#">Action</a></li>
+                            <li><a class="dropdown-item" href="#">Another action</a></li>
+                            <li><a class="dropdown-item" href="#">Something else here</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#">Separated link</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
+
+
+
+
+
 </body>
 </html>
