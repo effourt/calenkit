@@ -52,14 +52,13 @@ public class ScheduleController {
 
         for(Schedule schedule:scheduleList) { //일정 리스트에서 일정 뽑아내기
         Map<String, String> map=new HashMap<>(); //일정 저장할 map
-            if(schedule.getScTitle()==null) {
+            if(schedule.getScTitle()==null || schedule.getScTitle().equals("null")) {
                 schedule.setScTitle("제목 없음");
-            } else {
-                map.put("title", schedule.getScTitle());
             }
+            map.put("title", schedule.getScTitle());
             map.put("start", schedule.getScSdate());
             map.put("end", schedule.getScEdate());
-            map.put("url", "localhost:8080/main_" + schedule.getScNo());
+            map.put("url", "detail/" + schedule.getScNo());
             mapList.add(map); //map에 일정 저장
         }
         return mapList; //일정이 저장된 mapList값 보내기
@@ -70,7 +69,7 @@ public class ScheduleController {
      * @param scNo
      * @return 일정 상세 페이지 HTML
      */
-    @GetMapping("/main_{scNo}")
+    @GetMapping("/detail/{scNo}")
     public String ScheduleDetail(@PathVariable Integer scNo, Model model) {
         model.addAttribute("schdule",scheduleRepository.findByScNo(scNo));
         return "detail";
@@ -80,12 +79,12 @@ public class ScheduleController {
      *
      * @return 일정 상세 페이지 URL
      */
-    @GetMapping("/main_add")
+    @GetMapping("/add")
     public String addSchedule() {
         String id="employee"; //현재 세션 아이디
         Integer scNo=myScheduleService.addMySchedule(id); //일정 추가
 
-        return "main_"+scNo; //추가된 일정 상세 페이지로 이동
+        return "detail/"+scNo; //추가된 일정 상세 페이지로 이동
     }
 
    /* @GetMapping("/main_goToRecycleBin")
