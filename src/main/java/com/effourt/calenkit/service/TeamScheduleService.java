@@ -2,15 +2,16 @@ package com.effourt.calenkit.service;
 
 import com.effourt.calenkit.domain.Member;
 import com.effourt.calenkit.domain.Team;
-import com.effourt.calenkit.dto.TeamMember;
 import com.effourt.calenkit.repository.MemberRepository;
 import com.effourt.calenkit.repository.TeamRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+@Service
+@RequiredArgsConstructor
+public class TeamScheduleService {
+    private final MemberRepository memberRepository;
+    private final TeamRepository teamRepository;
 
 /*
 DOMAIN	REPOSITORY(mybatis3, JPA)	SERVICE
@@ -19,33 +20,8 @@ DOMAIN	REPOSITORY(mybatis3, JPA)	SERVICE
         DELETE	DELETE	REMOVE
         SELECT	FIND	GET
 */
-@Service
-@RequiredArgsConstructor
-public class TeamScheduleService {
-    private final MemberRepository memberRepository;
-    private final TeamRepository teamRepository;
-
-    //단순 find만 하는 로직
-    /*
-    public Team 상세페이지클릭하기(Member loginMember, int scNo){
-        int teamSno = scNo;
-        List<Team> teamList = teamRepository.findBySno(teamSno);
-        Team loginTeam = new Team();
-        for(Team team:teamList){
-            if(team.getTeamMid().equals(loginMember.getMemId())){
-                loginTeam.setTeamNo(team.getTeamNo());
-                loginTeam.setTeamSno(team.getTeamSno());
-                loginTeam.setTeamBookmark(team.getTeamBookmark());
-                loginTeam.setTeamLevel(team.getTeamLevel());
-                loginTeam.setTeamMid(team.getTeamMid());
-            }
-        }
-        return loginTeam;
-    }
-   */
-
     /**
-     * 공유할사람을찾아서 추가하는서비스
+     * 공유할 사람을 찾아서 추가하는서비스
      * @param findId : 공유받을 아이디
      * @param scNo : 일정 번호
      */
