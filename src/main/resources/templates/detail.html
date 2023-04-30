@@ -15,7 +15,13 @@
 </head>
 
 <body>
-<h1>메모장</h1>
+제목 : <p th:text="${schdule.getScTitle()}"></p>
+날짜 : <p th:text="${schdule.getScSdate()}"></p> <p th:if="${schdule.getScEdate()}!=null">→</p> <p th:text="${schdule.getScEdate()}"></p>
+동행 : <p></p>
+상태 : <p th:text="${schdule.getScProgress()}"></p>
+<!--<a th:href="@{goToRecycleBin/{scNo}(scNo=${schdule.getScNo()})}">휴지통 이동</a>-->
+<!--<a onclick='goToRecycleBin()'>휴지통 이동</a>-->
+
 <form action="#" method="POST">
   <textarea name="text" id="editor"></textarea>
   <p><input type="submit" value="전송"></p>
@@ -26,6 +32,11 @@
   ClassicEditor.create(document.querySelector('#editor'), {
 
   });
+
+  /*function goToRecycleBin() {
+    location.href='goToRecycleBin/'+[[${schedule.scNo}]];
+  }*/
+
 </script>
 </body>
 </html>
