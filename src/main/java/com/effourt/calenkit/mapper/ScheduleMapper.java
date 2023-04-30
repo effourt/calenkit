@@ -13,6 +13,7 @@ public interface ScheduleMapper {
 
     Integer save();
     Integer update(Schedule schedule);
+    Integer updateStatus(Schedule schedule);
     Integer delete(Integer scNo);
     Integer findLastInsertScNo();
     Schedule findByScNo(Integer scNo);
