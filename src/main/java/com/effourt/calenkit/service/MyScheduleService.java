@@ -104,7 +104,7 @@ public class MyScheduleService {
         return scheduleRepository.findAllByScNo(map);
     }
 
-    // [내 스케줄 즐겨찾기 출력]
+    // [내 스케줄 즐겨찾기 출력] - 수정 필요
     // => 현재 세션 아이디(loginMember) 기준 team, 출력 기준이 될 연월(date)을 매개변수로 입력받음
     public List<Schedule> getBookmark(String id, String date) {
         Map<String, Object> map=new HashMap<>();
