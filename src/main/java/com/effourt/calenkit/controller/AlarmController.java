@@ -32,8 +32,8 @@ public class AlarmController {
     @GetMapping("/{alMid}")
     @ResponseBody
     public List<Alarm> showMyAlarmList(@PathVariable String alMid, HttpSession session){
-        String loginId = (String)session.getAttribute("loginId");
-        //String loginId = "member";
+        //String loginId = (String)session.getAttribute("loginId");
+        String loginId = "member";
         List<Alarm> alarmList = new ArrayList<>();
         if(loginId.equals(alMid)){
             alarmList = alarmRepository.findByAlMid(loginId);

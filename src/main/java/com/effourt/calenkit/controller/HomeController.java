@@ -42,21 +42,21 @@ public class HomeController {
         }
 
         //개인 스케줄리스트 조회
-//        List<Team> teamList = teamRepository.findByMid(loginId);
-//        if(teamList.size()!=0){
-//            model.addAttribute("teamList", teamList);
-//        }
+        List<Team> teamList = teamRepository.findByMid(loginId);
+        if(teamList.size()!=0){
+            model.addAttribute("teamList", teamList);
+        }
 
         //개인 북마크한 스케줄리스트 조회
-//        List<Team> bookmarkList = new ArrayList<>();
-//        for (Team team : teamList) {
-//            if (team.getTeamBookmark().equals(1)) {
-//                bookmarkList.add(team);
-//            }
-//        }
-//        if(teamList.size()!=0) {
-//            model.addAttribute("bookmarkList", bookmarkList);
-//        }
+        List<Team> bookmarkList = new ArrayList<>();
+        if(teamList.size()!=0){
+            for (Team team : teamList) {
+                if (team.getTeamBookmark()==1) {
+                    bookmarkList.add(team);
+                }
+            }
+            model.addAttribute("bookmarkList", bookmarkList);
+        }
         return "main";
     }
 
