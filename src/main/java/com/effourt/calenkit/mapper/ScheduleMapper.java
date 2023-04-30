@@ -11,9 +11,10 @@ import java.util.List;
 @Mapper
 public interface ScheduleMapper {
 
-    Integer save(Schedule schedule);
+    Integer save();
     Integer update(Schedule schedule);
     Integer delete(Integer scNo);
+    Integer findLastInsertScNo();
     Schedule findByScNo(Integer scNo);
 
     //map 요소 : date, List 객체(일정번호) - map(date, "2020-12-12") , map(scNoList, List<Integer>)

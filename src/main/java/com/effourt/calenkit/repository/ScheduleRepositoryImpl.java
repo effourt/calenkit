@@ -21,9 +21,8 @@ public class ScheduleRepositoryImpl implements ScheduleRepository{
     private final SqlSessionTemplate sqlSessionTemplate;
 
     @Override
-    public Schedule save(Schedule schedule) {
-        sqlSessionTemplate.getMapper(ScheduleMapper.class).save(schedule);
-        return schedule;
+    public Integer save() {
+        return sqlSessionTemplate.getMapper(ScheduleMapper.class).save();
     }
 
     @Override
@@ -34,6 +33,11 @@ public class ScheduleRepositoryImpl implements ScheduleRepository{
     @Override
     public Integer delete(Integer scNo) {
         return sqlSessionTemplate.getMapper(ScheduleMapper.class).delete(scNo);
+    }
+
+    @Override
+    public Integer findLastInsertScNo(){
+        return sqlSessionTemplate.getMapper(ScheduleMapper.class).findLastInsertScNo();
     }
 
     @Override
