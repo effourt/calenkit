@@ -57,12 +57,37 @@
 </div>
 
 <script th:src="@{/js/loginFormScript.js}" src="../static/js/loginFormScript.js"></script>
-
 <script type="text/javascript">
+    //도메인 주소
     const domainURL = "http://localhost:8080";
+
+    //회원가입 후 로그인 버튼 클릭 이벤트
     $("#registerBtn").click(function() {
-       $("#registerForm").prop("action", domainURL + "/join");
-       $("#registerForm").submit();
+        const loginId = $("#loginId").val();
+        const profileImage = $("#profileImage").val();
+        const nickname = $("#nickname").val();
+        const password = $("#loginPw").val();
+        $.ajax({
+            url: domainURL + "/join",
+            method: "POST",
+            contentType: "application/json",
+            dataType: "text",
+            data: JSON.stringify({
+                "memId" : loginId,
+                "memImage" : profileImage,
+                "memName" : nickname,
+                "memPw" : password}),
+            success: function(result) {
+                if (result == "OK") {
+                    location.href = domainURL + "/";
+                } else {
+                    $("#message").val(result);
+                }
+            },
+            error: function(error) {
+                alert("비밀번호로 로그인 중 에러 발생 : " + error.status);
+            }
+        });
     });
 </script>
 </body>

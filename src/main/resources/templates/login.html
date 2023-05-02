@@ -54,12 +54,16 @@
                                                     <i class="input-icon uil uil-lock-alt"></i>
                                                     <button type="button" id="initializeCodeBtn" class="btn mt-4">초기화 코드로 로그인</button>
                                                 </div>
-                                                <button type="button" id="checkIdBtn" class="btn mt-4">이메일로 계속하기</button>
-                                                <p class="mb-0 mt-4 text-center">
-                                                    <button type="button" id="initializePasswordBtn" class="btn mt-4" style="display: none;">초기화 코드 보내기</button>
+                                                <p id="message" class="mb-0 mt-4 text-center"></p>
+
+                                                <p class="mb-0 mt-4 text-center" id="checkIdBtn">
+                                                    <button type="button" class="btn mt-4">이메일로 계속하기</button>
+                                                </p>
+                                                <p class="mb-0 mt-4 text-center" id="initializePasswordBtn" style="display: none;">
+                                                    <button type="button" class="btn mt-4">초기화 코드 보내기</button>
                                                 </p>
                                             </form>
-                                            <p class="mb-0 mt-4 text-center"><button type="button" id="findPasswordBtn">비밀번호 찾기</button></p>
+                                            <p class="mb-0 mt-4 text-center" id="findPasswordBtn"><button type="button">비밀번호 찾기</button></p>
                                         </div>
                                     </div>
                                 </div>
@@ -74,8 +78,10 @@
 
 <script th:src="@{/js/loginFormScript.js}" src="../static/js/loginFormScript.js"></script>
 <script type="text/javascript">
-    //아이디, 비밀번호 존재 여부 체크
+    //도메인 주소
     const domainURL = "http://localhost:8080";
+
+    //아이디, 비밀번호 존재 여부 체크
     $("#checkIdBtn").click(function () {
         const loginId = $("#loginId").val();
         $.ajax({
@@ -122,31 +128,78 @@
         return value;
     }
 
+    //보일 태그, 감출 태그, 값 초기화할 태그 설정 함수
+    function showTag(visible, invisible, initial) {
+        for (let i in visible) {
+            visible[i].css("display", "block");
+        }
+
+        for (let i in invisible) {
+            invisible[i].css("display", "none");
+        }
+
+        for (let i in initial) {
+            initial[i].val("");
+        }
+    }
+
     //이메일 입력창이 비었을 때, 입력창 상태 초기화
-    $("#loginId").change(function () {
+    $("#loginId").keyup(function () {
+        const visible = [$("#findPasswordBtn"), $("#checkIdBtn")];
+        const invisible = [$("#passwordDiv"), $("#loginCodeDiv"), $("#registerCodeDiv"), $("#initializeCodeDiv"), $("#initializePasswordBtn")];
+        const initial = [$("#loginPw"), $("#loginCode"), $("#loginId"), $("#initializeCode"), $("#message")];
         if ($("#loginId").val() == "") {
-            $("#loginPw").val("");
-            $("#loginCode").val("");
-            $("#loginId").val("");
-            $("#passwordDiv").css("display", "none");
-            $("#loginCodeDiv").css("display", "none");
-            $("#registerCodeDiv").css("display", "none");
-            $("#initializeCodeDiv").css("display", "none");
-            $("#checkIdBtn").css("display", "block");
-            $("#findPasswordBtn").css("display", "block");
+            showTag(visible, invisible, initial);
         }
     });
 
+    //비밀번호로 로그인 버튼 클릭 이벤트
     $("#passwordBtn").click(function () {
-        $("#loginForm").prop("action", domainURL + "/login/password");
-        $("#loginForm").submit();
+        const loginId = $("#loginId").val();
+        const loginPw = $("#loginPw").val();
+        $.ajax({
+            url: domainURL + "/login/password",
+            method: "POST",
+            contentType: "application/json",
+            dataType: "text",
+            data: JSON.stringify({"memId" : loginId, "memPw" : loginPw}),
+            success: function(result) {
+                if (result == "OK") {
+                    location.href = domainURL + "/";
+                } else {
+                    $("#message").text(result);
+                }
+            },
+            error: function(error) {
+                alert("비밀번호로 로그인 중 에러 발생 : " + error.status);
+            }
+        });
     });
 
+    //로그인 코드로 로그인 버튼 클릭 이벤트
     $("#loginCodeBtn").click(function () {
-        $("#loginForm").prop("action", domainURL + "/login/login-code");
-        $("#loginForm").submit();
+        const loginId = $("#loginId").val();
+        const loginCode = $("#loginCode").val();
+        $.ajax({
+            url: domainURL + "/login/login-code",
+            method: "POST",
+            contentType: "application/json",
+            dataType: "text",
+            data: JSON.stringify({"id" : loginId, "loginCode" : loginCode}),
+            success: function(result) {
+                if (result == "OK") {
+                    location.href = domainURL + "/";
+                } else {
+                    $("#message").text(result);
+                }
+            },
+            error: function(error) {
+                alert("비밀번호로 로그인 중 에러 발생 : " + error.status);
+            }
+        });
     });
 
+    //이메일로 회원가입 버튼 클릭 이벤트
     $("#registerCodeBtn").click(function () {
         $("#loginForm").prop("action", domainURL + "/login/register-code");
         $("#loginForm").submit();
@@ -162,12 +215,10 @@
 
     //비밀번호 찾기 버튼 클릭 이벤트
     $("#findPasswordBtn").click(function() {
-        $("#loginId").val("");
-        $("#passwordDiv").css("display", "none");
-        $("#loginCodeDiv").css("display", "none");
-        $("#registerCodeDiv").css("display", "none");
-        $("#checkIdBtn").css("display", "none");
-        $("#initializePasswordBtn").css("display", "block");
+        const visible = [$("#initializePasswordBtn")];
+        const invisible = [$("#findPasswordBtn"), $("#checkIdBtn"), $("#registerCodeDiv"), $("#loginCodeDiv"), $("#passwordDiv")];
+        const initial = [$("#loginId"), $("#message")];
+        showTag(visible, invisible, initial);
     });
 
     //비밀번호 초기화용 로그인 코드 이메일로 전송
@@ -180,8 +231,25 @@
 
     //비밀번호 초기화 코드로 로그인 버튼 클릭 이벤트
     $("#initializeCodeBtn").click(function() {
-        $("#loginForm").prop("action", domainURL + "/login/initialize-code");
-        $("#loginForm").submit();
+        const loginId = $("#loginId").val();
+        const initializeCode = $("#initializeCode").val();
+        $.ajax({
+            url: domainURL + "/login/initialize-code",
+            method: "POST",
+            contentType: "application/json",
+            dataType: "text",
+            data: JSON.stringify({"id" : loginId, "initializeCode" : initializeCode}),
+            success: function(result) {
+                if (result == "OK") {
+                    location.href = domainURL + "/";
+                } else {
+                    $("#message").text(result);
+                }
+            },
+            error: function(error) {
+                alert("비밀번호로 로그인 중 에러 발생 : " + error.status);
+            }
+        });
     });
 </script>
 </body>
