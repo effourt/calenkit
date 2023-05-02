@@ -114,17 +114,17 @@ public class MemberController2 {
     // MyPage
     // 아이디 검색 후 중복 확인(GET)
     // Ajax 처리를 위해 아이디 중복 갯수 반환
-//    @GetMapping("/memIdCheck")
-//    @ResponseBody
-//    public int idCheck(@RequestParam("memId") String memId) {
-//        int cnt=0;
-//        Member member = memberRepository.findByMemId(memId);
-//        if(member.getMemId()==memId){
-//            cnt++;
-//            return cnt;
-//        }
-//        return cnt;
-//    }
+    @GetMapping("/idCheck")
+    @ResponseBody
+    public int idCheck(@RequestParam("memId") String memId) {
+        int cnt=0;
+        Member member = memberRepository.findByMemId(memId);
+        if(member!=null){
+            cnt++;
+            return cnt;
+        }
+        return cnt;
+    }
 
     // MyPage
     // 멤버 정보변경(GET)
