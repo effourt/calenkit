@@ -3,29 +3,137 @@
 <head>
   <meta charset="utf-8">
   <title>CKEditor</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
   <style>
     .ck-editor__editable {
-      height: 400px;
+      height: 500px;
     }
-
     .ck-content {
       font-size: 12px;
     }
   </style>
 </head>
 
-<body>
-<h1>메모장</h1>
-<form action="#" method="POST">
-  <textarea name="text" id="editor"></textarea>
-  <p><input type="submit" value="전송"></p>
-</form>
-<script src="https://cdn.ckeditor.com/ckeditor5/34.0.0/classic/ckeditor.js"></script>
-<script src="https://cdn.ckeditor.com/ckeditor5/34.0.0/classic/translations/ko.js"></script>
-<script>
-  ClassicEditor.create(document.querySelector('#editor'), {
+<body style="background-color: #6c757d" class="d-flex align-items-center justify-content-center vh-100">
 
-  });
-</script>
+<div style="width: 90%; margin: 0 auto;">
+  <button type="button" id="myTeam" class="btn btn-sm btn-dark"  data-bs-toggle="modal" data-bs-target="#teamShare">일정공유</button>
+  <textarea name="text" id="editor">
+    제목 : <p th:text="${schdule.getScTitle()}"></p>
+    날짜 : <p th:text="${schdule.getScSdate()}"></p> <p th:if="${schdule.getScEdate()}!=null">→</p> <p th:text="${schdule.getScEdate()}"></p>
+    동행 : <p></p>
+    상태 : <p th:text="${schdule.getScProgress()}"></p>
+    <!--<a th:href="@{goToRecycleBin/{scNo}(scNo=${schdule.getScNo()})}">휴지통 이동</a>-->
+    <!--<a onclick='goToRecycleBin()'>휴지통 이동</a>-->
+  </textarea>
+</div>
+
+<!-- 일정공유팝업창 -->
+<div class="modal" tabindex="-1" id="teamShare" aria-labelledby="trash" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Select People</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"/>
+      </div>
+      <!-- 모달 헤더 끝 --->
+      <!-- 모달 바디 시작 -->
+      <div class="modal-body">
+        <!-- 1.검색창-->
+        <div class="input-group">
+          <input type="text" class="form-control"style="width:80%;" id="inputBox">
+          <button class="btn btn-outline-dark">search</button>
+        </div>
+        <!-- 2.검색시 출력될 박스 -->
+        <div style="height: 30px;">
+          <div class="alert alert-success" id="resultBox" style="display: none;">
+            <span id="typedText"></span>
+          </div>
+        </div>
+        <!-- 3.동행 리스트 -->
+        <div class="card mt-5" style="width: 100%">
+          <ul class="list-group list-group-flush">
+            <!-- 동행1 -->
+            <th:block th:each="team : ${teamList}">
+            <li class="list-group-item d-flex justify-content-between">
+              <!-- 동행 이미지 & 아이디 -->
+              <span>
+                  <span style="display: inline-block; width: 24px; line-height: 30px; height: 30px; border: 1px solid gray; border-radius: 30px; overflow: hidden;">
+                      <img style="width: 100%; height: 100%; object-fit: cover;" src="https://images.unsplash.com/photo-1533738363-b7f9aef128ce?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80" />
+                  </span> &nbsp;&nbsp; cat@cat.com [[team.teamMid]]
+                </span>
+              <!-- 권한 변경 dropdown -->
+              <div class="btn-group">
+                <select>
+                  <option class="btn-secondary" th:checked="1">읽기권한</option>
+                  <option class="btn-secondary" th:checked="0">수정권한</option>
+                  <option class="btn-secondary" th:checked="0">권한없음</option>
+                  <hr>
+                  <option class="btn-secondary" th:checked="9" disabled>호스트</option>
+                </select>
+              </div>
+            </li>
+            </th:block>
+          </ul>
+        </div>
+        <!-- 모달 바디 끝 -->
+        <!-- 모달 푸터 시작 --->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.ckeditor.com/ckeditor5/34.0.0/classic/ckeditor.js"></script>
+  <script src="https://cdn.ckeditor.com/ckeditor5/34.0.0/classic/translations/ko.js"></script>
+  <script>
+    ClassicEditor.create(document.querySelector('#editor'), {
+
+    });
+
+    document.getElementById("inputBox").onkeyup= function() {
+      // 키보드 입력값 가져오기
+      let typedText = this.value;
+      if (typedText == "") { // 키보드 입력값이 없다면 제시어 숨기고 함수 종료
+        document.getElementById("resultBox").style.display = "none";
+        return;
+      }
+      //입력값을 typedText 변수에 담아 AJAX 요청으로 DB에 저장된 스케줄 출력될 수 있도록 구현하기
+      document.getElementById('resultBox').style.display = 'block';
+      document.getElementById('typedText').textContent = typedText;
+
+      $.ajax({
+        url: "/members?memId="+typedText,
+        type: "GET",
+        success: function(result) {
+          let button = "<button class='btn btn-sm btn-outline-dark' onclick='addTeam()'>";
+          if(result.memId==typedText){
+            button += result.memId+"</button>";
+          } else{
+            button += "</button>";
+          }
+          console.log("button = " +button);
+          if(result.memId==typedText){
+            $('#typedText').text("");
+            $("#typedText").append(button);
+          }
+        },
+        error: function(xhr, status, error) {
+          console.error("AJAX Error: ", status, ", ", error);
+        }
+      });
+    };
+
+    //클릭 시 이메일 전송되는 기능
+    function addTeam(){
+
+    }
+
+  </script>
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
 </body>
 </html>

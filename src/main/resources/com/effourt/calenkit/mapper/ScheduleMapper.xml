@@ -4,11 +4,11 @@
     <!-- INSERT -->
     <!-- 상세페이지 내용 최초 입력 -->
     <insert id="save">
-        INSERT INTO SCHEDULE(SC_TITLE, SC_CONTENT, SC_SDATE, SC_EDATE, SC_STATUS, SC_PROGRESS) VALUES(null, null, now(), null, 1, 1)
+        INSERT INTO SCHEDULE(SC_TITLE, SC_CONTENT, SC_SDATE, SC_EDATE, SC_STATUS, SC_PROGRESS) VALUES('제목 없음', null, now(), null, 1, 1)
     </insert>
 
     <!-- UPDATE -->
-    <!-- 상세페이지 내용 수정 입력 (글 수정, 휴지통 상태변경) -->
+    <!-- 상세페이지 내용 수정 입력 (글 수정) -->
     <update id="update">
         UPDATE SCHEDULE
         <set>
@@ -24,14 +24,16 @@
             <if test="scEdate==null or scEdate==''">
                 SC_EDATE=#{scEdate},
             </if>
-            <if test="scStatus==0 or scStatus==1">
-                SC_STATUS=#{scStatus}
-            </if>
             <if test="scProgress==0 or scProgress==1 or scProgress==2">
                 SC_PROGRESS=#{scProgress}
             </if>
         </set>
         WHERE SC_NO=#{scNo}
+    </update>
+
+    <!-- 일정 상태 변경(휴지통 이동, 복원) -->
+    <update id="updateStatus">
+        UPDATE SCHEDULE SET SC_STATUS=#{scStatus} WHERE SC_NO=#{scNo}
     </update>
 
     <!-- DELETE -->
