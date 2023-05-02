@@ -63,8 +63,10 @@ public class MyScheduleService {
     @Transactional
     public void goToRecycleBin(Integer scNo) {
         Schedule schedule=scheduleRepository.findByScNo(scNo);
-        schedule.setScStatus(0);
-        scheduleRepository.update(schedule);
+        if(schedule.getScStatus()!=0) {
+            schedule.setScStatus(0);
+        }
+        scheduleRepository.updateStatus(schedule);
     }
 
     //[휴지통에서 내 스케줄 복원 행위]
@@ -78,10 +80,9 @@ public class MyScheduleService {
 
     //[휴지통에서 내 스케줄 완전 삭제 행위]
     @Transactional
-    public void removeSchedule(Integer scNo, String id, Integer alNo) {
-       scheduleRepository.delete(scNo);
+    public void removeSchedule(Integer scNo, String id) {
        teamRepository.delete(scNo, id);
-       alarmRepository.delete(alNo);
+       scheduleRepository.delete(scNo);
     }
 
     // [내 스케줄 즐겨찾기 버튼 클릭 행위]
@@ -104,7 +105,7 @@ public class MyScheduleService {
         return scheduleRepository.findAllByScNo(map);
     }
 
-    // [내 스케줄 즐겨찾기 출력]
+    // [내 스케줄 즐겨찾기 출력] - 수정 필요
     // => 현재 세션 아이디(loginMember) 기준 team, 출력 기준이 될 연월(date)을 매개변수로 입력받음
     public List<Schedule> getBookmark(String id, String date) {
         Map<String, Object> map=new HashMap<>();

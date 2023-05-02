@@ -5,13 +5,20 @@ import com.effourt.calenkit.exception.MemberNotFoundException;
 import com.effourt.calenkit.repository.MemberRepository;
 import com.effourt.calenkit.service.AdminService;
 import com.effourt.calenkit.service.MyPageService;
+import com.effourt.calenkit.util.ImageUpload;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpSession;
+import java.awt.*;
+import java.io.IOException;
 import java.util.List;
 
 @Slf4j
@@ -21,6 +28,7 @@ public class MemberController2 {
     private final MyPageService myPageService;
     private final AdminService adminService;
     private final MemberRepository memberRepository;
+    private final ImageUpload imageUploadService;
 
     /** 관리자 */
     // Admin
@@ -74,33 +82,23 @@ public class MemberController2 {
     public String MyPageModify() {
         return "member/myPageModify";
     }
-//    //파일 upload 기본 틀
-//    @PostMapping("/upload")
-//    public String upload(@RequestParam("file") MultipartFile file, Model model, @ModelAttribute Member member) throws IOException {
-//        if (file.isEmpty()) {
-//            return "member/upload_fail";
-//        }
-//
-//        String originalFilename = file.getOriginalFilename();
-//        String extension = FilenameUtils.getExtension(originalFilename);
-//        String uploadFilename = FilenameUtils.getBaseName(originalFilename) + "_" + System.currentTimeMillis() + "." + extension;
-//        String uploadDirectory = "/resources/images/member/";
-//
-//        Path uploadPath = Paths.get(uploadDirectory);
-//        if (!Files.exists(uploadPath)) {
-//            Files.createDirectories(uploadPath);
-//        }
-//
-//        Path filePath = uploadPath.resolve(uploadFilename);
-//        Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-//
-//        model.addAttribute("originalFilename", originalFilename);
-//        model.addAttribute("uploadFilename", uploadFilename);
-//
-//        return "";
-//    }
 
 
+    @PostMapping("/myPage_modify")
+    public ResponseEntity<?> saveMember(@RequestParam("memImage") MultipartFile memImage,HttpSession session) throws IOException, MemberNotFoundException {
+        //Member loginMember=(Member)session.getAttribute("loginMember");
+        Member loginMember=memberRepository.findByMemId("member");
+
+        // 이미지 업로드 후 파일명 반환
+        String uploadfilename = imageUploadService.uploadImage(memImage);
+        loginMember.setMemImage(uploadfilename);
+        //loginMember.setMemName(memName);
+
+        // Member 객체를 인자로 받는 modifyMe() 메소드 호출
+        myPageService.modifyMe(loginMember);
+
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
 
 
     // MyPage
@@ -116,17 +114,17 @@ public class MemberController2 {
     // MyPage
     // 아이디 검색 후 중복 확인(GET)
     // Ajax 처리를 위해 아이디 중복 갯수 반환
-//    @GetMapping("/memIdCheck")
-//    @ResponseBody
-//    public int idCheck(@RequestParam("memId") String memId) {
-//        int cnt=0;
-//        Member member = memberRepository.findByMemId(memId);
-//        if(member.getMemId()==memId){
-//            cnt++;
-//            return cnt;
-//        }
-//        return cnt;
-//    }
+    @GetMapping("/idCheck")
+    @ResponseBody
+    public int idCheck(@RequestParam("memId") String memId) {
+        int cnt=0;
+        Member member = memberRepository.findByMemId(memId);
+        if(member!=null){
+            cnt++;
+            return cnt;
+        }
+        return cnt;
+    }
 
     // MyPage
     // 멤버 정보변경(GET)

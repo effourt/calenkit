@@ -20,7 +20,14 @@
 
 <div style="width: 90%; margin: 0 auto;">
   <button type="button" id="myTeam" class="btn btn-sm btn-dark"  data-bs-toggle="modal" data-bs-target="#teamShare">일정공유</button>
-  <textarea name="text" id="editor"></textarea>
+  <textarea name="text" id="editor">
+    제목 : <p th:text="${schdule.getScTitle()}"></p>
+    날짜 : <p th:text="${schdule.getScSdate()}"></p> <p th:if="${schdule.getScEdate()}!=null">→</p> <p th:text="${schdule.getScEdate()}"></p>
+    동행 : <p></p>
+    상태 : <p th:text="${schdule.getScProgress()}"></p>
+    <!--<a th:href="@{goToRecycleBin/{scNo}(scNo=${schdule.getScNo()})}">휴지통 이동</a>-->
+    <!--<a onclick='goToRecycleBin()'>휴지통 이동</a>-->
+  </textarea>
 </div>
 
 <!-- 일정공유팝업창 -->

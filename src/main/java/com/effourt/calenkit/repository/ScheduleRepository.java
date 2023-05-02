@@ -10,6 +10,7 @@ import java.util.Map;
 public interface ScheduleRepository {
     Integer save();
     Integer update(Schedule schedule);
+    Integer updateStatus(Schedule schedule);
     Integer delete(Integer scNo);
     Integer findLastInsertScNo();
     Schedule findByScNo(Integer scNo);
