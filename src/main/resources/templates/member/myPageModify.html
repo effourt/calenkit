@@ -3,8 +3,25 @@
     <meta charset="UTF-8">
     <title>Title</title>
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<style>
+    .password_ok, .password_already {
+        display: inline-block;
+        font-size: 14px;
+        font-weight: bold;
+        margin-left: 10px;
+    }
+    .password_ok {
+        color: green;
+    }
+    .password_already {
+        color: red;
+    }
 
+
+
+</style>
 </head>
+
 <body><form>
       <p>이전 비밀번호</p>
       <input type="password" name="password" id="password"></input>
@@ -13,8 +30,8 @@
       <p>비밀번호 확인</p>
       <input type="password" name="password2" id="password2" oninput="checkPassword()"></input>
       <!-- memId ajax 중복체크 -->
-      <span class="id_ok" style="display: none">비밀번호가 일치합니다.</span>
-      <span class="id_already" style="display: none">비밀번호가 일치하지 않습니다.</span>
+      <span class="password_ok" style="display: none">비밀번호가 일치합니다.</span>
+      <span class="password_already" style="display: none">비밀번호가 일치하지 않습니다.</span>
 
       <p>최소 8자의 문자와 숫자조합을 비밀번호로 이용해주세요.</p>
 
@@ -37,11 +54,11 @@
                    password2: password2},
             success:function(cnt){ //컨트롤러에서 넘어온 cnt값을 받는다
                 if(cnt == 0){ //cnt가 1이 아니면(=0일 경우) -> 일치하지 않는 아이디
-                    $('.id_already').css("display","inline-block");
-                    $('.id_ok').css("display", "none");
+                    $('.password_already').css("display","inline-block");
+                    $('.password_ok').css("display", "none");
                 } else { // cnt가 1일 경우 -> 일치하는 아이디
-                    $('.id_ok').css("display","inline-block");
-                    $('.id_already').css("display", "none");
+                    $('.password_ok').css("display","inline-block");
+                    $('.password_already').css("display", "none");
                 }
             },
             error:function(){
