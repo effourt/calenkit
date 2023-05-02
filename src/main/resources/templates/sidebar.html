@@ -17,23 +17,19 @@
         </header>
         <div class="ul">
             <!-- alarm -->
-            <div tabindex="0" class="icon-alarm li" data-bs-toggle="collapse" data-bs-target="#alarm">
-                <span class="w-75">알림</span>&nbsp;&nbsp;&nbsp;
+            <div tabindex="0" class="icon-alarm li" data-bs-toggle="collapse" data-bs-target="#alarmBox">
+                <span id="alarm" class="w-75">알림</span>&nbsp;&nbsp;&nbsp;
                 <span class="badge bg-secondary">4</span>
             </div>
-            <div id="alarm" class="collapse">
+
+            <div id="alarmBox" class="collapse">
                 <ul style="height: 80px; overflow: scroll;">
                     <li th:each="alarm : ${alarmList}">
-                    <a href="sidebar.html#">
-                        <span th:text="'일정이 삭제 되었습니다.'" th:if="${alarm.alCate}==0">알람입니다.</span>
-                        <span th:text="'일정이 수정 되었습니다.'" th:if="${alarm.alCate}==1"/>
-                        <span th:text="'일정에 초대되었습니다.'" th:if="${alarm.alCate}==2"/>
-                        <span th:text="'일정의 권한이 변경되었습니다.'" th:if="${alarm.alCate}==3"/>
-                    </a>
+                        <span th:if="${alarm.alCate}==0"><strong>[[${titleList.get(alarmStat.index)}]]</strong>의 일정이 삭제 되었습니다.</span>
+                        <span th:if="${alarm.alCate}==1"><a th:href="@{/schedules?scNo={scNo}(scNo=${alarm.alScno})}"><strong>[[${titleList.get(alarmStat.index)}]]</strong></a>의 일정이 수정 되었습니다.</span>
+                        <span th:if="${alarm.alCate}==2"><a th:href="@{/schedules?scNo={scNo}(scNo=${alarm.alScno})}"><strong>[[${titleList.get(alarmStat.index)}]]</strong></a>의 일정이 초대 되었습니다.</span>
+                        <span th:if="${alarm.alCate}==3"><a th:href="@{/schedules?scNo={scNo}(scNo=${alarm.alScno})}"><strong>[[${titleList.get(alarmStat.index)}]]</strong></a>의 일정의 권한이 변경되었습니다.</span>
                     </li>
-                    <li><a href="sidebar.html#">알람입니다.</a></li>
-                    <li><a href="sidebar.html#">알람입니다.</a></li>
-                    <li><a href="sidebar.html#">알람입니다.</a></li>
                 </ul>
             </div>
 
@@ -74,6 +70,9 @@
             </div>
         </div>
     </div>
+
+
+
     <!-- searchbox -->
     <div class="modal" tabindex="-1" id="searchbox" data-bs-backdrop="static" aria-labelledby="search" aria-hidden="true">
         <div class="modal-dialog">
@@ -137,6 +136,10 @@
             //입력값을 typedText 변수에 담아 AJAX 요청으로 DB에 저장된 스케줄 출력될 수 있도록 구현하기
             document.getElementById('typedText').textContent = typedText;
             document.getElementById('resultBox').style.display = 'block';
+        };
+
+        document.getElementById("alarm").onclick= function() {
+            document.getElementById('alarmBox').style.display = 'block';
         };
     </script>
 </div>
