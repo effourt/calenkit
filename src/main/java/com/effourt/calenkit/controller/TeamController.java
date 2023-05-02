@@ -1,8 +1,10 @@
 package com.effourt.calenkit.controller;
 
 import com.effourt.calenkit.domain.Member;
+import com.effourt.calenkit.domain.Schedule;
 import com.effourt.calenkit.domain.Team;
 import com.effourt.calenkit.repository.MemberRepository;
+import com.effourt.calenkit.repository.ScheduleRepository;
 import com.effourt.calenkit.repository.TeamRepository;
 import com.effourt.calenkit.service.TeamScheduleService;
 import lombok.RequiredArgsConstructor;
@@ -25,26 +27,7 @@ public class TeamController {
     private final TeamScheduleService teamScheduleService;
     private final TeamRepository teamRepository;
     private final MemberRepository memberRepository;
-
-    //http://localhost:8080/schedules?scNo=1
-    @GetMapping("/schedules")
-    public String getMyTeam(@RequestParam int scNo, Model model) {
-        List<Team> teamList = teamRepository.findBySno(scNo);
-        List<String> imageList = new ArrayList<>();
-        for(int i=0; i<teamList.size(); i++){
-            imageList.add(memberRepository.findByMemId(teamList.get(i).getTeamMid()).getMemImage());
-        }
-        model.addAttribute("teamList",teamList);
-        model.addAttribute("imageList",imageList);
-        System.out.println(teamList.get(0).getTeamMid());
-        System.out.println(teamList.get(0).getTeamLevel());
-        System.out.println(imageList.get(0));
-        System.out.println(teamList.get(1).getTeamMid());
-        System.out.println(teamList.get(1).getTeamLevel());
-        System.out.println(imageList.get(1));
-        return "detail";
-    }
-
+    private final ScheduleRepository scheduleRepository;
 
     /**
      * 동행 검색하기 위해 필요
