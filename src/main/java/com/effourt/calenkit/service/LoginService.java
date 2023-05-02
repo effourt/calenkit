@@ -7,6 +7,7 @@ import com.effourt.calenkit.domain.Member;
 import com.effourt.calenkit.dto.AccessTokenRequest;
 import com.effourt.calenkit.dto.AccessTokenResponse;
 import com.effourt.calenkit.dto.AuthUserInfoResponse;
+import com.effourt.calenkit.exception.MemberNotFoundException;
 import com.effourt.calenkit.repository.AuthRepository;
 import com.effourt.calenkit.repository.MemberRepository;
 import com.effourt.calenkit.util.EmailSend;
@@ -31,6 +32,13 @@ public class LoginService {
     //Member 테이블에 회원 정보 저장
     public void saveMember(Member member) {
         memberRepository.save(member);
+    }
+
+    public void updatePassword(String memId, String password) {
+        Member member = new Member();
+        member.setMemId(memId);
+        member.setMemPw(password);
+        memberRepository.updatePassword(member);
     }
 
     //Member 테이블에서 이메일에 해당하는 회원 정보 조회
