@@ -41,12 +41,14 @@ public class HomeController {
             model.addAttribute("alarmList", alarmList);
         }
 
+        /*
         //개인 스케줄리스트 조회
         List<Team> teamList = teamRepository.findByMid(loginId);
         if(teamList.size()!=0){
             model.addAttribute("teamList", teamList);
         }
-
+        */
+        /*
         //개인 북마크한 스케줄리스트 조회
         List<Team> bookmarkList = new ArrayList<>();
         if(teamList.size()!=0){
@@ -57,6 +59,7 @@ public class HomeController {
             }
             model.addAttribute("bookmarkList", bookmarkList);
         }
+         */
         return "main";
     }
 

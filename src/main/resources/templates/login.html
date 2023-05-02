@@ -48,9 +48,16 @@
                                                     <i class="input-icon uil uil-lock-alt"></i>
                                                     <button type="button" id="registerCodeBtn" class="btn mt-4">이메일로 회원가입</button>
                                                 </div>
-                                                <button type="button" id="checkIdBtn" class="btn mt-4">Continue with Email</button>
+                                                <!-- 초기화 코드 입력창 -->
+                                                <div id="initializeCodeDiv" class="form-group mt-2" style="display: none">
+                                                    <input type="password" name="initializeCode" class="form-style" placeholder="초기화 코드를 입력하세요" id="initializeCode" autocomplete="off">
+                                                    <i class="input-icon uil uil-lock-alt"></i>
+                                                    <button type="button" id="initializeCodeBtn" class="btn mt-4">초기화 코드로 로그인</button>
+                                                </div>
+                                                <button type="button" id="checkIdBtn" class="btn mt-4">이메일로 계속하기</button>
+                                                <button type="button" id="initializePasswordBtn" class="btn mt-4" style="display: none;">초기화 링크 보내기</button>
                                             </form>
-                                            <p class="mb-0 mt-4 text-center"><button type="button">Forgot your password?</button></p>
+                                            <p class="mb-0 mt-4 text-center"><button type="button" id="findPasswordBtn">비밀번호 찾기</button></p>
                                         </div>
                                     </div>
                                 </div>
@@ -122,7 +129,9 @@
             $("#passwordDiv").css("display", "none");
             $("#loginCodeDiv").css("display", "none");
             $("#registerCodeDiv").css("display", "none");
+            $("#initializeCodeDiv").css("display", "none");
             $("#checkIdBtn").css("display", "block");
+            $("#findPasswordBtn").css("display", "block");
         }
     });
 
@@ -147,6 +156,26 @@
             "&redirect_uri=http://localhost:8080/login/kakao" +
             "&response_type=code" +
             "&scope=profile_nickname,profile_image,account_email";
+    });
+
+    //비밀번호 찾기 버튼 클릭 이벤트
+    $("#findPasswordBtn").click(function() {
+        $("#loginId").val("");
+        $("#passwordDiv").css("display", "none");
+        $("#loginCodeDiv").css("display", "none");
+        $("#registerCodeDiv").css("display", "none");
+        $("#checkIdBtn").css("display", "none");
+        $("#initializePasswordBtn").css("display", "block");
+    });
+
+    //비밀번호 초기화용 로그인 코드 이메일로 전송
+    $("#initializePasswordBtn").click(function() {
+        const loginId = $("#loginId").val();
+        let result = sendCode(loginId);
+        if (result == "ok") {
+            $("#initializePasswordBtn").css("display", "none");
+            $("#initializeCodeDiv").css("display", "block");
+        }
     });
 </script>
 </body>

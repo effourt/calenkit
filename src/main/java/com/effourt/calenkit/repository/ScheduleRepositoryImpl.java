@@ -31,6 +31,11 @@ public class ScheduleRepositoryImpl implements ScheduleRepository{
     }
 
     @Override
+    public Integer updateStatus(Schedule schedule) {
+        return sqlSessionTemplate.getMapper(ScheduleMapper.class).updateStatus(schedule);
+    }
+
+    @Override
     public Integer delete(Integer scNo) {
         return sqlSessionTemplate.getMapper(ScheduleMapper.class).delete(scNo);
     }

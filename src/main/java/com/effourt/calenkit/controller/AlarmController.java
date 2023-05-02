@@ -1,6 +1,10 @@
 package com.effourt.calenkit.controller;
 
 import com.effourt.calenkit.domain.Alarm;
+import com.effourt.calenkit.domain.Schedule;
+import com.effourt.calenkit.dto.AjaxStatus;
+import com.effourt.calenkit.dto.AjaxStatus;
+import com.effourt.calenkit.dto.AlarmCate;
 import com.effourt.calenkit.repository.AlarmRepository;
 import com.effourt.calenkit.repository.ScheduleRepository;
 import com.effourt.calenkit.service.AlarmService;
@@ -16,7 +20,6 @@ import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/alarms")
 public class AlarmController {
 
     private final AlarmRepository alarmRepository;
@@ -29,7 +32,7 @@ public class AlarmController {
      * @return
      */
     // http://localhost:8080/alarms/{alMid}
-    @GetMapping("/{alMid}")
+    @GetMapping("/alarms/{alMid}")
     @ResponseBody
     public List<Alarm> showMyAlarmList(@PathVariable String alMid, HttpSession session){
         //String loginId = (String)session.getAttribute("loginId");
@@ -64,17 +67,42 @@ public class AlarmController {
     */
 
     /**
-     * 일정 수정 일어날 시 알람 리소스 추가
+     * 일정 수정 일어날 시 알람 리소스 추가 - 1 (알람추가지만 .. POST말고, GET으로 요청함)
+     * 일정 삭제 일어날 시 알람 리소스 추가 - 0
      * @return
      */
-    /*
-    // http://localhost:8080/alarms?scNo=1
-    @GetMapping("/")
+    // http://localhost:8080/alarms/{kind}?scNo=1
+    // http://localhost:8080/alarms/1?scNo=1
+    // http://localhost:8080/alarms/0?scNo=1
+    @GetMapping("/alarms/{kind}")
     @ResponseBody
-    public String addAlarms(@RequestParam int scNo) {
+    public AjaxStatus addAlarms(@PathVariable String kind, @RequestParam int scNo) {
+        int kinds = Integer.parseInt(kind);
 
+        if(AlarmCate.MODIFY_SCHEDULE.ordinal()==kinds){
+            alarmService.addAlarmByModifySchedule(scNo);
+        } else if (AlarmCate.DELETE_SCHDULE.ordinal()==kinds){
+            alarmService.addAlarmByDeleteSchedule(scNo);
+        } else {
+            return AjaxStatus.FAIL;
+        }
+        return AjaxStatus.OK;
+    }
+
+    /**
+     * 동행 추가 일어날 시 알람 리소스 추가
+     * @return
+     */
+    // http://localhost:8080/alarms?scNo=1
+    /*
+    @GetMapping("/alarms")
+    @ResponseBody
+    public Status addAlarms(@RequestParam int scNo) {
+        alarmService.addAlarmByModifySchedule(scNo);
+        return Status.ADD_OK;
     }
     */
+
     //1. 일정 수정 >> 비동기로 스케줄테이블 수정 처리하는 요청 처리 메소드 PATCH
     //2. 일정 수정 >> 동행에게 알람을 울리기 위한 요청 처리 메소드
 
