@@ -3,12 +3,11 @@ package com.effourt.calenkit.controller;
 import com.effourt.calenkit.domain.Alarm;
 import com.effourt.calenkit.domain.Schedule;
 import com.effourt.calenkit.domain.Team;
-import com.effourt.calenkit.repository.ScheduleRepository;
-import com.effourt.calenkit.repository.TeamRepository;
-import com.effourt.calenkit.repository.TeamRepositoryImpl;
+import com.effourt.calenkit.repository.*;
 import com.effourt.calenkit.service.MyScheduleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.bouncycastle.math.raw.Mod;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,10 +23,13 @@ import java.util.*;
 @RequiredArgsConstructor
 public class ScheduleController {
     private final MyScheduleService myScheduleService;
-    private final SqlSessionTemplate sqlSessionTemplate;
     private final TeamRepository teamRepository;
     private final ScheduleRepository scheduleRepository;
+    private final MemberRepository memberRepository;
+    private final AlarmRepository alarmRepository;
 
+    //http://localhost:8080/
+    //http://localhost:8080/main
     /**
      * 달력에 일정 출력(메인페이지)
      */
@@ -72,10 +74,11 @@ public class ScheduleController {
      *
      * @return 캘린더 라이브러리에 필요한 필드명 : 일정값 을 매핑한 맵리스트
      */
-    @GetMapping("main_ajax")
+    @GetMapping("/main_ajax")
     @ResponseBody
     public List<Map> mainAJAX() {
-        String id="employee"; //session으로 현재 아이디 받아오기
+        //String loginId = (String)session.getAttribute("loginId"); //session으로 현재 아이디 받아오기
+        String id="employee";
         Date temp=new Date(); //출력 기준 월 받아오기
         SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM");
         String date=simpleDateFormat.format(temp).toString();
@@ -89,7 +92,7 @@ public class ScheduleController {
             map.put("title", schedule.getScTitle());
             map.put("start", schedule.getScSdate());
             map.put("end", schedule.getScEdate());
-            map.put("url", "detail/" + schedule.getScNo());
+            map.put("url", "schedules?scNo=" + schedule.getScNo());
             mapList.add(map); //map에 일정 저장
         }
         return mapList; //일정이 저장된 mapList값 보내기
@@ -100,9 +103,19 @@ public class ScheduleController {
      * @param scNo
      * @return 일정 상세 페이지 HTML
      */
-    @RequestMapping("detail/{scNo}")
-    public String ScheduleDetail(@PathVariable Integer scNo, Model model) {
-        model.addAttribute("schdule",scheduleRepository.findByScNo(scNo));
+    //http://localhost:8080/schedules?scNo=1
+    @GetMapping("/schedules")
+    public String getMyTeam(@RequestParam int scNo, Model model) {
+        Schedule schedule = scheduleRepository.findByScNo(scNo); //일정 데이터
+        List<Team> teamList = teamRepository.findBySno(scNo); //권한 데이터
+        List<String> imageList = new ArrayList<>(); //이미지 리스트
+        for(int i=0; i<teamList.size(); i++){
+            imageList.add(memberRepository.findByMemId(teamList.get(i).getTeamMid()).getMemImage());
+        }
+        model.addAttribute("schedule",schedule);
+        model.addAttribute("teamList",teamList);
+        model.addAttribute("imageList",imageList);
+
         return "detail";
     }
 
@@ -110,25 +123,37 @@ public class ScheduleController {
      *
      * @return 일정 상세 페이지 URL
      */
-    @GetMapping("add")
+    @GetMapping("/add")
     public String addSchedule() {
-        String id="employee"; //현재 세션 아이디
+        //String loginId = (String)session.getAttribute("loginId"); //session으로 현재 아이디 받아오기
+        String id="employee";
         Integer scNo=myScheduleService.addMySchedule(id); //일정 추가
 
-        return "detail/"+scNo; //추가된 일정 상세 페이지로 이동
+        return "redirect:/schedules?scNo="+scNo; //추가된 일정 상세 페이지로 이동
     }
 
-   @GetMapping("detail/goToRecycleBin/{scNo}")
-    public String goToRecycleBin(@PathVariable Integer scNo) {
+    /** 일정 휴지통 이동
+     *
+     * @param scNo
+     * @return
+     */
+   @GetMapping("/goToRecycleBin")
+    public String goToRecycleBin(@RequestParam Integer scNo) {
         myScheduleService.goToRecycleBin(scNo);
-        return "/main";
+        return "redirect:/";
     }
 
-    /*@GetMapping("delete/{scNo}")
-    public String deleteSchedule(@PathVariable Integer scNo) {
-        String id="employee"; //현재 세션 아이디
+    /** 일정 완전 삭제
+     *
+     * @param scNo
+     * @return
+     */
+    @GetMapping("/delete")
+    public String deleteSchedule(@RequestParam Integer scNo) {
+        //String loginId = (String)session.getAttribute("loginId"); //session으로 현재 아이디 받아오기
+        String id="employee";
         myScheduleService.removeSchedule(scNo, id);
 
-        return "main";
-    }*/
+        return "redirect:/";
+    }
 }
