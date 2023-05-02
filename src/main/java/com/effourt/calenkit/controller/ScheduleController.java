@@ -1,5 +1,6 @@
 package com.effourt.calenkit.controller;
 
+import com.effourt.calenkit.domain.Alarm;
 import com.effourt.calenkit.domain.Schedule;
 import com.effourt.calenkit.domain.Team;
 import com.effourt.calenkit.repository.ScheduleRepository;
@@ -14,6 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.mail.Session;
+import javax.servlet.http.HttpSession;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -29,8 +31,40 @@ public class ScheduleController {
     /**
      * 달력에 일정 출력(메인페이지)
      */
-    @GetMapping(value={"/","main"})
-    public String main() {
+    @GetMapping(value={"/","/main"})
+    public String main(Model model, HttpSession session) {
+        //세션에서 로그인아이디 반환받아 저장
+        //String loginId = (String)session.getAttribute("loginId");
+        String loginId = "employee";
+
+        //개인 알람리스트 조회
+        List<Alarm> alarmList = alarmRepository.findByAlMid(loginId);
+        List<String> titleList = new ArrayList<>();
+
+        for(int i=0; i<alarmList.size(); i++){
+            titleList.add(scheduleRepository.findByScNo(alarmList.get(i).getAlScno()).getScTitle());
+        }
+        if(alarmList.size()!=0){
+            model.addAttribute("alarmList", alarmList);
+        }
+        model.addAttribute("titleList", titleList);
+        for(int i=0;i<alarmList.size(); i++) {
+            System.out.println("i = " + i);
+            System.out.println("getAlCate = " + alarmList.get(i).getAlCate());
+            System.out.println("getAlMid = " + alarmList.get(i).getAlMid());
+            System.out.println("getAlScno = " + alarmList.get(i).getAlScno());
+            System.out.println("getAlStatus = " + alarmList.get(i).getAlStatus()); //1=출력, 0=휴지통
+            System.out.println("titleList = "+titleList.get(i));
+            System.out.println("======================================");
+        }
+        /*//개인 스케줄리스트 조회
+        List<Schedule> scheduleList=myScheduleService.getMySchedule(loginId, null);
+        model.addAttribute("scheduleList", scheduleList);
+
+        //개인 즐겨찾기리스트 조회
+        List<Schedule> bookmarkList=myScheduleService.getBookmark(loginId, null);
+        model.addAttribute("bookmarkList", bookmarkList);*/
+
         return "main";
     }
 
