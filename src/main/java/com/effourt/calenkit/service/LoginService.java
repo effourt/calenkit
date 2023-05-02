@@ -34,11 +34,17 @@ public class LoginService {
         memberRepository.save(member);
     }
 
+    //회원 비밀번호 UPDATE
     public void updatePassword(String memId, String password) {
         Member member = new Member();
         member.setMemId(memId);
         member.setMemPw(password);
         memberRepository.updatePassword(member);
+    }
+
+    //회원 정보 UPDATE
+    public void update(Member member) {
+        memberRepository.update(member);
     }
 
     //Member 테이블에서 이메일에 해당하는 회원 정보 조회
