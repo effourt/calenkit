@@ -76,7 +76,7 @@ public class MemberController {
         log.info("email id={}", memId);
         log.info("subject={}", subject);
         log.info("message={}", message);
-        return "ok";
+        return "OK";
     }
 
 
@@ -95,28 +95,34 @@ public class MemberController {
      * @return
      */
     @PostMapping("/login/password")
-    public String loginByPassword(@ModelAttribute Member member, HttpSession session) {
+    @ResponseBody
+    public String loginByPassword(@RequestBody Member member, HttpSession session) {
         Member findMember = loginService.getMemberById(member.getMemId());
         if (findMember.getMemPw().equals(member.getMemPw())) {
             session.setAttribute("loginId", member.getMemId());
+        } else {
+            return "아이디 또는 비밀번호를 잘못 입력하셨습니다.";
         }
-        return "main";
+        return "OK";
     }
 
     /**
      * 로그인 코드로 로그인
-     * @param memId
-     * @param loginCode
+     * @param loginCodeMap
      * @param session
      * @return
      */
     @PostMapping("/login/login-code")
-    public String loginByCode(String memId, String loginCode, HttpSession session) {
-        String code = (String) session.getAttribute(loginCode);
+    @ResponseBody
+    public String loginByCode(@RequestBody Map<String, String> loginCodeMap, HttpSession session) {
+        String memId = loginCodeMap.get("id");
+        String code = (String) session.getAttribute(loginCodeMap.get("loginCode"));
         if (code.equals(memId + "ACCESS")) {
             session.setAttribute("loginId", memId);
+        } else {
+            return "로그인 코드를 잘못 입력하셨습니다.";
         }
-        return "main";
+        return "OK";
     }
 
     /**
@@ -137,15 +143,19 @@ public class MemberController {
     }
 
     @PostMapping("/login/initialize-code")
-    public String loginByInitialize(String memId, String initializeCode, HttpSession session) {
+    @ResponseBody
+    public String loginByInitialize(@RequestBody Map<String, String> initializeCodeMap, HttpSession session) {
+        String memId = initializeCodeMap.get("id");
         //비밀번호 초기화 (null로 지정)
         loginService.updatePassword(memId, null);
         //초기화 코드 검증 후 로그인
-        String code = (String) session.getAttribute(initializeCode);
+        String code = (String) session.getAttribute(initializeCodeMap.get("initializeCode"));
         if (code.equals(memId + "ACCESS")) {
             session.setAttribute("loginId", memId);
+        } else {
+            return "초기화 코드를 잘못 입력하였습니다.";
         }
-        return "main";
+        return "OK";
     }
 
     /**
@@ -154,9 +164,11 @@ public class MemberController {
      * @return
      */
     @PostMapping("/join")
-    public String join(@ModelAttribute Member member) {
+    @ResponseBody
+    public String join(@RequestBody Member member, HttpSession session) {
         joinService.joinByEmail(member);
-        return "main";
+        session.setAttribute("loginId", member.getMemId());
+        return "OK";
     }
 
     /**
