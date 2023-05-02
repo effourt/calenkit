@@ -127,6 +127,20 @@ public class MemberController2 {
     }
 
     // MyPage
+    // 아이디 검색 후 중복 확인(GET)
+    // Ajax 처리를 위해 비밀번호 중복 갯수 반환
+    @GetMapping("/passwordCheck")
+    @ResponseBody
+    public int passwordCheck(String password1,String password2) {
+        int cnt=0;
+        if (password1.equals(password2)){
+            cnt++;
+            return cnt;
+        }
+        return cnt;
+    }
+
+    // MyPage
     // 멤버 정보변경(GET)
     // 로그인세션에서 아이디값을 전달받아 member_modify 페이지로 이동
     @GetMapping(value ="/myPage_modify")
