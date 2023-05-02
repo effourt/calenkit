@@ -2,6 +2,7 @@ package com.effourt.calenkit.service;
 
 import com.effourt.calenkit.domain.Alarm;
 import com.effourt.calenkit.domain.Team;
+import com.effourt.calenkit.dto.AlarmCate;
 import com.effourt.calenkit.repository.AlarmRepository;
 import com.effourt.calenkit.repository.ScheduleRepository;
 import com.effourt.calenkit.repository.TeamRepository;
@@ -39,7 +40,7 @@ public class AlarmService {
             alarm.setAlScno(scNo); //3. 알람 울릴 스케줄번호
             //4. 알람 상태 - 1(고정해놨음)
             //5. 알람 추가한 시간 - sysdate
-            alarm.setAlCate(1); //6. 알람의 종류(1) - 일정 수정 [scNo 스케줄이 수정되었습니다.라고 출력할 것임]
+            alarm.setAlCate(AlarmCate.MODIFY_SCHEDULE.ordinal()); //6. 1
             alarmRepository.save(alarm); //idList의 갯수 만큼 save(alarm) 호출
         }
     }
@@ -57,7 +58,7 @@ public class AlarmService {
             //1.
             List<Alarm> findAlarmList = alarmRepository.findByAlScno(scNo);
             for(Alarm alarm:findAlarmList){
-                alarm.setAlStatus(0);
+                alarm.setAlStatus(0);//알람상태 0으로 변경 - 동행에게는 해당 스케줄의 알람이 출력되지 않음
                 alarmRepository.update(alarm);
             }
             //2.
@@ -69,7 +70,7 @@ public class AlarmService {
                 alarm.setAlScno(scNo); //3. 알람 울릴 스케줄번호
                 //4. 알람 상태 - 1(고정해놨음)
                 //5. 알람 추가한 시간 - sysdate
-                alarm.setAlCate(0); //6. 알람의 종류(0) - 일정 삭제 [scNo 스케줄이 삭제되었습니다.라고 출력할 것임]
+                alarm.setAlCate(AlarmCate.DELETE_SCHDULE.ordinal()); //6. 0
                 alarmRepository.save(alarm); //idList의 갯수 만큼 save(alarm) 호출
             }
         }
@@ -84,7 +85,7 @@ public class AlarmService {
         List<Alarm> findAlarmList = alarmRepository.findByAlScno(scNo);
         for(Alarm alarm:findAlarmList){
             alarm.setAlStatus(0);
-            alarmRepository.delete(alarm.getAlNo());
+            alarmRepository.delete(alarm.getAlNo());//알람삭제
         }
     }
 
@@ -102,7 +103,7 @@ public class AlarmService {
         alarm.setAlScno(scNo); //3. 알람 울릴 스케줄
         //4. 알람 상태 - 1(고정해놨음)
         //5. 알람 추가한 시간 - sysdate
-        alarm.setAlCate(2); //6. 알람의 종류(2) - 권한 변경 [scNo 스케줄에 최대되엇습니다.라고 출력할 것임]
+        alarm.setAlCate(AlarmCate.SAVE_TEAM.ordinal()); //6. 2
         return alarmRepository.save(alarm);
     }
 
@@ -123,23 +124,10 @@ public class AlarmService {
                 alarm.setAlScno(scNo); //3. 알람 울릴 스케줄
                 //4. 알람 상태 - 1(고정해놨음)
                 //5. 알람 추가한 시간 - sysdate
-                alarm.setAlCate(3); //6. 알람의 종류(3) - 권한 변경 [scNo 스케줄의 권한이 변경되었습니다.라고 출력할 것임]
+                alarm.setAlCate(AlarmCate.UPDATE_TEAMLEVEL.ordinal()); //6. 3
                 alarmRepository.save(alarm);
             }
         }
-    }
-
-
-
-
-
-
-    //동행이 있는지 확인하는 시스템 메소드 - 동행이 있다면 true, 동행이 없다면 false
-    private Boolean isTeam(Integer scNo){
-        List<Team> teamList = teamRepository.findBySno(scNo);
-        //if(teamList.size()==0){ //이럴 수는 없다 예외발생시키기 }
-        if(teamList.size()==1) return false;
-        return true;
     }
 
     //일정번호로 team을 find해서 아이디만 배열로 반환하는 시스템 메소드
@@ -150,6 +138,4 @@ public class AlarmService {
         for (int i = 0; i < teamList.size(); i++) idList[i] = teamList.get(i).getTeamMid();
         return idList;
     }
-
-
 }
