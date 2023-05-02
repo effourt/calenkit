@@ -45,8 +45,8 @@ public class MemberController {
      * @param idMap
      * @return
      */
-    @ResponseBody
     @PostMapping("/login/check")
+    @ResponseBody
     public String checkId(@RequestBody Map<String, String> idMap) {
         String memId = idMap.get("id");
         String loginType = loginService.checkMember(memId);
@@ -134,6 +134,18 @@ public class MemberController {
             model.addAttribute("memId", memId);
         }
         return "register";
+    }
+
+    @PostMapping("/login/initialize-code")
+    public String loginByInitialize(String memId, String initializeCode, HttpSession session) {
+        //비밀번호 초기화 (null로 지정)
+        loginService.updatePassword(memId, null);
+        //초기화 코드 검증 후 로그인
+        String code = (String) session.getAttribute(initializeCode);
+        if (code.equals(memId + "ACCESS")) {
+            session.setAttribute("loginId", memId);
+        }
+        return "main";
     }
 
     /**
