@@ -199,14 +199,17 @@ public class MemberController {
         if (member == null) {
             //사용자 이메일이 DB에 존재하지 않는 경우
             joinService.joinBySns(userInfo, accessToken);
+            log.info("카카오 - 회원가입 후 로그인");
         } else if (member.getMemAuthId() == 0) {
             //사용자 이메일이 DB에 존재하지만 Access 토큰, Refresh 토큰이 설정되어 있지 않는 경우
             Auth auth = loginService.saveToken(accessToken);
             member.setMemAuthId(auth.getAuthId());
-            loginService.saveMember(member);
+            loginService.update(member);
+            log.info("카카오 - 토큰 저장 후 로그인");
         } else if (member.getMemAuthId() != 0) {
             //사용자 이메일이 DB에 존재하고 Access 토큰, Refresh 토큰이 존재하는 경우
             loginService.updateToken(member.getMemAuthId(), accessToken);
+            log.info("카카오 - 토큰 갱신 후 로그인");
         }
 
         session.setAttribute("loginId", userInfo.getEmail());
