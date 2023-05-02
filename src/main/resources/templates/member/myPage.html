@@ -7,7 +7,32 @@
     <link th:href="@{/packages/list/main.css}" href='../../static/packages/list/main.css' rel='stylesheet' />
     <script th:src="@{/packages/core/main.js}" src='../../static/packages/core/main.js'></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <style></style>
+    <style>
+
+        #previewImage {
+            max-width: 200px;
+            max-height: 200px;
+            margin-bottom: 10px;
+        }
+        #memName {
+            width: 50%;
+            height: 30px;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        .name_ok, .name_already {
+            display: inline-block;
+            font-size: 14px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .name_ok {
+            color: green;
+        }
+        .name_already {
+            color: red;
+        }
+    </style>
 
 
 </head>
@@ -16,11 +41,13 @@
     <h1>계정 정보</h1>
     <hr>
     <p>프로필 사진</p>
+    <!-- 이미지 파일 업로드 input -->
+    <input type="file" id="fileInput">
+
+    <!-- 미리보기 이미지 -->
     <img id="previewImage" src="#" alt="Preview Image" style="display:none;">
-    <input type="file" id="fileInput" accept=".jpeg,.jpg,.png">
+    <div for="memName">닉네임</div>
 
-
-    <label for="memName">아이디</label>
     <input type="text" id="memName" name="memName" oninput = "checkName()" >
 
     <!-- name ajax 중복체크 -->
@@ -38,18 +65,19 @@
 </body>
 <script type="text/javascript">
 
-    //파일 미리보기(HTML에서만 동작, 확인 필요)
-    // const fileInput = document.getElementById('fileInput');
-    // const previewImage = document.getElementById('previewImage');
-    // fileInput.addEventListener('change', (event) => {
-    //     const file = event.target.files[0];
-    //     const reader = new FileReader();
-    //     reader.readAsDataURL(file);
-    //     reader.onload = (event) => {
-    //         previewImage.style.display = 'block';
-    //         previewImage.setAttribute('src', event.target.result);
-    //     };
-    // });
+    const fileInput = document.getElementById('fileInput');
+    const previewImage = document.getElementById('previewImage');
+
+    fileInput.addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (event) => {
+            previewImage.style.display = 'block';
+            previewImage.setAttribute('src', event.target.result);
+        };
+    });
+
 
     //삭제 팝업창
     function openDeletePopup() {
