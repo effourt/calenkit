@@ -23,17 +23,17 @@ public class MyPageService {
         if(memberRepository.findByMemId(member.getMemId())==null) {
             throw new MemberNotFoundException("아이디의 회원정보가 존재하지 않습니다.");
         }
-        //전달받은 회원정보의 비밀번호가 존재할 경우 암호화된 비밀번호로 필드값 변경
-        if(member.getMemPw()!=null && !member.getMemPw().equals("")) {
-            member.setMemPw(BCrypt.hashpw(member.getMemPw(),BCrypt.gensalt()));
-        }
+//        //전달받은 회원정보의 비밀번호가 존재할 경우 암호화된 비밀번호로 필드값 변경
+//        if(member.getMemPw()!=null && !member.getMemPw().equals("")) {
+//            member.setMemPw(BCrypt.hashpw(member.getMemPw(),BCrypt.gensalt()));
+//        }
         //전달받은 회원정보의 프로필이 존재할 경우 필드값 변경
         if(member.getMemImage()!=null && !member.getMemImage().equals("")){
             member.setMemImage(member.getMemImage());
         }
-        member.setMemName(member.getMemName());
-        member.setMemStatus(member.getMemStatus());
-        member.setMemAuthId(member.getMemAuthId());
+//        member.setMemName(member.getMemName());
+//        member.setMemStatus(member.getMemStatus());
+//        member.setMemAuthId(member.getMemAuthId());
         memberRepository.update(member);
     }
 
