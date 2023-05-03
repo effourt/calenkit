@@ -6,6 +6,7 @@ import com.effourt.calenkit.dto.TeamShare;
 import com.effourt.calenkit.repository.MemberRepository;
 import com.effourt.calenkit.repository.ScheduleRepository;
 import com.effourt.calenkit.repository.TeamRepository;
+import com.effourt.calenkit.service.AlarmService;
 import com.effourt.calenkit.service.TeamScheduleService;
 import com.effourt.calenkit.util.EmailSend;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,8 @@ import java.util.Map;
 public class TeamController {
 
     private final TeamScheduleService teamScheduleService;
+    private final AlarmService alarmService;
+
     private final TeamRepository teamRepository;
     private final MemberRepository memberRepository;
     private final ScheduleRepository scheduleRepository;
@@ -55,7 +58,7 @@ public class TeamController {
 
 
     /**
-     * 동행 추가
+     * 동행 추가 (동행추가 + 알람서비스)
      * */
     // http://localhost:8080/teams/share/1  : memId=member
     // http://localhost:8080/teams/share/1  : memId=test@test.com
@@ -64,17 +67,15 @@ public class TeamController {
     @PostMapping ("/teams/share/{scNo}")
     @ResponseBody
     public Team shareTeam(@PathVariable int scNo, @RequestBody Map<String,Object> map) {
-        Team newTeam = teamScheduleService.addTeam(scNo,(String)map.get("memId"));
-
-        if(newTeam.equals("") || newTeam==null){ //삽입 실패
-            return null; //예외처리
-        }
+        String memId = (String)map.get("memId");
+        Team newTeam = teamScheduleService.addTeam(scNo,memId);
+        alarmService.addAlarmBySaveTeam(scNo,memId); //알람서비스
         return newTeam;
     }
 
 
     /***
-     * 동행의 권한 상태 변경
+     * 동행의 권한 상태 변경 (권한상태변경 + 알람서비스)
      * @param map -> teamLevel은 무조건 - 읽기권한:0, 수정권한:1
      * @return
      */
@@ -87,18 +88,26 @@ public class TeamController {
         //int level = (int)map.get("teamLevel"); //error
         int level = Integer.parseInt(String.valueOf(map.get("teamLevel"))); //String으로 변환한 후 Integer.parseInt
         teamScheduleService.modifyTeamLevel(scNo,id,level);
+        if(level==0){ //읽기
+            alarmService.addAlarmByUpdateTeamLevelRead(id,scNo);//알람서비스
+        } else if(level==1){ //수정
+            alarmService.addAlarmByUpdateTeamLevelWrite(id,scNo);//알람서비스
+        }
         return "updateTeamLevel ok";
     }
 
     /**
-     * 동행 삭제
+     * 동행 삭제 (동행 삭제 + 알람서비스)
      * */
     // http://localhost:8080/teams/share/4 : teamMid=member
     // http://localhost:8080/teams/share/1 : teamMid=employee
     @DeleteMapping ("/teams/share/{scNo}")
     @ResponseBody
-    public int deleteMyTeam(@PathVariable int scNo,@RequestBody Map<String,String> map) {
-        return teamScheduleService.removeTeam(scNo, map.get("teamMid"));
+    public String deleteMyTeam(@PathVariable int scNo,@RequestBody Map<String,String> map) {
+        String id = map.get("teamMid");
+        teamScheduleService.removeTeam(scNo, id);
+        alarmService.addAlarmByDeleteTeam(scNo,id); //알람서비스
+        return "deleteMyTeam ok";
     }
 
 
