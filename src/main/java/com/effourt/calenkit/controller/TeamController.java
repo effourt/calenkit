@@ -78,26 +78,27 @@ public class TeamController {
      * @param map -> teamLevel은 무조건 - 읽기권한:0, 수정권한:1
      * @return
      */
-    // http://localhost:8080/teams/share/1  : teamMId=member?teamLevel=0
-    // http://localhost:8080/teams/share/1  : teamMId=member?teamLevel=1
+    // http://localhost:8080/teams/share/1  : teamMid=member?teamLevel=0
+    // http://localhost:8080/teams/share/1  : teamMid=member?teamLevel=1
     @PatchMapping("/teams/share/{scNo}")
     @ResponseBody
-    public void updateTeamLevel(@PathVariable int scNo,@RequestBody Map<String,Object> map) {
-        String id = (String)map.get("teamMId");
+    public String updateTeamLevel(@PathVariable int scNo,@RequestBody Map<String,Object> map) {
+        String id = (String)map.get("teamMid");
         //int level = (int)map.get("teamLevel"); //error
         int level = Integer.parseInt(String.valueOf(map.get("teamLevel"))); //String으로 변환한 후 Integer.parseInt
         teamScheduleService.modifyTeamLevel(scNo,id,level);
+        return "updateTeamLevel ok";
     }
 
     /**
      * 동행 삭제
      * */
-    // http://localhost:8080/teams/share/4 : memId=member
-    // http://localhost:8080/teams/share/1 : memId=employee
+    // http://localhost:8080/teams/share/4 : teamMid=member
+    // http://localhost:8080/teams/share/1 : teamMid=employee
     @DeleteMapping ("/teams/share/{scNo}")
     @ResponseBody
-    public Integer deleteMyTeam(@PathVariable int scNo,@RequestBody Map<String,Object> map) {
-        return teamScheduleService.removeTeam(scNo, (String)map.get("memId"));
+    public int deleteMyTeam(@PathVariable int scNo,@RequestBody Map<String,String> map) {
+        return teamScheduleService.removeTeam(scNo, map.get("teamMid"));
     }
 
 
