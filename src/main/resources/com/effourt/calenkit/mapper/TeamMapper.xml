@@ -40,7 +40,7 @@
     </select>
 
     <!-- teamBookmark가 1일 경우 즐겨찾기 일정 번호 출력 -->
-    <select id="findByBookmark" resultType="Team">
+    <select id="findByBookmark" resultType="Integer">
         SELECT TEAM_SNO FROM TEAM
         WHERE TEAM_MID=#{teamMid} AND TEAM_BOOKMARK=1
     </select>

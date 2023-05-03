@@ -45,8 +45,8 @@ public class TeamRepositoryImpl implements TeamRepository {
     }
 
     @Override
-    public List<Team> findByBookmark(String teamMid) {
-        return sqlSessionTemplate.getMapper(TeamMapper.class).findByMid(teamMid);
+    public List<Integer> findByBookmark(String teamMid) {
+        return sqlSessionTemplate.getMapper(TeamMapper.class).findByBookmark(teamMid);
     }
 
     @Override
