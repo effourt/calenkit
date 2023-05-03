@@ -7,6 +7,10 @@ import lombok.Setter;
 @Getter
 @Setter
 public class TeamShare {
-    private Team team;
+    private Integer teamNo;
+    private String teamMid;
+    private Integer teamSno;
+    private Integer teamLevel;
+    private Integer teamBookmark;
     private String image;
 }
