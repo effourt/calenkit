@@ -37,21 +37,22 @@
 
 </head>
 <body>
-<form>
+<form method="post" th:action="@{/modify}" enctype="multipart/form-data">
     <h1>계정 정보</h1>
     <hr>
     <p>프로필 사진</p>
-    <!-- 이미지 파일 업로드 input -->
-    <input type="file" id="fileInput">
-
     <!-- 미리보기 이미지 -->
-    <img id="previewImage" src="#" alt="Preview Image" style="display:none;">
+    <img alt="Member Image" />
+    <!-- 이미지 파일 업로드 input -->
+    <input type="file" id="memImage" name="memImage">
+    <button type="submit">이미지 업로드</button>
+
     <div for="memName">닉네임</div>
 
-    <input type="text" id="memName" name="memName" oninput = "checkName()" >
+    <input type="text" id="memName" name="memName" oninput = "checkName()">
 
     <!-- name ajax 중복체크 -->
-    <span class="name_ok" style="display: none">사용 가능한 닉네임입니다.</span>
+    <button type="button" style="display: none" th:action="@{/modify}">닉네임 사용하기</button>
     <span class="name_already" style="display: none">사용 중 닉네임입니다.</span>
 
     <p>비밀번호</p>
@@ -60,24 +61,22 @@
     <p>위험 구역</p>
     <button id="deleteButton" onclick="openDeletePopup()">내 계정 삭제</button>
     <hr>
-    <div><button formaction="/myPage_modify">변경</button><button formaction="/">취소</button></div>
+    <div><button formaction="/">취소</button></div>
 </form>
 </body>
 <script type="text/javascript">
 
-    const fileInput = document.getElementById('fileInput');
-    const previewImage = document.getElementById('previewImage');
-
-    fileInput.addEventListener('change', (event) => {
-        const file = event.target.files[0];
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = (event) => {
-            previewImage.style.display = 'block';
-            previewImage.setAttribute('src', event.target.result);
-        };
-    });
-
+        // 이미지 선택 시 미리보기 기능 제공
+        $('#memImage').change(function() {
+            var input = this;
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    $('#preview').html('<img src="'+e.target.result+'" width="200"/>');
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        });
 
     //삭제 팝업창
     function openDeletePopup() {
