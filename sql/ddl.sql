@@ -8,3 +8,12 @@
 -- [TEST] 테스트 코드 추가 삭제 변경 - 테스트 코드 관련 모든 변경사항들
 -- [ETC] 기타 애매한 경우
 
+
+-- DOMAIN	REPOSITORY(mybatis3, JPA)	SERVICE
+--     INSERT	SAVE	ADD
+--     UPDATE	UPDATE	MODIFY
+--     DELETE	DELETE	REMOVE
+--     SELECT	FIND	GET
+
+
+
