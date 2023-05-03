@@ -11,7 +11,7 @@
     <!-- 일정 삭제 시 알림의 알림상태 0으로 변경 -->
     <update id="update">
         UPDATE ALARM SET AL_STATUS=#{alStatus}
-        WHERE AL_SCNO=#{scNo}
+        WHERE AL_SCNO=#{alScno}
     </update>
 
     <!-- DELETE -->
