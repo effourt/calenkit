@@ -35,12 +35,9 @@ public class AlarmService {
         String[] idList = findIdList(scNo); //idList[0] , idList[1], idList[2] ...
         for(int i=0; i<idList.length; i++){
             Alarm alarm = new Alarm();
-            //1. 알람 번호 - 자동증가값
-            alarm.setAlMid(idList[i]); //2. 알람 울릴 아이디
-            alarm.setAlScno(scNo); //3. 알람 울릴 스케줄번호
-            //4. 알람 상태 - 1(고정해놨음)
-            //5. 알람 추가한 시간 - sysdate
-            alarm.setAlCate(AlarmCate.MODIFY_SCHEDULE.ordinal()); //6. 1
+            alarm.setAlMid(idList[i]);
+            alarm.setAlScno(scNo);
+            alarm.setAlCate(AlarmCate.MODIFY_SCHEDULE.ordinal());
             alarmRepository.save(alarm); //idList의 갯수 만큼 save(alarm) 호출
         }
     }
@@ -58,6 +55,7 @@ public class AlarmService {
             //1.
             List<Alarm> findAlarmList = alarmRepository.findByAlScno(scNo);
             for(Alarm alarm:findAlarmList){
+                alarm.setAlScno(scNo);
                 alarm.setAlStatus(0);//알람상태 0으로 변경 - 동행에게는 해당 스케줄의 알람이 출력되지 않음
                 alarmRepository.update(alarm);
             }
@@ -70,7 +68,7 @@ public class AlarmService {
                 alarm.setAlScno(scNo); //3. 알람 울릴 스케줄번호
                 //4. 알람 상태 - 1(고정해놨음)
                 //5. 알람 추가한 시간 - sysdate
-                alarm.setAlCate(AlarmCate.DELETE_SCHDULE.ordinal()); //6. 0
+                alarm.setAlCate(AlarmCate.DELETE_SCHDULE.ordinal());
                 alarmRepository.save(alarm); //idList의 갯수 만큼 save(alarm) 호출
             }
         }
@@ -84,7 +82,6 @@ public class AlarmService {
     public void removeAlarmByScno(Integer scNo){
         List<Alarm> findAlarmList = alarmRepository.findByAlScno(scNo);
         for(Alarm alarm:findAlarmList){
-            alarm.setAlStatus(0);
             alarmRepository.delete(alarm.getAlNo());//알람삭제
         }
     }
@@ -92,39 +89,74 @@ public class AlarmService {
     /**
      * 일정에 초대할 시 울릴 알람 서비스
      * 단, 일정에 초대받은 아이디의 알람 객체만 DB에 저장될 것임 - 일괄처리로 알람객체가 저장되는 것이 아님
-     * @param addId : 일정에 초대할 아이디
      * @param scNo : 일정 번호
+     * @param addId : 일정에 초대할 아이디
      */
     @Transactional
-    public Alarm addAlarmBySaveTeam(String addId, Integer scNo){
+    public Alarm addAlarmBySaveTeam(Integer scNo,String addId){
         Alarm alarm = new Alarm();
-        //1. 알람 번호 - 자동증가값
-        alarm.setAlMid(addId); //2. 알람 울릴 아이디
-        alarm.setAlScno(scNo); //3. 알람 울릴 스케줄
-        //4. 알람 상태 - 1(고정해놨음)
-        //5. 알람 추가한 시간 - sysdate
-        alarm.setAlCate(AlarmCate.SAVE_TEAM.ordinal()); //6. 2
+        alarm.setAlMid(addId);
+        alarm.setAlScno(scNo);
+        alarm.setAlCate(AlarmCate.SAVE_TEAM.ordinal());
         return alarmRepository.save(alarm);
     }
 
     /**
-     * 일정의 권한을 변경할 시 울릴 알람 서비스
+     * 일정에 삭제될 시 울릴 알람 서비스
+     * 단, 일정에 삭제된 아이디의 알람 객체만 DB에 저장될 것임 - 일괄처리로 알람객체가 저장되는 것이 아님
+     * @param scNo : 일정 번호
+     * @param removeId : 일정을 삭제할 아이디
+     */
+    //@Transactional
+    public Alarm addAlarmByDeleteTeam(Integer scNo,String removeId){
+        int alScno = scNo;
+        List<Alarm> findAlarmList = alarmRepository.findByAlScno(alScno);
+        for(Alarm alarm:findAlarmList){
+            if(alarm.getAlMid().equals(removeId)){ //해당 아이디만 알람상태 0으로 변경
+                alarm.setAlScno(alScno);
+                alarm.setAlStatus(0);
+                alarmRepository.update(alarm);
+            }
+        }
+        Alarm NewAlarm = new Alarm();
+        NewAlarm.setAlMid(removeId);
+        NewAlarm.setAlScno(alScno);
+        NewAlarm.setAlCate(AlarmCate.REMOVE_TEAM.ordinal());
+        return alarmRepository.save(NewAlarm);
+    }
+
+    /**
+     * 일정의 권한을 읽기로 변경할 시 울릴 알람 서비스
      * 단, 권한을 변경받은 동행의 알람 객체만 DB에 저장될 것임 - 일괄처리로 알람객체가 저장되는 것이 아님
      * @param updateId : 일정 권한을 변경할 아이디
      * @param scNo : 일정 번호
      */
     @Transactional
-    public void addAlarmByUpdateTeamLevel(String updateId, Integer scNo){
+    public void addAlarmByUpdateTeamLevelRead(String updateId, Integer scNo){
         String[] idList = findIdList(scNo); //idList[0] , idList[1], idList[2] ...
         for(String id:idList){
             if(id.equals(updateId)) {
                 Alarm alarm = new Alarm();
-                //1. 알람 번호 - 자동증가값
-                alarm.setAlMid(updateId); //2. 알람 울릴 아이디
-                alarm.setAlScno(scNo); //3. 알람 울릴 스케줄
-                //4. 알람 상태 - 1(고정해놨음)
-                //5. 알람 추가한 시간 - sysdate
-                alarm.setAlCate(AlarmCate.UPDATE_TEAMLEVEL.ordinal()); //6. 3
+                alarm.setAlMid(updateId);
+                alarm.setAlScno(scNo);
+                alarm.setAlCate(AlarmCate.UPDATE_TEAMLEVEL_READ.ordinal());
+                alarmRepository.save(alarm);
+            }
+        }
+    }
+
+    /**
+     * 일정의 권한을 쓰기로 변경할 시 울릴 알람 서비스
+     */
+    @Transactional
+    public void addAlarmByUpdateTeamLevelWrite(String updateId, Integer scNo){
+        String[] idList = findIdList(scNo);
+        for(String id:idList){
+            if(id.equals(updateId)) {
+                Alarm alarm = new Alarm();
+                alarm.setAlMid(updateId);
+                alarm.setAlScno(scNo);
+                alarm.setAlCate(AlarmCate.UPDATE_TEAMLEVEL_WRITE.ordinal());
                 alarmRepository.save(alarm);
             }
         }
