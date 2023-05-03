@@ -15,5 +15,6 @@ public interface TeamMapper {
     List<Team> findByMid(String teamMid);
     List<Integer> findByid(String teamMid);
 
+    List<Integer> findByBookmark(String teamMid);
     List<Team> findBySno(Integer teamSno);
 }
