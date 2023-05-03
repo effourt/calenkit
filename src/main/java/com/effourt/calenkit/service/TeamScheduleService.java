@@ -122,7 +122,7 @@ public class TeamScheduleService {
      * @return
      */
     @Transactional
-    public int removeTeam(Integer scNo, String teamMid) {
+    public int removeTeam(int scNo, String teamMid) {
         ///int result = -1;
 
         //teamMid 유효값인지 확인
