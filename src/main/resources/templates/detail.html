@@ -60,7 +60,7 @@
               <li class="list-group-item d-flex justify-content-between" th:id="${team.teamNo}">
                 <!-- 동행 이미지 & 아이디 -->
                 <span>
-                    <img th:id="'remove'+${team.teamNo}" src="https://icongr.am/entypo/remove-user.svg?size=15&color=ababab">
+                    <img th:if="${team.teamLevel!=9}" th:id="'remove'+${team.teamNo}" src="https://icongr.am/entypo/remove-user.svg?size=15&color=ababab">
                     <span style="display: inline-block; width: 24px; line-height: 30px; height: 30px; border: 1px solid gray; border-radius: 30px; overflow: hidden;">
                         <img style="width: 100%; height: 100%; object-fit: cover;" src=""/>
                     </span> [[${team.teamMid}]] [[${imageList.get(teamStat.index)}]]
@@ -144,7 +144,7 @@
           dataType: "json",
           data: JSON.stringify({"memId": memId}),
           success: function(result) {
-            location.href="/schedules?scNo="+scNo;
+            //location.href="/schedules?scNo="+scNo;
           },
           error: function(xhr, status, error) {
             console.error("error: ", status, ", ", error);
@@ -186,7 +186,7 @@
             dataType: "text",
             data: JSON.stringify({"teamMid": teamMId}),
             success: function(result) {
-              location.href="/schedules?scNo="+scNo;
+              //location.href="/schedules?scNo="+scNo;
             },
             error: function(xhr, status, error) {
               console.error("error: ", status, ", ", error);
