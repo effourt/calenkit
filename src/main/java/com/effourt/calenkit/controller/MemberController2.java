@@ -10,14 +10,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.awt.*;
 import java.io.IOException;
 import java.util.List;
 
@@ -69,36 +68,17 @@ public class MemberController2 {
 
     /** 마이 페이지 */
 
+
     //MyPage 이동
     @GetMapping(value = "/myPage")
-    public String MyPage() {
+    public String MyPage(HttpSession session,Member member) {
+        String loginId=(String)session.getAttribute("loginId");
+        Member loginMember=memberRepository.findByMemId(loginId);
+        member.setMemName(loginMember.getMemName());
+        member.setMemImage(loginMember.getMemImage());
         return "member/myPage";
     }
-    @GetMapping(value = "/myPage_delete")
-    public String MyPageDelete() {
-        return "member/myPageDelete";
-    }
-    @GetMapping(value = "/myPage_pwModify")
-    public String MyPageModify() {
-        return "member/myPageModify";
-    }
 
-
-    @PostMapping("/myPage_modify")
-    public ResponseEntity<?> saveMember(@RequestParam("memImage") MultipartFile memImage,HttpSession session) throws IOException, MemberNotFoundException {
-        //Member loginMember=(Member)session.getAttribute("loginMember");
-        Member loginMember=memberRepository.findByMemId("member");
-
-        // 이미지 업로드 후 파일명 반환
-        String uploadfilename = imageUploadService.uploadImage(memImage);
-        loginMember.setMemImage(uploadfilename);
-        //loginMember.setMemName(memName);
-
-        // Member 객체를 인자로 받는 modifyMe() 메소드 호출
-        myPageService.modifyMe(loginMember);
-
-        return new ResponseEntity<>(HttpStatus.CREATED);
-    }
 
 
     // MyPage
@@ -139,46 +119,53 @@ public class MemberController2 {
         }
         return cnt;
     }
+    @PostMapping("/modify")
+    public String saveMember(@RequestParam("memImage") MultipartFile memImage,@RequestParam("memName") String memName,HttpSession session) throws MemberNotFoundException, IOException {
+        String loginId=(String)session.getAttribute("loginId");
+        Member loginMember=memberRepository.findByMemId(loginId);
+        // 이미지 업로드 후 파일명 반환
+        String fileName = imageUploadService.uploadImage(memImage);
+        // Member 객체에 이미지 파일명 저장
+        loginMember.setMemImage(fileName);
+        // 닉네임 업로드
+        loginMember.setMemName(memName);
+        // Member 객체를 인자로 받는 modifyMe() 메소드 호출
+        myPageService.modifyMe(loginMember);
 
-    // MyPage
-    // 멤버 정보변경(GET)
-    // 로그인세션에서 아이디값을 전달받아 member_modify 페이지로 이동
-    @GetMapping(value ="/myPage_modify")
-    public String MyPageModify(Model model, HttpSession session) throws MemberNotFoundException {
-        Member member=(Member)session.getAttribute("loginMember");
-        model.addAttribute("member", memberRepository.findByMemId(member.getMemId()));
-        return "myPage";
+        return "member/myPage";
     }
 
+        // MyPage
+    // 멤버 비밀번호 정보변경(Put)
+    // 로그인세션에서 아이디값을 전달받아 member_pwModify 페이지로 이동처리.
+    @PostMapping(value ="/myPage_pwModify")
+    public String MyPagePwModify(HttpSession session,String memPw,String password1) throws MemberNotFoundException {
+        String loginId=(String)session.getAttribute("loginId");
+        Member loginMember=memberRepository.findByMemId(loginId);
+        if (loginMember.getMemPw().equals(memPw)) {
+            myPageService.modifyPassword(loginMember,password1);
+            System.out.println("error = "+password1+memPw+loginMember.getMemPw());
+            return "member/myPage";
+        }
+        else {
+            return "member/myPage";
+        }
 
-    // MyPage
-    // 멤버 정보변경(PATCH)
-    // Form태그를 통해 전달받은 값들을 member 객체에 update 후 member_modify 페이지로 이동
-    @PatchMapping(value ="/myPage_modify")
-    public String MyPageModify(HttpSession session) throws MemberNotFoundException {
-        Member member=(Member)session.getAttribute("loginMember");
-        myPageService.modifyMe(member);
-
-        return "redirect:myPage";
     }
-
-
-//    // MyPage
-//    // 멤버 비밀번호 정보변경(Put)
-//    // 로그인세션에서 아이디값을 전달받아 member_pwModify 페이지로 이동처리.
-//    @PutMapping(value ="/myPage_pwModify")
-//    public String MyPagePwModify(HttpSession session) throws MemberNotFoundException {
-//        Member member=(Member)session.getAttribute("loginMember");
-//        myPageService.modifyPassword(member);
-//        return "myPage";
-//    }
-//    // MyPage
-//    // 멤버 상태 변경(Put)
-//    // 로그인세션에서 아이디값을 전달받아 member_delete 페이지로 이동처리.
-//    @PutMapping(value ="/myPage_delete")
-//    public String MyPageDelete(HttpSession session) throws MemberNotFoundException {
-//        Member member=(Member)session.getAttribute("loginMember");
-//        myPageService.removeMe(member);
-//        return "myPage";
-//    }
+    // MyPage
+    // 멤버 상태 변경(Put)
+    // 로그인세션에서 아이디값을 전달받아 member_delete 페이지로 이동처리.
+    @PutMapping(value ="/myPage_delete")
+    public String MyPageDelete(HttpSession session,String memId) throws MemberNotFoundException {
+        String loginId=(String)session.getAttribute("loginId");
+        Member loginMember=memberRepository.findByMemId(loginId);
+        Integer memStatus=0;
+        if(loginMember.getMemId().equals(memId)) {
+            myPageService.removeMe(loginMember, memStatus);
+            return "myPage";
+        }
+        else{
+            return "";
+        }
+    }
 }
