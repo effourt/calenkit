@@ -43,7 +43,9 @@
             <div id="bookmark" class="collapse">
                 <ul style="height: 80px; overflow: scroll;">
                     <th:block th:each="bookmark : ${bookmarkList}">
-                        <li>[[${bookmark.getScSdate()}]] ~ [[${bookmark.getScEdate()}]] / <a th:href="@{/schedules?scNo={scNo}(scNo=${bookmark.getScNo})}">[[${bookmark.getScTitle()}]]</a></li>
+                        <th:block th:if="${bookmark.scStatus}==1">
+                            <li>[[${bookmark.getScSdate()}]] ~ [[${bookmark.getScEdate()}]] / <a th:href="@{/schedules?scNo={scNo}(scNo=${bookmark.getScNo})}">[[${bookmark.getScTitle()}]]</a></li>
+                        </th:block>
                     </th:block>
                 </ul>
             </div>
@@ -54,7 +56,9 @@
             <div id="schedule" class="collapse">
                 <ul style="height: 80px; overflow: scroll;">
                     <th:block th:each="schedule : ${scheduleList}">
-                        <li><Strong>([[${schedule.getScNo}]])</Strong>[[${schedule.getScSdate}]] ~ [[${schedule.getScEdate}]] / <a th:href="@{/schedules?scNo={scNo}(scNo=${schedule.getScNo})}">[[${schedule.getScTitle}]]</a></li>
+                        <th:block th:if="${schedule.scStatus}==1">
+                            <li><Strong>([[${schedule.getScNo}]])</Strong>[[${schedule.getScSdate}]] ~ [[${schedule.getScEdate}]] / <a th:href="@{/schedules?scNo={scNo}(scNo=${schedule.getScNo})}">[[${schedule.getScTitle}]]</a></li>
+                        </th:block>
                     </th:block>
                 </ul>
             </div>
@@ -114,6 +118,15 @@
                             <li><a class="dropdown-item" href="#">Something else here</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="#">Separated link</a></li>
+                        </ul>
+                    </div>
+                    <div id="recycleBin">
+                        <ul style="height: 80px; overflow: scroll;">
+                            <th:block th:each="schedule : ${scheduleList}">
+                                <th:block th:if="${schedule.scStatus}==0">
+                                    <li><Strong>([[${schedule.getScNo}]])</Strong>[[${schedule.getScSdate}]] ~ [[${schedule.getScEdate}]] / [[${schedule.getScTitle}]]</li>
+                                </th:block>
+                            </th:block>
                         </ul>
                     </div>
                 </div>
