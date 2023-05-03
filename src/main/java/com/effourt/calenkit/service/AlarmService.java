@@ -7,12 +7,14 @@ import com.effourt.calenkit.repository.AlarmRepository;
 import com.effourt.calenkit.repository.ScheduleRepository;
 import com.effourt.calenkit.repository.TeamRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AlarmService {
@@ -55,7 +57,6 @@ public class AlarmService {
             //1.
             List<Alarm> findAlarmList = alarmRepository.findByAlScno(scNo);
             for(Alarm alarm:findAlarmList){
-                alarm.setAlScno(scNo);
                 alarm.setAlStatus(0);//알람상태 0으로 변경 - 동행에게는 해당 스케줄의 알람이 출력되지 않음
                 alarmRepository.update(alarm);
             }
@@ -109,18 +110,29 @@ public class AlarmService {
      */
     //@Transactional
     public Alarm addAlarmByDeleteTeam(Integer scNo,String removeId){
-        int alScno = scNo;
-        List<Alarm> findAlarmList = alarmRepository.findByAlScno(alScno);
-        for(Alarm alarm:findAlarmList){
-            if(alarm.getAlMid().equals(removeId)){ //해당 아이디만 알람상태 0으로 변경
-                alarm.setAlScno(alScno);
-                alarm.setAlStatus(0);
-                alarmRepository.update(alarm);
+        List<Alarm> findAlarmList = alarmRepository.findByAlMid(removeId);
+
+        log.info(""+findAlarmList.size());
+
+        List<Alarm> zeroAlarmList = new ArrayList<>();
+        for(Alarm findAlarm : findAlarmList){
+            log.info(""+findAlarm.getAlMid());
+            log.info(""+removeId);
+            if(findAlarm.getAlMid().equals(removeId)){
+                zeroAlarmList.add(findAlarm);
             }
+            log.info(""+zeroAlarmList.size());
         }
+
+        for(Alarm zeroAlarm : zeroAlarmList){
+            zeroAlarm.setAlStatus(0);
+            log.debug(""+zeroAlarm.getAlScno());
+            alarmRepository.update(zeroAlarm);
+        }
+
         Alarm NewAlarm = new Alarm();
         NewAlarm.setAlMid(removeId);
-        NewAlarm.setAlScno(alScno);
+        NewAlarm.setAlScno(scNo);
         NewAlarm.setAlCate(AlarmCate.REMOVE_TEAM.ordinal());
         return alarmRepository.save(NewAlarm);
     }
