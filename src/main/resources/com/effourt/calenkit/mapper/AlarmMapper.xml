@@ -11,14 +11,13 @@
     <!-- 일정 삭제 시 알림의 알림상태 0으로 변경 -->
     <update id="update">
         UPDATE ALARM SET AL_STATUS=#{alStatus}
-        WHERE AL_SCNO=#{scNo}
+        WHERE AL_SCNO=#{alScno}
     </update>
 
     <!-- DELETE -->
-    <!-- 수동 알림 삭제 -->
-    <delete id="delete">
-        DELETE FROM ALARM WHERE AL_NO=#{alNo}
-    </delete>
+    <select id="delete">
+        DELETE FROM ALARM WHERE AL_MID=#{alMid} AND AL_SCNO=#{alScno}
+    </select>
     
     <!-- SELECT -->
     <!-- 알람 목록 출력 -->

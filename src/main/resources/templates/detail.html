@@ -55,27 +55,27 @@
         </div>
         <!-- 3.동행 리스트 -->
         <div class="card mt-5" style="width: 100%">
-          <ul class="list-group list-group-flush">
-            <!-- 동행1 -->
+          <ul class="list-group list-group-flush" id="teamList">
+            <!-- 동행 -->
             <th:block th:each="team : ${teamList}">
-            <li class="list-group-item d-flex justify-content-between">
-              <!-- 동행 이미지 & 아이디 -->
-              <span>
-                  <span style="display: inline-block; width: 24px; line-height: 30px; height: 30px; border: 1px solid gray; border-radius: 30px; overflow: hidden;">
-                      <img style="width: 100%; height: 100%; object-fit: cover;" src="https://images.unsplash.com/photo-1533738363-b7f9aef128ce?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80" />
-                  </span> &nbsp;&nbsp; cat@cat.com [[team.teamMid]]
+              <li class="list-group-item d-flex justify-content-between" th:id="${team.teamNo}">
+                <!-- 동행 이미지 & 아이디 -->
+                <span>
+                    <img th:if="${team.teamLevel!=9}" th:id="'remove'+${team.teamNo}" src="https://icongr.am/entypo/remove-user.svg?size=15&color=ababab">
+                    <span style="display: inline-block; width: 24px; line-height: 30px; height: 30px; border: 1px solid gray; border-radius: 30px; overflow: hidden;">
+                        <img style="width: 100%; height: 100%; object-fit: cover;" src=""/>
+                    </span> [[${team.teamMid}]] [[${imageList.get(teamStat.index)}]]
                 </span>
-              <!-- 권한 변경 dropdown -->
-              <div class="btn-group">
-                <select>
-                  <option class="btn-secondary" th:checked="1">읽기권한</option>
-                  <option class="btn-secondary" th:checked="0">수정권한</option>
-                  <option class="btn-secondary" th:checked="0">권한없음</option>
-                  <hr>
-                  <option class="btn-secondary" th:checked="9" disabled>호스트</option>
-                </select>
-              </div>
-            </li>
+                <!-- 권한 변경 dropdown -->
+                <div class="btn-group">
+                  <select id="team" th:id="'team'+${team.teamNo}">
+                    <option class="btn-secondary" value="0" th:selected="${team.getTeamLevel()==0}" th:disabled="${team.getTeamLevel()==9}">읽기권한</option>
+                    <option class="btn-secondary" value="1" th:selected="${team.getTeamLevel()==1}" th:disabled="${team.getTeamLevel()==9}">수정권한</option>
+                    <hr>
+                    <option class="btn-secondary" value="9" th:selected="${team.getTeamLevel()==9}" th:disabled="${team.getTeamLevel()==1 || team.getTeamLevel()==0}">호스트</option>
+                  </select>
+                </div>
+              </li>
             </th:block>
           </ul>
         </div>
@@ -92,12 +92,15 @@
 
   <script src="https://cdn.ckeditor.com/ckeditor5/34.0.0/classic/ckeditor.js"></script>
   <script src="https://cdn.ckeditor.com/ckeditor5/34.0.0/classic/translations/ko.js"></script>
-  <script>
-    ClassicEditor.create(document.querySelector('#editor'), {
+  <script th:inline="javascript">
+    const queryString = window.location.search; //?scNo=1
+    const scNo = new URLSearchParams(queryString).get('scNo'); //1
 
-    });
+      ClassicEditor.create(document.querySelector('#editor'), {
+      });
 
-    document.getElementById("inputBox").onkeyup= function() {
+    //#inputBox의 키이벤트 발생 시 호출
+    $("#inputBox").on("keyup", function() {
       // 키보드 입력값 가져오기
       let typedText = this.value;
       if (typedText == "") { // 키보드 입력값이 없다면 제시어 숨기고 함수 종료
@@ -112,11 +115,11 @@
         url: "/members?memId="+typedText,
         type: "GET",
         success: function(result) {
-          let button = "<button class='btn btn-sm btn-outline-dark' onclick='addTeam()'>";
+          let button = "<button class='btn btn-sm btn-outline-dark' ";
           if(result.memId==typedText){
-            button += result.memId+"</button>";
+            button += "onclick='addTeam(\""+result.memId+"\")'>"+result.memId+"</button>";
           } else{
-            button += "</button>";
+            button += "onclick='addTeam()'></button>";
           }
           console.log("button = " +button);
           if(result.memId==typedText){
@@ -125,16 +128,75 @@
           }
         },
         error: function(xhr, status, error) {
-          console.error("AJAX Error: ", status, ", ", error);
+          console.error("error: ", status, ", ", error);
         }
       });
-    };
+    });
 
-    //클릭 시 이메일 전송되는 기능
-    function addTeam(){
+    //이메일 전송과 동행 추가 함수
+    function addTeam(memId){
+      if(confirm(memId+"님을 일정에 초대하시겠습니까?")){
 
+        //이메일 전송
+
+        $.ajax({ //동행 추가
+          url: "/teams/share/"+scNo,
+          type: "POST",
+          contentType: "application/json",
+          dataType: "json",
+          data: JSON.stringify({"memId": memId}),
+          success: function(result) {
+            //location.href="/schedules?scNo="+scNo;
+          },
+          error: function(xhr, status, error) {
+            console.error("error: ", status, ", ", error);
+          }
+        });
+      }
     }
 
+
+    [# th:each="team, stat : ${teamList}"]
+      //권한변경 이벤트 처리 함수
+      $("#team"+[[${team.teamNo}]]).on("change", function() {
+        const teamLevel = $("#team"+[[${team.teamNo}]]).val(); //선택된 권한레벨 값
+        const teamMId = [[${team.teamMid}]];
+        $.ajax({ //동행 권한 변경
+          url: "/teams/share/"+scNo,
+          type: "PATCH",
+          contentType: "application/json",
+          dataType: "text",
+          data: JSON.stringify({"teamMid": teamMId, "teamLevel": teamLevel} ),
+          success: function(result) {
+          },
+          error: function(xhr, status, error) {
+            console.error("error: ", status, ", ", error);
+          }
+        });
+      });
+    [/]
+
+    [# th:each="team, stat : ${teamList}"]
+      //권한 삭제 이벤트 처리 함수
+      $("#remove"+[[${team.teamNo}]]).on("click", function() {
+        const teamMId = [[${team.teamMid}]];
+        if(confirm(teamMId+"님을 일정에서 삭제하시겠습니까?")){
+          $.ajax({
+            url: "/teams/share/"+scNo,
+            type: "DELETE",
+            contentType: "application/json",
+            dataType: "text",
+            data: JSON.stringify({"teamMid": teamMId}),
+            success: function(result) {
+              //location.href="/schedules?scNo="+scNo;
+            },
+            error: function(xhr, status, error) {
+              console.error("error: ", status, ", ", error);
+            }
+          });
+        }
+      });
+    [/]
   </script>
   <script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
 </body>

@@ -1,7 +1,6 @@
 package com.effourt.calenkit.repository;
 
 import com.effourt.calenkit.domain.Team;
-import com.effourt.calenkit.dto.TeamMember;
 
 import java.util.List;
 
