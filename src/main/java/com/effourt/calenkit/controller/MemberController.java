@@ -14,7 +14,6 @@ import com.effourt.calenkit.util.EmailSend;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
-import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -101,7 +100,7 @@ public class MemberController {
         if (findMember.getMemPw().equals(member.getMemPw())) {
             session.setAttribute("loginId", member.getMemId());
         } else {
-            return "아이디 또는 비밀번호를 잘못 입력하셨습니다.";
+            return "비밀번호가 올바르지 않습니다.";
         }
         return "OK";
     }
@@ -120,7 +119,7 @@ public class MemberController {
         if (code.equals(memId + "ACCESS")) {
             session.setAttribute("loginId", memId);
         } else {
-            return "로그인 코드를 잘못 입력하셨습니다.";
+            return "코드가 올바르지 않습니다.";
         }
         return "OK";
     }
@@ -142,6 +141,12 @@ public class MemberController {
         return "register";
     }
 
+    /**
+     * 비밀번호 초기화 코드로 로그인 - 비밀번호 초기화 후 로그인 처리
+     * @param initializeCodeMap
+     * @param session
+     * @return
+     */
     @PostMapping("/login/initialize-code")
     @ResponseBody
     public String loginByInitialize(@RequestBody Map<String, String> initializeCodeMap, HttpSession session) {
@@ -153,7 +158,7 @@ public class MemberController {
         if (code.equals(memId + "ACCESS")) {
             session.setAttribute("loginId", memId);
         } else {
-            return "초기화 코드를 잘못 입력하였습니다.";
+            return "코드가 올바르지 않습니다.";
         }
         return "OK";
     }
