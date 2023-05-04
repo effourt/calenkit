@@ -2,6 +2,7 @@ package com.effourt.calenkit.controller;
 
 import com.effourt.calenkit.domain.Member;
 import com.effourt.calenkit.domain.Team;
+import com.effourt.calenkit.dto.EmailMessage;
 import com.effourt.calenkit.dto.TeamShare;
 import com.effourt.calenkit.repository.MemberRepository;
 import com.effourt.calenkit.repository.ScheduleRepository;
@@ -13,8 +14,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Map;
 @Slf4j
@@ -85,7 +88,6 @@ public class TeamController {
     @ResponseBody
     public String updateTeamLevel(@PathVariable int scNo,@RequestBody Map<String,Object> map) {
         String id = (String)map.get("teamMid");
-        //int level = (int)map.get("teamLevel"); //error
         int level = Integer.parseInt(String.valueOf(map.get("teamLevel"))); //String으로 변환한 후 Integer.parseInt
         teamScheduleService.modifyTeamLevel(scNo,id,level);
         if(level==0){ //읽기
@@ -114,33 +116,52 @@ public class TeamController {
     /**
      * 동행에게 초대 이메일 발송
      */
-    // http://localhost:8080/teams/send/email
-    /*
-    @PostMapping("/teams/send/email")
+    // http://localhost:8080/teams/share/send-link/57  : teamId:jhla456@naver.com
+    // http://localhost:8080/teams/share/send-link/58
+    // http://localhost:8080/teams/share/send-link/59
+    @PostMapping("/teams/share/send-link/{scNo}")
     @ResponseBody
-    public String sendCode(@RequestBody Map<String, String> idMap, HttpSession session) {
-        String memId = idMap.get("id");
-        String subject = ms.getMessage("mail.login-code.subject", null, null);
+    public String sendCode(@PathVariable int scNo, @RequestBody Map<String, String> map, HttpSession session) {
+        String loginId = (String) session.getAttribute("loginId"); //초대하는 호스트 아이디
+        String teamMid = map.get("teamMid"); //메세지 보낼 동행 아이디(이메일)
+
+        String subject = ms.getMessage(
+                "mail.share-code.subject",
+                new Object[]{loginId},
+                null);
+
         String message = ms.getMessage(
-                "mail.login-code.message",
-                new Object[]{emailSend.createAccessCode(memId, session)},
+                "mail.share-code.message",
+                new Object[]{"http://localhost:8080/teams/share/confirm/"+scNo+"/"+teamMid},
                 null);
 
         EmailMessage emailMessage = EmailMessage.builder()
-                .recipient(memId)
+                .recipient(teamMid)
                 .subject(subject)
                 .message(message)
                 .build();
+
         //이메일 전송
         emailSend.sendMail(emailMessage);
-
-        log.info("email id={}", memId);
+        log.info("email id={}", teamMid);
         log.info("subject={}", subject);
         log.info("message={}", message);
         return "OK";
     }
-    */
 
+    /**
+     * 이메일 받은 동행이 링크 클릭할 시 이동될 페이지 - teamShareConfirm.html
+     * @param scNo
+     * @param teamMid
+     * @param model
+     * @return
+     */
+    @GetMapping("/teams/share/confirm/{scNo}/{teamMid}")
+    public String showTeamShareAuth(@PathVariable int scNo, @PathVariable String teamMid, Model model) {
+        model.addAttribute("teamMid", teamMid);
+        model.addAttribute("scNo", scNo);
+        return "teamShareConfirm";
+    }
 
 
 }
