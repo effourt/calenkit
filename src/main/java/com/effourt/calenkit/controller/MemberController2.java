@@ -32,9 +32,12 @@ public class MemberController2 {
     /** 관리자 */
     // Admin
     @GetMapping(value = "/admin")
-    public String AdminList() {
+    public String AdminList(@RequestParam(required = false) String keyword, Model model) {
+        model.addAttribute("keyword", keyword);
         return "member/admin";
     }
+
+
 
 
     // Admin
@@ -71,14 +74,23 @@ public class MemberController2 {
 
     //MyPage 이동
     @GetMapping(value = "/myPage")
-    public String MyPage(HttpSession session,Member member) {
+    public String MyPage(HttpSession session,Model model) {
         String loginId=(String)session.getAttribute("loginId");
         Member loginMember=memberRepository.findByMemId(loginId);
-        member.setMemName(loginMember.getMemName());
-        member.setMemImage(loginMember.getMemImage());
+        model.addAttribute("memName",loginMember.getMemName());
+        model.addAttribute("memImage",loginMember.getMemImage());
+        System.out.println(loginMember.getMemImage());
         return "member/myPage";
     }
+    @GetMapping(value = "/myPage_delete")
+    public String myPageDelete() {
 
+        return "member/myPageDelete";
+    }
+    @GetMapping(value = "/myPage_pwModify")
+    public String myPagePwModify() {
+        return "member/mypageModify";
+    }
 
 
     // MyPage
@@ -96,13 +108,16 @@ public class MemberController2 {
     // Ajax 처리를 위해 아이디 중복 갯수 반환
     @GetMapping("/idCheck")
     @ResponseBody
-    public int idCheck(@RequestParam("memId") String memId) {
+    public int idCheck(@RequestParam("memId") String memId,HttpSession session) {
+        String loginId=(String)session.getAttribute("loginId");
         int cnt=0;
+        if(loginId.equals(memId)){
         Member member = memberRepository.findByMemId(memId);
         if(member!=null){
             cnt++;
             return cnt;
-        }
+        }}
+
         return cnt;
     }
 
@@ -119,8 +134,8 @@ public class MemberController2 {
         }
         return cnt;
     }
-    @PostMapping("/modify")
-    public String saveMember(@RequestParam("memImage") MultipartFile memImage,@RequestParam("memName") String memName,HttpSession session) throws MemberNotFoundException, IOException {
+    @PostMapping("/modify_image")
+    public String saveMember(@RequestParam(value="memImage",required = false ) MultipartFile memImage,HttpSession session) throws MemberNotFoundException, IOException {
         String loginId=(String)session.getAttribute("loginId");
         Member loginMember=memberRepository.findByMemId(loginId);
         // 이미지 업로드 후 파일명 반환
@@ -128,12 +143,25 @@ public class MemberController2 {
         // Member 객체에 이미지 파일명 저장
         loginMember.setMemImage(fileName);
         // 닉네임 업로드
-        loginMember.setMemName(memName);
+        //loginMember.setMemName(memName);
         // Member 객체를 인자로 받는 modifyMe() 메소드 호출
         myPageService.modifyMe(loginMember);
 
-        return "member/myPage";
+        return "redirect:/myPage";
     }
+
+    @PostMapping("/modify_name")
+    public String Member(@RequestParam("memName") String memName,HttpSession session) throws MemberNotFoundException, IOException {
+        String loginId=(String)session.getAttribute("loginId");
+        Member loginMember=memberRepository.findByMemId(loginId);
+        // 닉네임 업로드
+        loginMember.setMemName(memName);
+        // Member 객체를 인자로 받는 modifyMe() 메소드 호출
+        myPageService.modifyMe(loginMember);
+        return "redirect:/myPage";
+    }
+
+
 
         // MyPage
     // 멤버 비밀번호 정보변경(Put)
@@ -144,7 +172,6 @@ public class MemberController2 {
         Member loginMember=memberRepository.findByMemId(loginId);
         if (loginMember.getMemPw().equals(memPw)) {
             myPageService.modifyPassword(loginMember,password1);
-            System.out.println("error = "+password1+memPw+loginMember.getMemPw());
             return "member/myPage";
         }
         else {
@@ -155,17 +182,19 @@ public class MemberController2 {
     // MyPage
     // 멤버 상태 변경(Put)
     // 로그인세션에서 아이디값을 전달받아 member_delete 페이지로 이동처리.
-    @PutMapping(value ="/myPage_delete")
+    @PostMapping(value ="/myPage_delete")
     public String MyPageDelete(HttpSession session,String memId) throws MemberNotFoundException {
         String loginId=(String)session.getAttribute("loginId");
         Member loginMember=memberRepository.findByMemId(loginId);
         Integer memStatus=0;
         if(loginMember.getMemId().equals(memId)) {
             myPageService.removeMe(loginMember, memStatus);
-            return "myPage";
+            System.out.println("memStatus"+memStatus+loginMember.getMemId());
+
+            return "member/myPage";
         }
         else{
-            return "";
+            return "/myPage_delete";
         }
     }
 }
