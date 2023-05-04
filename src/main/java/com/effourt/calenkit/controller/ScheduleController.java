@@ -50,22 +50,14 @@ public class ScheduleController {
             model.addAttribute("alarmList", alarmList);
         }
         model.addAttribute("titleList", titleList);
-        for(int i=0;i<alarmList.size(); i++) {
-            System.out.println("i = " + i);
-            System.out.println("getAlCate = " + alarmList.get(i).getAlCate());
-            System.out.println("getAlMid = " + alarmList.get(i).getAlMid());
-            System.out.println("getAlScno = " + alarmList.get(i).getAlScno());
-            System.out.println("getAlStatus = " + alarmList.get(i).getAlStatus()); //1=출력, 0=휴지통
-            System.out.println("titleList = "+titleList.get(i));
-            System.out.println("======================================");
-        }
-        /*//개인 스케줄리스트 조회
+
+        //개인 스케줄리스트 조회
         List<Schedule> scheduleList=myScheduleService.getMySchedule(loginId, null);
         model.addAttribute("scheduleList", scheduleList);
 
         //개인 즐겨찾기리스트 조회
         List<Schedule> bookmarkList=myScheduleService.getBookmark(loginId, null);
-        model.addAttribute("bookmarkList", bookmarkList);*/
+        model.addAttribute("bookmarkList", bookmarkList);
 
         return "main";
     }

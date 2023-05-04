@@ -52,8 +52,12 @@ public class MyScheduleService {
     // => 검색어(keyword)가 없을 경우 null로 전달 받아야 함(필수 매개변수)
     public List<Schedule> getRecycleBin(String id, String keyword) {
         Map<String, Object> map=new HashMap<>();
+        List<Integer> scNoList=teamRepository.findByBookmark(id);
+        if(scNoList.isEmpty()) { //조건에 만족하는 일정이 없을 경우 미출력(scNo=0)
+            scNoList.add(0);
+        }
 
-        map.put("scNoList", teamRepository.findByMid(id));
+        map.put("scNoList", scNoList);
         map.put("keyword", keyword);
 
         return scheduleRepository.findByRecycleBin(map);
@@ -98,8 +102,12 @@ public class MyScheduleService {
     public List<Schedule> getMySchedule(String id, String date) {
         //map 요소 : date, List 객체(일정번호) - map(date, "2020-12-12") , map(scNoList, List<Integer>)
         Map<String, Object> map=new HashMap<>();
+        List<Integer> scNoList=teamRepository.findByBookmark(id);
+        if(scNoList.isEmpty()) { //조건에 만족하는 일정이 없을 경우 미출력(scNo=0)
+            scNoList.add(0);
+        }
 
-        map.put("scNoList", teamRepository.findByid(id)); //아이디 기준 권한있는 일정번호목록
+        map.put("scNoList", scNoList); //아이디 기준 권한있는 일정번호목록
         map.put("date", date); //date : 출력 기준이 될 연월(default:현재 연월)
 
         return scheduleRepository.findAllByScNo(map);
@@ -109,8 +117,12 @@ public class MyScheduleService {
     // => 현재 세션 아이디(loginMember) 기준 team, 출력 기준이 될 연월(date)을 매개변수로 입력받음
     public List<Schedule> getBookmark(String id, String date) {
         Map<String, Object> map=new HashMap<>();
+        List<Integer> scNoList=teamRepository.findByBookmark(id);
+        if(scNoList.isEmpty()) { //조건에 만족하는 일정이 없을 경우 미출력(scNo=0)
+            scNoList.add(0);
+        }
 
-        map.put("scNoList",teamRepository.findByBookmark(id));
+        map.put("scNoList", scNoList);
         map.put("date", date); //date : 출력 기준이 될 연월(default:defaultDate)
 
         return scheduleRepository.findAllByScNo(map);

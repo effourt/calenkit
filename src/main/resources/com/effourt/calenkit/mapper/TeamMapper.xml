@@ -3,8 +3,8 @@
 <mapper namespace="com.effourt.calenkit.mapper.TeamMapper">
     <!-- INSERT -->
     <!-- 일정상세 삽입 시 함께 호출 - 권한레벨로 호스트와 동행 구분(1,0,9) -->
-    <insert id="save" parameterType="Team" useGeneratedKeys="true" keyProperty="teamNo">
-        INSERT INTO TEAM(TEAM_MID, TEAM_SNO, TEAM_LEVEL, TEAM_BOOKMARK) VALUES( #{teamMid}, #{teamSno}, 9, 0)
+    <insert id="save">
+        INSERT INTO TEAM(TEAM_MID, TEAM_SNO, TEAM_LEVEL, TEAM_BOOKMARK) VALUES( #{teamMid}, #{teamSno}, #{teamLevel}, 0)
     </insert>
 
     <!-- UPDATE -->
@@ -40,7 +40,7 @@
     </select>
 
     <!-- teamBookmark가 1일 경우 즐겨찾기 일정 번호 출력 -->
-    <select id="findByBookmark" resultType="Team">
+    <select id="findByBookmark" resultType="Integer">
         SELECT TEAM_SNO FROM TEAM
         WHERE TEAM_MID=#{teamMid} AND TEAM_BOOKMARK=1
     </select>

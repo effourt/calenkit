@@ -1,9 +1,6 @@
 package com.effourt.calenkit.repository;
 
-import com.effourt.calenkit.domain.Auth;
 import com.effourt.calenkit.domain.Team;
-import com.effourt.calenkit.dto.TeamMember;
-import com.effourt.calenkit.mapper.ScheduleMapper;
 import com.effourt.calenkit.mapper.TeamMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,8 +42,8 @@ public class TeamRepositoryImpl implements TeamRepository {
     }
 
     @Override
-    public List<Team> findByBookmark(String teamMid) {
-        return sqlSessionTemplate.getMapper(TeamMapper.class).findByMid(teamMid);
+    public List<Integer> findByBookmark(String teamMid) {
+        return sqlSessionTemplate.getMapper(TeamMapper.class).findByBookmark(teamMid);
     }
 
     @Override

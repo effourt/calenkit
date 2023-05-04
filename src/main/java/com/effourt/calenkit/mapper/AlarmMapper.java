@@ -2,6 +2,7 @@ package com.effourt.calenkit.mapper;
 
 import com.effourt.calenkit.domain.Alarm;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -9,7 +10,7 @@ import java.util.List;
 public interface AlarmMapper {
     Integer save(Alarm alarm);
     Integer update(Alarm alarm);
-    Integer delete(Integer alNo);
+    Integer delete(@Param("alMid") String alMid, @Param("alScno") Integer alScno);
     List<Alarm> findByAlMid(String alMid);
-    List<Alarm> findByAlScno(Integer AlScno);
+    List<Alarm> findByAlScno(Integer alScno);
 }
