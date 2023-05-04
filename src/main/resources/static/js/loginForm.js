@@ -22,6 +22,8 @@ $("#checkIdBtn").click(function () {
                 sendCode(loginId);
                 $("#registerCodeDiv").css("display", "block");
                 $("#checkIdBtn").css("display", "none");
+            } else {
+                $("#message").text(result);
             }
         },
         error: function (error) {
@@ -68,9 +70,7 @@ $("#loginId").keyup(function () {
     const visible = [$("#findPasswordBtn"), $("#checkIdBtn")];
     const invisible = [$("#passwordDiv"), $("#loginCodeDiv"), $("#registerCodeDiv"), $("#initializeCodeDiv"), $("#initializePasswordBtn")];
     const initial = [$("#loginPw"), $("#loginCode"), $("#loginId"), $("#initializeCode"), $("#message")];
-    if ($("#loginId").val() == "") {
-        showTag(visible, invisible, initial);
-    }
+    showTag(visible, invisible, initial);
 });
 
 //카카오 로그인
