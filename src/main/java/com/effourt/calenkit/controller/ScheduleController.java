@@ -118,10 +118,10 @@ public class ScheduleController {
      * @return 일정 상세 페이지 URL
      */
     @GetMapping("/add")
-    public String addSchedule() {
+    public String addSchedule(@RequestParam String date) {
         //String loginId = (String)session.getAttribute("loginId"); //session으로 현재 아이디 받아오기
         String id="employee";
-        Integer scNo=myScheduleService.addMySchedule(id); //일정 추가
+        Integer scNo=myScheduleService.addMySchedule(id, date); //일정 추가
 
         return "redirect:/schedules?scNo="+scNo; //추가된 일정 상세 페이지로 이동
     }

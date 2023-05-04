@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,8 +32,14 @@ public class MyScheduleService {
 
     //[메인에서 내 스케줄 추가 행위]
     @Transactional
-    public Integer addMySchedule(String id) {
-        scheduleRepository.save();
+    public Integer addMySchedule(String id, String date) {
+        if(date==null || date.isEmpty() || date.isBlank()) { //날짜 미지정 시 현재 날짜로 설정
+            SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd");
+            Date temp=new Date(System.currentTimeMillis());
+            date=simpleDateFormat.format(temp);
+        }
+
+        scheduleRepository.save(date);
         Integer scNo=scheduleRepository.findLastInsertScNo();
 
         Team team=new Team();
