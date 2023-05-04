@@ -81,9 +81,9 @@ public class AlarmService {
      */
     @Transactional
     public void removeAlarmByScno(Integer scNo){
-        List<Alarm> findAlarmList = alarmRepository.findByAlScno(scNo);
-        for(Alarm alarm:findAlarmList){
-            alarmRepository.delete(alarm.getAlNo());//알람삭제
+        String[] idList = findIdList(scNo);
+        for(int i=0; i<idList.length; i++){
+            alarmRepository.delete(idList[i],scNo); //알람삭제
         }
     }
 
@@ -104,32 +104,15 @@ public class AlarmService {
 
     /**
      * 일정에 삭제될 시 울릴 알람 서비스
-     * 단, 일정에 삭제된 아이디의 알람 객체만 DB에 저장될 것임 - 일괄처리로 알람객체가 저장되는 것이 아님
      * @param scNo : 일정 번호
      * @param removeId : 일정을 삭제할 아이디
      */
     //@Transactional
     public Alarm addAlarmByDeleteTeam(Integer scNo,String removeId){
-        List<Alarm> findAlarmList = alarmRepository.findByAlMid(removeId);
-
-        log.info(""+findAlarmList.size());
-
-        List<Alarm> zeroAlarmList = new ArrayList<>();
-        for(Alarm findAlarm : findAlarmList){
-            log.info(""+findAlarm.getAlMid());
-            log.info(""+removeId);
-            if(findAlarm.getAlMid().equals(removeId)){
-                zeroAlarmList.add(findAlarm);
-            }
-            log.info(""+zeroAlarmList.size());
+        List<Alarm> alarmList = alarmRepository.findByAlMid(removeId);
+        for(Alarm alarm:alarmList){
+            if(alarm.getAlScno()==scNo) alarmRepository.delete(removeId,scNo);
         }
-
-        for(Alarm zeroAlarm : zeroAlarmList){
-            zeroAlarm.setAlStatus(0);
-            log.debug(""+zeroAlarm.getAlScno());
-            alarmRepository.update(zeroAlarm);
-        }
-
         Alarm NewAlarm = new Alarm();
         NewAlarm.setAlMid(removeId);
         NewAlarm.setAlScno(scNo);
