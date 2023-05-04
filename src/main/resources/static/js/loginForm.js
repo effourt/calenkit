@@ -168,13 +168,16 @@ $("#initializePasswordBtn").click(function() {
         method: "POST",
         contentType: "application/json",
         dataType: "text",
+        data: JSON.stringify({"id" : loginId}),
         success: function(result) {
             if (result == "JOIN_LOGIN") {
                 $("#message").text("이메일이 올바르지 않습니다.");
-            } else {
+            } else if (result == "PASSWORD_LOGIN" || result == "CODE_LOGIN") {
                 sendCode(loginId);
                 $("#initializePasswordBtn").css("display", "none");
                 $("#initializeCodeDiv").css("display", "block");
+            } else {
+                $("#message").text(result);
             }
         },
         error: function(error) {
