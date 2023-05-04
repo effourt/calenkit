@@ -116,12 +116,15 @@ public class MemberController {
     @ResponseBody
     public String loginByCode(@RequestBody Map<String, String> loginCodeMap, HttpSession session) {
         String memId = loginCodeMap.get("id");
+        if (session.getAttribute(loginCodeMap.get("loginCode")) == null) {
+            return "코드가 올바르지 않습니다.";
+        }
         String code = (String) session.getAttribute(loginCodeMap.get("loginCode"));
-        if (code.equals(memId + "ACCESS")) {
+        if (!code.equals(memId + "ACCESS")) {
+            return "코드가 올바르지 않습니다.";
+        } else {
             session.setAttribute("loginId", memId);
             loginService.updateLastLogin(memId);
-        } else {
-            return "코드가 올바르지 않습니다.";
         }
         return "OK";
     }
@@ -153,6 +156,9 @@ public class MemberController {
     @ResponseBody
     public String loginByInitialize(@RequestBody Map<String, String> initializeCodeMap, HttpSession session) {
         String memId = initializeCodeMap.get("id");
+        if (session.getAttribute(initializeCodeMap.get("initializeCode")) == null) {
+            return "코드가 올바르지 않습니다.";
+        }
         //비밀번호 초기화 (null로 지정)
         loginService.updatePassword(memId, null);
         //초기화 코드 검증 후 로그인
