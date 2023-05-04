@@ -33,6 +33,9 @@
             <if test="memStatus != null and memStatus != ''">
                 MEM_STATUS=#{memStatus},
             </if>
+            <if test="memLogin != null and memLogin != ''">
+                MEM_LOGIN=#{memLogin},
+            </if>
             <if test="memAuthId != null and memAuthId != ''">
                 MEM_AUTH_ID=#{memAuthId}
             </if>

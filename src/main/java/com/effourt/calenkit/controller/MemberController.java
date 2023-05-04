@@ -14,10 +14,10 @@ import com.effourt.calenkit.util.EmailSend;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
-import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpSession;
 import java.util.Map;
@@ -100,8 +100,9 @@ public class MemberController {
         Member findMember = loginService.getMemberById(member.getMemId());
         if (findMember.getMemPw().equals(member.getMemPw())) {
             session.setAttribute("loginId", member.getMemId());
+            loginService.updateLastLogin(findMember.getMemId());
         } else {
-            return "아이디 또는 비밀번호를 잘못 입력하셨습니다.";
+            return "비밀번호가 올바르지 않습니다.";
         }
         return "OK";
     }
@@ -116,46 +117,75 @@ public class MemberController {
     @ResponseBody
     public String loginByCode(@RequestBody Map<String, String> loginCodeMap, HttpSession session) {
         String memId = loginCodeMap.get("id");
+        if (session.getAttribute(loginCodeMap.get("loginCode")) == null) {
+            return "코드가 올바르지 않습니다.";
+        }
         String code = (String) session.getAttribute(loginCodeMap.get("loginCode"));
-        if (code.equals(memId + "ACCESS")) {
-            session.setAttribute("loginId", memId);
+
+        //코드 일치 여부 검증
+        if (!code.equals(memId + "ACCESS")) {
+            return "코드가 올바르지 않습니다.";
         } else {
-            return "로그인 코드를 잘못 입력하셨습니다.";
+            session.setAttribute("loginId", memId);
+            loginService.updateLastLogin(memId);
         }
         return "OK";
     }
 
     /**
      * 회원가입 코드로 회원가입 후 이메일 로그인
-     * @param memId
-     * @param registerCode
+     * @param registerMap
      * @param session
-     * @param model
      * @return
      */
     @PostMapping("/login/register-code")
-    public String loginByJoin(String memId, String registerCode, HttpSession session, Model model) {
-        String joinCode = (String) session.getAttribute(registerCode);
-        if (joinCode.equals(memId + "ACCESS")) {
-            model.addAttribute("memId", memId);
+    @ResponseBody
+    public String loginByJoin(@RequestBody Map<String, String> registerMap, HttpSession session) {
+        String memId = registerMap.get("id");
+        if (session.getAttribute(registerMap.get("registerCode")) == null) {
+            return "코드가 올바르지 않습니다.";
         }
-        return "register";
+        String code = (String) session.getAttribute(registerMap.get("registerCode"));
+
+        //코드 일치 여부 검증
+        if (!code.equals(memId + "ACCESS")) {
+            return "코드가 올바르지 않습니다.";
+        }
+        return "OK";
     }
 
+    /**
+     * 비밀번호 초기화 코드로 로그인 - 비밀번호 초기화 후 로그인 처리
+     * @param initializeCodeMap
+     * @param session
+     * @return
+     */
     @PostMapping("/login/initialize-code")
     @ResponseBody
     public String loginByInitialize(@RequestBody Map<String, String> initializeCodeMap, HttpSession session) {
         String memId = initializeCodeMap.get("id");
+        if (session.getAttribute(initializeCodeMap.get("initializeCode")) == null) {
+            return "코드가 올바르지 않습니다.";
+        }
         //비밀번호 초기화 (null로 지정)
         loginService.updatePassword(memId, null);
         //초기화 코드 검증 후 로그인
         String code = (String) session.getAttribute(initializeCodeMap.get("initializeCode"));
+
+        //코드 일치 여부 검증
         if (code.equals(memId + "ACCESS")) {
             session.setAttribute("loginId", memId);
+            loginService.updateLastLogin(memId);
         } else {
-            return "초기화 코드를 잘못 입력하였습니다.";
+            return "코드가 올바르지 않습니다.";
         }
         return "OK";
+    }
+
+    @PostMapping("/join/form")
+    public String joinForm(@RequestParam String memId, Model model) {
+        model.addAttribute("memId", memId);
+        return "register";
     }
 
     /**
@@ -168,6 +198,7 @@ public class MemberController {
     public String join(@RequestBody Member member, HttpSession session) {
         joinService.joinByEmail(member);
         session.setAttribute("loginId", member.getMemId());
+        loginService.updateLastLogin(member.getMemId());
         return "OK";
     }
 
@@ -213,6 +244,7 @@ public class MemberController {
         }
 
         session.setAttribute("loginId", userInfo.getEmail());
+        loginService.updateLastLogin(userInfo.getEmail());
         return "main";
     }
 
