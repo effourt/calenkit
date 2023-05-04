@@ -46,8 +46,8 @@ $("#loginPw").focusout(function() {
 
 //비밀번호 확인 검증
 let passwordCheckConfirm = false;
-$("#loginPwConfirm").focusout(function() {
-    if ($("#loginPw").val() != $("#loginPwConfirm").val) {
+$("#loginPwCheck").focusout(function() {
+    if ($("#loginPw").val() != $("#loginPwCheck").val()) {
         passwordCheckConfirm = false;
         $("#passwordCheckMessage").text("입력한 비밀번호와 같은 값을 입력해주세요.");
     } else {
