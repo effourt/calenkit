@@ -7,7 +7,6 @@ import com.effourt.calenkit.domain.Member;
 import com.effourt.calenkit.dto.AccessTokenRequest;
 import com.effourt.calenkit.dto.AccessTokenResponse;
 import com.effourt.calenkit.dto.AuthUserInfoResponse;
-import com.effourt.calenkit.exception.MemberNotFoundException;
 import com.effourt.calenkit.repository.AuthRepository;
 import com.effourt.calenkit.repository.MemberRepository;
 import com.effourt.calenkit.util.EmailSend;
@@ -17,6 +16,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Slf4j
 @Service
@@ -44,6 +47,17 @@ public class LoginService {
 
     //회원 정보 UPDATE
     public void update(Member member) {
+        memberRepository.update(member);
+    }
+    
+    //최근 로그인 시각 갱신
+    @Transactional
+    public void updateLastLogin(String memId) {
+        Member member = new Member();
+        String lastLogin = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        member.setMemId(memId);
+        member.setMemLogin(lastLogin);
+        log.info("ID={}, LastLogin={}", member.getMemId(), member.getMemLogin());
         memberRepository.update(member);
     }
 
