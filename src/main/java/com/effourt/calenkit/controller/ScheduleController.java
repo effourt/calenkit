@@ -80,12 +80,14 @@ public class ScheduleController {
         List<Map> mapList=new ArrayList<>();
 
         for(Schedule schedule:scheduleList) { //일정 리스트에서 일정 뽑아내기
-        Map<String, String> map=new HashMap<>(); //일정 저장할 map
-            map.put("title", schedule.getScTitle());
-            map.put("start", schedule.getScSdate());
-            map.put("end", schedule.getScEdate());
-            map.put("url", "schedules?scNo=" + schedule.getScNo());
-            mapList.add(map); //map에 일정 저장
+            if(schedule.getScStatus()!=0) {
+                Map<String, String> map=new HashMap<>(); //일정 저장할 map
+                map.put("title", schedule.getScTitle());
+                map.put("start", schedule.getScSdate());
+                map.put("end", schedule.getScEdate());
+                map.put("url", "schedules?scNo=" + schedule.getScNo());
+                mapList.add(map); //map에 일정 저장
+            }
         }
         return mapList; //일정이 저장된 mapList값 보내기
     }
@@ -145,6 +147,15 @@ public class ScheduleController {
         //String loginId = (String)session.getAttribute("loginId"); //session으로 현재 아이디 받아오기
         String id="employee";
         myScheduleService.removeSchedule(scNo, id);
+
+        return "redirect:/";
+    }
+
+    @GetMapping("/restore")
+    public String restoreSchedule(@RequestParam Integer scNo) {
+        //String loginId = (String)session.getAttribute("loginId"); //session으로 현재 아이디 받아오기
+        String id="employee";
+        myScheduleService.restoreSchedule(scNo, null);
 
         return "redirect:/";
     }
