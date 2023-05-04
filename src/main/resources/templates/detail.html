@@ -27,6 +27,7 @@
     동행 : <p></p>
     상태 : <p th:if="${schedule.getScProgress()}==1"></p>
     <a th:href="@{goToRecycleBin?scNo={scNo}(scNo=${schedule.getScNo()})}">휴지통 이동</a>
+    <a th:href="@{delete?scNo={scNo}(scNo=${schedule.getScNo()})}">삭제 test</a>
   </textarea>
 </div>
 
@@ -87,6 +88,7 @@
       </div>
     </div>
   </div>
+</div>
 
   <script src="https://cdn.ckeditor.com/ckeditor5/34.0.0/classic/ckeditor.js"></script>
   <script src="https://cdn.ckeditor.com/ckeditor5/34.0.0/classic/translations/ko.js"></script>
