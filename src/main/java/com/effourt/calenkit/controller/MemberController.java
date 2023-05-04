@@ -99,6 +99,7 @@ public class MemberController {
         Member findMember = loginService.getMemberById(member.getMemId());
         if (findMember.getMemPw().equals(member.getMemPw())) {
             session.setAttribute("loginId", member.getMemId());
+            loginService.updateLastLogin(findMember.getMemId());
         } else {
             return "비밀번호가 올바르지 않습니다.";
         }
@@ -118,6 +119,7 @@ public class MemberController {
         String code = (String) session.getAttribute(loginCodeMap.get("loginCode"));
         if (code.equals(memId + "ACCESS")) {
             session.setAttribute("loginId", memId);
+            loginService.updateLastLogin(memId);
         } else {
             return "코드가 올바르지 않습니다.";
         }
@@ -157,6 +159,7 @@ public class MemberController {
         String code = (String) session.getAttribute(initializeCodeMap.get("initializeCode"));
         if (code.equals(memId + "ACCESS")) {
             session.setAttribute("loginId", memId);
+            loginService.updateLastLogin(memId);
         } else {
             return "코드가 올바르지 않습니다.";
         }
@@ -173,6 +176,7 @@ public class MemberController {
     public String join(@RequestBody Member member, HttpSession session) {
         joinService.joinByEmail(member);
         session.setAttribute("loginId", member.getMemId());
+        loginService.updateLastLogin(member.getMemId());
         return "OK";
     }
 
@@ -218,6 +222,7 @@ public class MemberController {
         }
 
         session.setAttribute("loginId", userInfo.getEmail());
+        loginService.updateLastLogin(userInfo.getEmail());
         return "main";
     }
 
