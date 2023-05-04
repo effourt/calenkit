@@ -44,26 +44,28 @@ public class MyPageService {
     // => MemberRepository.update
 
     @Transactional
-    public void modifyPassword(Member member) throws MemberNotFoundException{
-        if(memberRepository.findByMemId(member.getMemId())==null) {
-            throw new MemberNotFoundException("아이디의 회원정보가 존재하지 않습니다.");
-        }
-        //전달받은 회원정보의 비밀번호가 존재할 경우 암호화된 비밀번호로 필드값 변경
-        if(member.getMemPw()!=null && !member.getMemPw().equals("")) {
-            member.setMemPw(BCrypt.hashpw(member.getMemPw(),BCrypt.gensalt()));
-        }
-        memberRepository.updatePassword(member);
+    public void modifyPassword(Member loginmember,String password1) throws MemberNotFoundException{
+//        if(memberRepository.findByMemId(loginmember.getMemId())==null) {
+//            throw new MemberNotFoundException("아이디의 회원정보가 존재하지 않습니다.");
+//        }
+//        //전달받은 회원정보의 비밀번호가 존재할 경우 암호화된 비밀번호로 필드값 변경
+//        if(loginmember.getMemPw()!=null && !loginmember.getMemPw().equals("")) {
+//            loginmember.setMemPw(BCrypt.hashpw(loginmember.getMemPw(),BCrypt.gensalt()));
+//        }
+        loginmember.setMemPw(password1);
+       memberRepository.updatePassword(loginmember);
     }
     // [회원탈퇴 행위] : removeMe()
     // => MemberRepository.update
-    public void removeMe(Member member) throws MemberNotFoundException{
-        if(memberRepository.findByMemId(member.getMemId())==null) {
-            throw new MemberNotFoundException("아이디의 회원정보가 존재하지 않습니다.");
-        }
-        //전달받은 회원정보의 상태가 존재할 경우 상태 필드값 변경
-        if(member.getMemStatus()!=null) {
-            member.setMemStatus(member.getMemStatus());
-        }
+    public void removeMe(Member member,Integer memStatus) throws MemberNotFoundException{
+//        if(memberRepository.findByMemId(member.getMemId())==null) {
+//            throw new MemberNotFoundException("아이디의 회원정보가 존재하지 않습니다.");
+//        }
+//        //전달받은 회원정보의 상태가 존재할 경우 상태 필드값 변경
+//        if(member.getMemStatus()!=null) {
+//            member.setMemStatus(member.getMemStatus());
+//        }
+        member.setMemStatus(memStatus);
         memberRepository.update(member);
     }
     // [로그아웃 행위] : logout()
