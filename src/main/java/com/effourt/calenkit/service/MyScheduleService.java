@@ -37,6 +37,7 @@ public class MyScheduleService {
         Team team=new Team();
         team.setTeamMid(id);
         team.setTeamSno(scNo);
+        team.setTeamLevel(9);
         teamRepository.save(team);
         return scNo;
     }
@@ -75,11 +76,14 @@ public class MyScheduleService {
 
     //[휴지통에서 내 스케줄 복원 행위]
     @Transactional
-    public void restoreSchedule(Schedule schedule, Alarm alarm) {
-        schedule.setScStatus(1);
-        scheduleRepository.update(schedule);
-        alarm.setAlStatus(1);
-        alarmRepository.update(alarm);
+    public void restoreSchedule(Integer scNo, Alarm alarm) {
+        Schedule schedule=scheduleRepository.findByScNo(scNo);
+        if(schedule.getScStatus()!=1) {
+            schedule.setScStatus(1);
+        }
+        scheduleRepository.updateStatus(schedule);
+        /*alarm.setAlStatus(1);
+        alarmRepository.update(alarm);*/
     }
 
     //[휴지통에서 내 스케줄 완전 삭제 행위]
