@@ -8,6 +8,7 @@
 <body>
   <h3><span th:text="${teamMid}"/>님, 일정공유에 참여하시겠습니까?</h3>
       <input type="hidden" id="scNo" th:value="${scNo}">
+      <input type="hidden" id="teamMid" th:value="${teamMid}">
       <button id="teamShare"> 참여하기 </button>
 </body>
   <script>
