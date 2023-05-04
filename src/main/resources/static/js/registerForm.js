@@ -20,7 +20,7 @@ $("#profileImage").change(function() {
 
 //닉네임 검증
 let nicknameConfirm = false;
-const nicknameReg = /$[a-zA-Z가-힣]{2,10}^/;
+const nicknameReg = /^[a-zA-Z가-힣]{2,10}$/;
 $("#nickname").focusout(function() {
     if (!nicknameReg.test($("#nickname").val())) {
         nicknameConfirm = false;
@@ -33,7 +33,7 @@ $("#nickname").focusout(function() {
 
 //비밀번호 검증
 let passwordConfirm = false;
-const passwordReg = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#])[\da-zA-Z!@#]{8,15}$/;
+const passwordReg = /^.*(?=^.{8,15}$)(?=.*\d)(?=.*[a-zA-Z])(?=.*[!@#$%^&+=]).*$/;
 $("#loginPw").focusout(function() {
     if (!passwordReg.test($("#loginPw").val())) {
         passwordConfirm = false;
