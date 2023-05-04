@@ -52,7 +52,7 @@ public class MyScheduleService {
     // => 검색어(keyword)가 없을 경우 null로 전달 받아야 함(필수 매개변수)
     public List<Schedule> getRecycleBin(String id, String keyword) {
         Map<String, Object> map=new HashMap<>();
-        List<Integer> scNoList=teamRepository.findByBookmark(id);
+        List<Integer> scNoList=teamRepository.findByid(id);
         if(scNoList.isEmpty()) { //조건에 만족하는 일정이 없을 경우 미출력(scNo=0)
             scNoList.add(0);
         }
@@ -102,7 +102,7 @@ public class MyScheduleService {
     public List<Schedule> getMySchedule(String id, String date) {
         //map 요소 : date, List 객체(일정번호) - map(date, "2020-12-12") , map(scNoList, List<Integer>)
         Map<String, Object> map=new HashMap<>();
-        List<Integer> scNoList=teamRepository.findByBookmark(id);
+        List<Integer> scNoList=teamRepository.findByid(id);
         if(scNoList.isEmpty()) { //조건에 만족하는 일정이 없을 경우 미출력(scNo=0)
             scNoList.add(0);
         }
