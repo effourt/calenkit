@@ -49,6 +49,9 @@ public class MemberController {
     @ResponseBody
     public String checkId(@RequestBody Map<String, String> idMap) {
         String memId = idMap.get("id");
+        if (memId == null) {
+            return "이메일이 올바르지 않습니다.";
+        }
         String loginType = loginService.checkMember(memId);
         log.info("loginType={}", loginType);
 
