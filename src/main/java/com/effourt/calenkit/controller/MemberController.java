@@ -17,6 +17,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpSession;
 import java.util.Map;
@@ -120,6 +121,8 @@ public class MemberController {
             return "코드가 올바르지 않습니다.";
         }
         String code = (String) session.getAttribute(loginCodeMap.get("loginCode"));
+
+        //코드 일치 여부 검증
         if (!code.equals(memId + "ACCESS")) {
             return "코드가 올바르지 않습니다.";
         } else {
@@ -131,19 +134,24 @@ public class MemberController {
 
     /**
      * 회원가입 코드로 회원가입 후 이메일 로그인
-     * @param memId
-     * @param registerCode
+     * @param registerMap
      * @param session
-     * @param model
      * @return
      */
     @PostMapping("/login/register-code")
-    public String loginByJoin(String memId, String registerCode, HttpSession session, Model model) {
-        String joinCode = (String) session.getAttribute(registerCode);
-        if (joinCode.equals(memId + "ACCESS")) {
-            model.addAttribute("memId", memId);
+    @ResponseBody
+    public String loginByJoin(@RequestBody Map<String, String> registerMap, HttpSession session) {
+        String memId = registerMap.get("id");
+        if (session.getAttribute(registerMap.get("registerCode")) == null) {
+            return "코드가 올바르지 않습니다.";
         }
-        return "register";
+        String code = (String) session.getAttribute(registerMap.get("registerCode"));
+
+        //코드 일치 여부 검증
+        if (!code.equals(memId + "ACCESS")) {
+            return "코드가 올바르지 않습니다.";
+        }
+        return "OK";
     }
 
     /**
@@ -163,6 +171,8 @@ public class MemberController {
         loginService.updatePassword(memId, null);
         //초기화 코드 검증 후 로그인
         String code = (String) session.getAttribute(initializeCodeMap.get("initializeCode"));
+
+        //코드 일치 여부 검증
         if (code.equals(memId + "ACCESS")) {
             session.setAttribute("loginId", memId);
             loginService.updateLastLogin(memId);
@@ -170,6 +180,12 @@ public class MemberController {
             return "코드가 올바르지 않습니다.";
         }
         return "OK";
+    }
+
+    @PostMapping("/join/form")
+    public String joinForm(@RequestParam String memId, Model model) {
+        model.addAttribute("memId", memId);
+        return "register";
     }
 
     /**

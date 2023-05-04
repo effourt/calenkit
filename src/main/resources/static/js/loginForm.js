@@ -130,8 +130,26 @@ $("#loginCodeBtn").click(function () {
 
 //이메일로 회원가입 버튼 클릭 이벤트
 $("#registerCodeBtn").click(function () {
-    $("#loginForm").prop("action", domainURL + "/login/register-code");
-    $("#loginForm").submit();
+    const loginId = $("#loginId").val();
+    const registerCode = $("#registerCode").val();
+    $.ajax({
+        url: domainURL + "/login/register-code",
+        method: "POST",
+        contentType: "application/json",
+        dataType: "text",
+        data: JSON.stringify({"id" : loginId, "registerCode" : registerCode}),
+        success: function(result) {
+            if (result == "OK") {
+                $("#loginForm").prop("action", domainURL + "/join/form");
+                $("#loginForm").submit();
+            } else {
+                $("#message").text(result);
+            }
+        },
+        error: function(error) {
+            alert("비밀번호로 로그인 중 에러 발생 : " + error.status);
+        }
+    });
 });
 
 //비밀번호 찾기 버튼 클릭 이벤트
