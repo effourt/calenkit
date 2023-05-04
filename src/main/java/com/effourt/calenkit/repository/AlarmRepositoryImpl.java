@@ -29,10 +29,10 @@ public class AlarmRepositoryImpl implements AlarmRepository {
     }
 
     @Override
-    public Integer delete(Integer alNo) {
-
-        return sqlSessionTemplate.getMapper(AlarmMapper.class).delete(alNo);
+    public Integer delete(String alMid, Integer alScno) {
+        return sqlSessionTemplate.getMapper(AlarmMapper.class).delete(alMid,alScno);
     }
+
 
     @Override
     public List<Alarm> findByAlMid(String alMid) {
