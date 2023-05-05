@@ -152,7 +152,14 @@ public class MemberController2 {
         return "redirect:/myPage";
     }
 
-
+    @GetMapping(value ="/myPage_pwModify")
+    public String MyPagePwModify(){
+        return "member/myPageModify";
+    }
+    @GetMapping(value ="/myPage_delete")
+    public String MyPageDelete(){
+        return "member/myPageDelete";
+    }
 
     // MyPage
     // 멤버 비밀번호 정보변경(Put)
