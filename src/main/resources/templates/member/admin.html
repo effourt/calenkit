@@ -96,6 +96,59 @@
             $('input[type="checkbox"]').prop('checked', false);
         }
     });
+
+    //호스트상태정보 수정
+    function modify(memId) {
+        var memId=memId;
+        var memstatus=$("#memStatus_"+memId).val();
+
+        $.ajax({
+            type: "put",
+            url: "/admin/modifystatus/"+memId,
+            contentType: "application/json",
+            data : JSON.stringify({"memStatus":memStatus}),
+            dataType: "text",
+            success: function (result) {
+                if(result=="success"){
+                    memberTableBody(page);
+                }
+            },
+            error: function(xhr) {
+                alert("에러코드(호스트 상태 변경) = "+xhr.status)
+            }
+        });
+    }
+
+
+
+    //호스트정보 삭제
+    function remove() {
+        var count=$("input[name='checkId']:checked").length;
+        var removearray= new Array();
+        $("input[name='checkId']:checked").each(function () {
+            removearray.push($(this).attr('id'));
+        });
+        if(count==0){
+            alert("선택된 회원이 없습니다.");
+        } else{
+            if(confirm("회원 정보를 삭제 하시겠습니까?")) {
+                $.ajax({
+                    type: "post",
+                    url: "$/admin/remove",
+                    data: {host : removearray},
+                    dataType: "text",
+                    success: function(result) {
+                        if(result=="success") {
+                            memberTableBody(page);
+                        }
+                    },
+                    error: function(xhr) {
+                        alert("에러코드(회원 정보 삭제) = "+xhr.status)
+                    }
+                });
+            }
+        }
+    }
 </script>
 
 </body>
