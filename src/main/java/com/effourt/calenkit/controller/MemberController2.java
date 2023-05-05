@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +30,7 @@ public class MemberController2 {
     private final AdminService adminService;
     private final MemberRepository memberRepository;
     private final ImageUpload imageUploadService;
+    private final PasswordEncoder passwordEncoder;
 
     /** 관리자 */
     // Admin
@@ -83,16 +85,6 @@ public class MemberController2 {
         System.out.println(loginMember.getMemImage());
         return "member/myPage";
     }
-    @GetMapping(value = "/myPage_delete")
-    public String myPageDelete() {
-
-        return "member/myPageDelete";
-    }
-    @GetMapping(value = "/myPage_pwModify")
-    public String myPagePwModify() {
-        return "member/mypageModify";
-    }
-
 
     // MyPage
     // 멤버 닉네임 검색 후 중복 확인(GET)
@@ -169,9 +161,9 @@ public class MemberController2 {
     public String MyPagePwModify(HttpSession session,String memPw,String password1) throws MemberNotFoundException {
         String loginId=(String)session.getAttribute("loginId");
         Member loginMember=memberRepository.findByMemId(loginId);
-        System.out.println(BCrypt.checkpw(memPw, loginMember.getMemPw()));
-        if(BCrypt.checkpw(memPw, loginMember.getMemPw())){
-        //if (loginMember.getMemPw().equals(memPw))
+
+
+        if(passwordEncoder.matches(memPw, loginMember.getMemPw())){
             myPageService.modifyPassword(loginMember,password1);
             return "member/myPage";
         }
