@@ -37,37 +37,50 @@
         #deleteButton {
             cursor: pointer;
             user-select: none;
+            width: 120px;
+            height: 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            color: #fff;
+            background-color:darkred;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
         }
 
-        #pwModifyButton:hover,
-        #deleteButton:hover {
-            background-color: #ddd;
-        }
+
+
+
     </style>
 
 
 </head>
-<body>
+<body class="text-center">
 <form method="post" enctype="multipart/form-data" action="/modify_image">
     <h1>계정 정보</h1>
     <hr>
     <p>프로필 사진</p>
+
     <!-- 미리보기 이미지 -->
     <img id="preview" th:src="@{/img/} + ${memImage}" onclick="document.getElementById('memImage').click()"
          style="cursor: pointer;"/>
+
     <!-- 이미지 파일 업로드 input -->
     <input type="file" id="memImage" name="memImage" onchange="this.form.submit()" style="display: none">
     <input type="submit" style="display: none">
 
-    <div for="memName" >닉네임</div>
 
-    <input type="text" id="memName" name="memName" oninput = "checkName()" th:value="${memName}">
     <!-- name ajax 중복체크 -->
+    <div for="memName" >닉네임</div>
+    <input type="text" id="memName" name="memName" oninput = "checkName()" th:value="${memName}">
     <button class="name_ok" type="submit" style="display: none" formaction="/modify_name">닉네임 사용하기</button>
     <span class="name_already" style="display: none">사용 중 닉네임입니다.</span>
-    <p>비밀번호(임시 로그인 코드를 사용하고 싶지 않으면 비밀번호를 설정할 수 있습니다.)</p>
+
+    <!-- 비밀번호 변경 -->
     <div id="pwModifyButton" onclick="openPwModifyPopup()">비밀번호 변경</div>
-    <p>삭제</p>
+
+    <!-- 계정 삭제 -->
     <div id="deleteButton" onclick="openDeletePopup()">내 계정 삭제</div>
     <hr>
     <a th:href="@{/}">취소</a>
@@ -87,6 +100,7 @@
         }
     });
 
+
     //삭제 팝업창
     function openDeletePopup() {
         var url = "/myPage_delete";
@@ -103,6 +117,7 @@
         window.open(url, name, specs);
     }
 
+    //닉네임 비동기
     function checkName() {
         var memName = $('#memName').val(); // id 값이 "memName"인 입력란의 값을 저장
         $.ajax({

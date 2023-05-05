@@ -48,11 +48,10 @@ public class MyPageService {
 //        if(memberRepository.findByMemId(loginmember.getMemId())==null) {
 //            throw new MemberNotFoundException("아이디의 회원정보가 존재하지 않습니다.");
 //        }
-//        //전달받은 회원정보의 비밀번호가 존재할 경우 암호화된 비밀번호로 필드값 변경
-//        if(loginmember.getMemPw()!=null && !loginmember.getMemPw().equals("")) {
-//            loginmember.setMemPw(BCrypt.hashpw(loginmember.getMemPw(),BCrypt.gensalt()));
-//        }
-        loginmember.setMemPw(password1);
+        //전달받은 회원정보의 비밀번호가 존재할 경우 암호화된 비밀번호로 필드값 변경
+        if(loginmember.getMemPw()!=null && !loginmember.getMemPw().equals("")) {
+            loginmember.setMemPw(BCrypt.hashpw(password1,BCrypt.gensalt()));
+        }
        memberRepository.updatePassword(loginmember);
     }
     // [회원탈퇴 행위] : removeMe()
