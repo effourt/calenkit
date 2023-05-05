@@ -8,12 +8,14 @@ import com.effourt.calenkit.exception.ExistsTeamException;
 import com.effourt.calenkit.repository.MemberRepository;
 import com.effourt.calenkit.repository.TeamRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TeamScheduleService {
@@ -64,8 +66,9 @@ public class TeamScheduleService {
     public Team addTeam(Integer scNo, String findId) {
 
         //findId 유효값인지 확인
+        /*
         Member findMember = memberRepository.findByMemId(findId);
-        if(findMember.equals("") || findMember==null){ //존재하지 않을 경우
+        if(!findMember.getMemId().equals(findId)){ //같지 않을 경우
             return null; //예외 처리 - throw new
         }
 
@@ -76,6 +79,7 @@ public class TeamScheduleService {
                 return null; //예외 처리  - throw new
             }
         }
+         */
 
         //Team 추가
         Team newTeam = new Team();
@@ -122,25 +126,26 @@ public class TeamScheduleService {
      * @return
      */
     @Transactional
-    public int removeTeam(int scNo, String teamMid) {
-        ///int result = -1;
+    public Boolean removeTeam(int scNo, String teamMid) {
+        Boolean result = false;
 
         //teamMid 유효값인지 확인
         Member findMember = memberRepository.findByMemId(teamMid);
         if(findMember.equals("") || findMember==null){ //존재하지 않을 경우
-            return -1; //예외 처리 - throw new
+            return false; //예외 처리 - throw new
         }
 
-        /*
         //scNo 유효값인지 확인
         List<Integer> teamSnoList = teamRepository.findByid(teamMid);
         for(Integer teamSno:teamSnoList){
             if(teamSno==scNo) {//sc==scNo 일때만
-                result =  //Team 삭제
+                result = true; //Team 삭제
             }
         }
-         */
-        return teamRepository.delete(scNo,teamMid);
+        if(result) teamRepository.delete(scNo,teamMid);
+
+        return result;
+
     }
 
 

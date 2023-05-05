@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>동행 인증 화면</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+</head>
+<body>
+  <h3><span th:text="${teamMid}"/>님, 일정공유에 참여하시겠습니까?</h3>
+      <input type="hidden" id="scNo" th:value="${scNo}">
+      <input type="hidden" id="teamMid" th:value="${teamMid}">
+      <button id="teamShare"> 참여하기 </button>
+</body>
+  <script>
+
+  const domainURL = "http://localhost:8080";
+  const teamMid = $("#teamMid").val();
+  const scNo = $("#scNo").val();
+
+  $("#teamShare").click(function () {
+      $.ajax({ //동행 추가
+        url: domainURL+"/teams/share/"+scNo,
+        type: "POST",
+        contentType: "application/json",
+        dataType: "json",
+        data: JSON.stringify({"memId": teamMid}),
+        success: function(result) {
+            location.href= "/schedules?scNo="+scNo;
+        },
+        error: function(xhr, status, error) {
+          console.error("error: ", status, ", ", error);
+        }
+      });
+
+    });
+
+  </script>
+
+</html>

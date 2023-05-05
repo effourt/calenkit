@@ -27,8 +27,10 @@
                     <li th:each="alarm : ${alarmList}">
                         <span th:if="${alarm.alCate}==0"><strong>[[${titleList.get(alarmStat.index)}]]</strong>의 일정이 삭제 되었습니다.</span>
                         <span th:if="${alarm.alCate}==1"><a th:href="@{/schedules?scNo={scNo}(scNo=${alarm.alScno})}"><strong>[[${titleList.get(alarmStat.index)}]]</strong></a>의 일정이 수정 되었습니다.</span>
-                        <span th:if="${alarm.alCate}==2"><a th:href="@{/schedules?scNo={scNo}(scNo=${alarm.alScno})}"><strong>[[${titleList.get(alarmStat.index)}]]</strong></a>의 일정이 초대 되었습니다.</span>
-                        <span th:if="${alarm.alCate}==3"><a th:href="@{/schedules?scNo={scNo}(scNo=${alarm.alScno})}"><strong>[[${titleList.get(alarmStat.index)}]]</strong></a>의 일정의 권한이 변경되었습니다.</span>
+                        <span th:if="${alarm.alCate}==2"><a th:href="@{/schedules?scNo={scNo}(scNo=${alarm.alScno})}"><strong>[[${titleList.get(alarmStat.index)}]]</strong></a>의 일정에 초대 되었습니다.</span>
+                        <span th:if="${alarm.alCate}==3"><strong>[[${titleList.get(alarmStat.index)}]]</strong>의 일정에서 삭제되었습니다.</span>
+                        <span th:if="${alarm.alCate}==4"><a th:href="@{/schedules?scNo={scNo}(scNo=${alarm.alScno})}"><strong>[[${titleList.get(alarmStat.index)}]]</strong></a>의 일정의 귀하의 권한이 읽기로 변경되었습니다.</span>
+                        <span th:if="${alarm.alCate}==5"><a th:href="@{/schedules?scNo={scNo}(scNo=${alarm.alScno})}"><strong>[[${titleList.get(alarmStat.index)}]]</strong></a>의 일정의 귀하의 권한이 쓰기로 변경되었습니다.</span>
                     </li>
                 </ul>
             </div>
