@@ -13,10 +13,10 @@
         UPDATE AUTH
         <set>
             <if test="authAccess != null and authAccess != ''">
-                AUTH_ACCESS=#{authAccess}
+                AUTH_ACCESS=#{authAccess},
             </if>
             <if test="authRefresh != null and authRefresh != ''">
-                AUTH_REFRESH=#{authRefresh}
+                AUTH_REFRESH=#{authRefresh},
             </if>
         </set>
         WHERE AUTH_ID=#{authId}
