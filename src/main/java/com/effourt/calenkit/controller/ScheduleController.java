@@ -27,6 +27,7 @@ public class ScheduleController {
     private final ScheduleRepository scheduleRepository;
     private final MemberRepository memberRepository;
     private final AlarmRepository alarmRepository;
+    private final HttpSession session;
 
     //http://localhost:8080/
     //http://localhost:8080/main
@@ -34,10 +35,9 @@ public class ScheduleController {
      * 달력에 일정 출력(메인페이지)
      */
     @GetMapping(value={"/","/main"})
-    public String main(Model model, HttpSession session) {
+    public String main(Model model) {
         //세션에서 로그인아이디 반환받아 저장
-        //String loginId = (String)session.getAttribute("loginId");
-        String loginId = "employee";
+        String loginId = (String)session.getAttribute("loginId");
 
         //개인 알람리스트 조회
         List<Alarm> alarmList = alarmRepository.findByAlMid(loginId);
@@ -69,23 +69,24 @@ public class ScheduleController {
     @GetMapping("/main_ajax")
     @ResponseBody
     public List<Map> mainAJAX() {
-        //String loginId = (String)session.getAttribute("loginId"); //session으로 현재 아이디 받아오기
-        String id="employee";
+        String loginId = (String)session.getAttribute("loginId"); //session으로 현재 아이디 받아오기
         Date temp=new Date(); //출력 기준 월 받아오기
         SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM");
         String date=simpleDateFormat.format(temp).toString();
 
-        List<Schedule> scheduleList = myScheduleService.getMySchedule(id,null); //일정 리스트 저장
+        List<Schedule> scheduleList = myScheduleService.getMySchedule(loginId,null); //일정 리스트 저장
 
         List<Map> mapList=new ArrayList<>();
 
         for(Schedule schedule:scheduleList) { //일정 리스트에서 일정 뽑아내기
-        Map<String, String> map=new HashMap<>(); //일정 저장할 map
-            map.put("title", schedule.getScTitle());
-            map.put("start", schedule.getScSdate());
-            map.put("end", schedule.getScEdate());
-            map.put("url", "schedules?scNo=" + schedule.getScNo());
-            mapList.add(map); //map에 일정 저장
+            if(schedule.getScStatus()!=0) {
+                Map<String, String> map=new HashMap<>(); //일정 저장할 map
+                map.put("title", schedule.getScTitle());
+                map.put("start", schedule.getScSdate());
+                map.put("end", schedule.getScEdate());
+                map.put("url", "schedules?scNo=" + schedule.getScNo());
+                mapList.add(map); //map에 일정 저장
+            }
         }
         return mapList; //일정이 저장된 mapList값 보내기
     }
@@ -116,10 +117,9 @@ public class ScheduleController {
      * @return 일정 상세 페이지 URL
      */
     @GetMapping("/add")
-    public String addSchedule() {
-        //String loginId = (String)session.getAttribute("loginId"); //session으로 현재 아이디 받아오기
-        String id="employee";
-        Integer scNo=myScheduleService.addMySchedule(id); //일정 추가
+    public String addSchedule(@RequestParam String date) {
+        String loginId = (String)session.getAttribute("loginId"); //session으로 현재 아이디 받아오기
+        Integer scNo=myScheduleService.addMySchedule(loginId, date); //일정 추가
 
         return "redirect:/schedules?scNo="+scNo; //추가된 일정 상세 페이지로 이동
     }
@@ -142,9 +142,16 @@ public class ScheduleController {
      */
     @GetMapping("/delete")
     public String deleteSchedule(@RequestParam Integer scNo) {
-        //String loginId = (String)session.getAttribute("loginId"); //session으로 현재 아이디 받아오기
-        String id="employee";
-        myScheduleService.removeSchedule(scNo, id);
+        String loginId = (String)session.getAttribute("loginId"); //session으로 현재 아이디 받아오기
+        myScheduleService.removeSchedule(scNo, loginId);
+
+        return "redirect:/";
+    }
+
+    @GetMapping("/restore")
+    public String restoreSchedule(@RequestParam Integer scNo) {
+        String loginId = (String)session.getAttribute("loginId"); //session으로 현재 아이디 받아오기
+        myScheduleService.restoreSchedule(scNo, null);
 
         return "redirect:/";
     }

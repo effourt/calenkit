@@ -14,6 +14,7 @@ import com.effourt.calenkit.util.EmailSend;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -35,6 +36,7 @@ public class MemberController {
 
     private final MessageSource ms;
     private final EmailSend emailSend;
+    private final PasswordEncoder passwordEncoder;
 
 
     /**
@@ -49,6 +51,9 @@ public class MemberController {
     @ResponseBody
     public String checkId(@RequestBody Map<String, String> idMap) {
         String memId = idMap.get("id");
+        if (memId == null) {
+            return "이메일이 올바르지 않습니다.";
+        }
         String loginType = loginService.checkMember(memId);
         log.info("loginType={}", loginType);
 
@@ -97,8 +102,10 @@ public class MemberController {
     @PostMapping("/login/password")
     @ResponseBody
     public String loginByPassword(@RequestBody Member member, HttpSession session) {
+        //세션에 저장된 아이디 검색
         Member findMember = loginService.getMemberById(member.getMemId());
-        if (findMember.getMemPw().equals(member.getMemPw())) {
+        //전달된 비밀번호와 검색한 비밀번호(인코딩된 비밀번호)를 비교
+        if (passwordEncoder.matches(member.getMemPw(), findMember.getMemPw())) {
             session.setAttribute("loginId", member.getMemId());
             loginService.updateLastLogin(findMember.getMemId());
         } else {
@@ -196,6 +203,9 @@ public class MemberController {
     @PostMapping("/join")
     @ResponseBody
     public String join(@RequestBody Member member, HttpSession session) {
+        //비밀번호를 암호화
+        member.setMemPw(passwordEncoder.encode(member.getMemPw()));
+        //아이디(이메일), 프로필 이미지, 닉네임, 비밀번호를 회원 테이블에 저장
         joinService.joinByEmail(member);
         session.setAttribute("loginId", member.getMemId());
         loginService.updateLastLogin(member.getMemId());
@@ -263,6 +273,4 @@ public class MemberController {
         session.invalidate();
         return "login";
     }
-
-
 }

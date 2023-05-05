@@ -126,7 +126,11 @@
                         <ul style="height: 80px; overflow: scroll;">
                             <th:block th:each="schedule : ${scheduleList}">
                                 <th:block th:if="${schedule.scStatus}==0">
-                                    <li><Strong>([[${schedule.getScNo}]])</Strong>[[${schedule.getScSdate}]] ~ [[${schedule.getScEdate}]] / [[${schedule.getScTitle}]]</li>
+                                    <li>
+                                        <Strong>([[${schedule.getScNo}]])</Strong>
+                                        [[${schedule.getScSdate}]] ~ [[${schedule.getScEdate}]] / [[${schedule.getScTitle}]]
+                                        <a th:href="@{restore?scNo={scNo}(scNo=${schedule.getScNo()})}">복원</a> <a th:href="@{delete?scNo={scNo}(scNo=${schedule.getScNo()})}">삭제</a>
+                                    </li>
                                 </th:block>
                             </th:block>
                         </ul>

@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,13 +32,20 @@ public class MyScheduleService {
 
     //[메인에서 내 스케줄 추가 행위]
     @Transactional
-    public Integer addMySchedule(String id) {
-        scheduleRepository.save();
+    public Integer addMySchedule(String id, String date) {
+        if(date==null || date.isEmpty() || date.isBlank()) { //날짜 미지정 시 현재 날짜로 설정
+            SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd");
+            Date temp=new Date(System.currentTimeMillis());
+            date=simpleDateFormat.format(temp);
+        }
+
+        scheduleRepository.save(date);
         Integer scNo=scheduleRepository.findLastInsertScNo();
 
         Team team=new Team();
         team.setTeamMid(id);
         team.setTeamSno(scNo);
+        team.setTeamLevel(9);
         teamRepository.save(team);
         return scNo;
     }
@@ -52,7 +61,7 @@ public class MyScheduleService {
     // => 검색어(keyword)가 없을 경우 null로 전달 받아야 함(필수 매개변수)
     public List<Schedule> getRecycleBin(String id, String keyword) {
         Map<String, Object> map=new HashMap<>();
-        List<Integer> scNoList=teamRepository.findByBookmark(id);
+        List<Integer> scNoList=teamRepository.findByid(id);
         if(scNoList.isEmpty()) { //조건에 만족하는 일정이 없을 경우 미출력(scNo=0)
             scNoList.add(0);
         }
@@ -75,11 +84,14 @@ public class MyScheduleService {
 
     //[휴지통에서 내 스케줄 복원 행위]
     @Transactional
-    public void restoreSchedule(Schedule schedule, Alarm alarm) {
-        schedule.setScStatus(1);
-        scheduleRepository.update(schedule);
-        alarm.setAlStatus(1);
-        alarmRepository.update(alarm);
+    public void restoreSchedule(Integer scNo, Alarm alarm) {
+        Schedule schedule=scheduleRepository.findByScNo(scNo);
+        if(schedule.getScStatus()!=1) {
+            schedule.setScStatus(1);
+        }
+        scheduleRepository.updateStatus(schedule);
+        /*alarm.setAlStatus(1);
+        alarmRepository.update(alarm);*/
     }
 
     //[휴지통에서 내 스케줄 완전 삭제 행위]
@@ -102,7 +114,7 @@ public class MyScheduleService {
     public List<Schedule> getMySchedule(String id, String date) {
         //map 요소 : date, List 객체(일정번호) - map(date, "2020-12-12") , map(scNoList, List<Integer>)
         Map<String, Object> map=new HashMap<>();
-        List<Integer> scNoList=teamRepository.findByBookmark(id);
+        List<Integer> scNoList=teamRepository.findByid(id);
         if(scNoList.isEmpty()) { //조건에 만족하는 일정이 없을 경우 미출력(scNo=0)
             scNoList.add(0);
         }
