@@ -1,22 +1,14 @@
 package com.effourt.calenkit.service;
 
 import com.effourt.calenkit.domain.Member;
-import com.effourt.calenkit.dto.AccessTokenRequest;
 import com.effourt.calenkit.repository.MemberRepository;
-import com.effourt.calenkit.repository.MemberRepositoryImpl;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
 @Transactional
@@ -86,5 +78,25 @@ class LoginServiceTest {
 
     @Test
     void updateToken() {
+    }
+
+    @Test
+    void updateRecentLogin() {
+        Member member1 = new Member();
+        member1.setMemId("ID-1");
+        member1.setMemPw("PASSWORD-1");
+        member1.setMemName("NICKNAME-1");
+        memberRepository.save(member1);
+
+        Member updateMember = new Member();
+        updateMember.setMemId("ID-1");
+        updateMember.setMemLogin("2020-01-01");
+        memberRepository.update(updateMember);
+        Member findMember = memberRepository.findByMemId("ID-1");
+        log.info("findMember LastLogin={}", findMember.getMemLogin());
+
+        loginService.updateLastLogin("ID-1");
+        Member findMember2 = memberRepository.findByMemId("ID-1");
+        log.info("findMember2 LastLogin={}", findMember2.getMemLogin());
     }
 }

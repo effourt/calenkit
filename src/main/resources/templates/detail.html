@@ -132,27 +132,25 @@
       });
     });
 
-    //이메일 전송과 동행 추가 함수
+    //일정 초대 이벤트 함수
+    // => 이메일 전송 >> 동행의 링크 확인 >> 동행 추가
     function addTeam(memId){
-      if(confirm(memId+"님을 일정에 초대하시겠습니까?")){
-
-        //이메일 전송
-
-        $.ajax({ //동행 추가
-          url: "/teams/share/"+scNo,
-          type: "POST",
-          contentType: "application/json",
-          dataType: "json",
-          data: JSON.stringify({"memId": memId}),
-          success: function(result) {
-            //location.href="/schedules?scNo="+scNo;
-          },
-          error: function(xhr, status, error) {
-            console.error("error: ", status, ", ", error);
-          }
-        });
+      if(confirm(memId+"님을 일정에 초대하시겠습니까? 확인을 누를 시 동행에게 일정 초대 메일이 발송됩니다.")){
+          //이메일 전송
+          $.ajax({
+            url: "/teams/share/send-link/"+scNo,
+            method: "POST",
+            contentType: "application/json",
+            dataType: "text",
+            data: JSON.stringify({"teamMid": memId}),
+            success: function(result) {
+            },
+            error: function(error) {
+              alert("이메일 전송 API 호출 중 에러 발생 : " + error.status);
+            }
+          });
+        }
       }
-    }
 
 
     [# th:each="team, stat : ${teamList}"]

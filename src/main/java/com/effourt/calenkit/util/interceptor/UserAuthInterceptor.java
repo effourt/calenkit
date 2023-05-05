@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 @Slf4j
+@Component
 public class UserAuthInterceptor implements HandlerInterceptor {
 
     private MemberRepository memberRepository;

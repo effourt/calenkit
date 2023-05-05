@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -142,8 +143,6 @@ public class MemberController2 {
         String fileName = imageUploadService.uploadImage(memImage);
         // Member 객체에 이미지 파일명 저장
         loginMember.setMemImage(fileName);
-        // 닉네임 업로드
-        //loginMember.setMemName(memName);
         // Member 객체를 인자로 받는 modifyMe() 메소드 호출
         myPageService.modifyMe(loginMember);
 
@@ -163,14 +162,16 @@ public class MemberController2 {
 
 
 
-        // MyPage
+    // MyPage
     // 멤버 비밀번호 정보변경(Put)
     // 로그인세션에서 아이디값을 전달받아 member_pwModify 페이지로 이동처리.
     @PostMapping(value ="/myPage_pwModify")
     public String MyPagePwModify(HttpSession session,String memPw,String password1) throws MemberNotFoundException {
         String loginId=(String)session.getAttribute("loginId");
         Member loginMember=memberRepository.findByMemId(loginId);
-        if (loginMember.getMemPw().equals(memPw)) {
+        System.out.println(BCrypt.checkpw(memPw, loginMember.getMemPw()));
+        if(BCrypt.checkpw(memPw, loginMember.getMemPw())){
+        //if (loginMember.getMemPw().equals(memPw))
             myPageService.modifyPassword(loginMember,password1);
             return "member/myPage";
         }

@@ -8,6 +8,14 @@
     <link rel="stylesheet" th:href="@{/css/login-form-style.css}" href="../static/css/login-form-style.css">
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <style>
+        #profileImageMessage, #nicknameMessage, #passwordMessage, #passwordCheckMessage {
+            height: 10px;
+        }
+        #profileImage::file-selector-button {
+            display: none;
+        }
+    </style>
 </head>
 <body>
 
@@ -23,25 +31,34 @@
                                     <div class="center-wrap">
                                         <div class="section text-center">
                                             <h4 class="mb-4 pb-3">회원가입</h4>
-                                            <form id="registerForm" method="post">
+                                            <form id="registerForm" method="post" enctype="multipart/form-data">
                                                 <div class="form-group">
                                                     <input type="hidden" name="memId" id="loginId" th:value="${memId}">
                                                 </div>
                                                 <!-- 프로필 이미지 입력창 -->
                                                 <div class="form-group mt-2">
-                                                    <input type="file" name="memImage" class="form-style" id="profileImage" autocomplete="off">
+                                                    <input type="file" name="memImage" class="form-style" id="profileImage" accept=".jpg, .jpeg, .png" autocomplete="off">
                                                     <i class="input-icon uil uil-lock-alt"></i>
                                                 </div>
+                                                <p id="profileImageMessage" class="mb-0 mt-4 text-center"></p>
                                                 <!-- 닉네임 입력창 -->
                                                 <div class="form-group mt-2">
                                                     <input type="text" name="memName" class="form-style" placeholder="닉네임을 입력하세요" id="nickname" autocomplete="off">
                                                     <i class="input-icon uil uil-lock-alt"></i>
                                                 </div>
+                                                <p id="nicknameMessage" class="mb-0 mt-4 text-center"></p>
                                                 <!-- 비밀번호 입력창 -->
                                                 <div class="form-group mt-2">
                                                     <input type="password" name="memPw" class="form-style" placeholder="설정할 비밀번호를 입력하세요" id="loginPw" autocomplete="off">
                                                     <i class="input-icon uil uil-lock-alt"></i>
                                                 </div>
+                                                <p id="passwordMessage" class="mb-0 mt-4 text-center"></p>
+                                                <!-- 비밀번호 확인 입력창 -->
+                                                <div class="form-group mt-2">
+                                                    <input type="password" class="form-style" placeholder="동일한 비밀번호를 입력하세요" id="loginPwCheck" autocomplete="off">
+                                                    <i class="input-icon uil uil-lock-alt"></i>
+                                                </div>
+                                                <p id="passwordCheckMessage" class="mb-0 mt-4 text-center"></p>
                                                 <button type="button" id="registerBtn" class="btn mt-4">회원가입 후 로그인</button>
                                             </form>
                                         </div>
@@ -56,39 +73,6 @@
     </div>
 </div>
 
-<script th:src="@{/js/loginFormScript.js}" src="../static/js/loginFormScript.js"></script>
-<script type="text/javascript">
-    //도메인 주소
-    const domainURL = "http://localhost:8080";
-
-    //회원가입 후 로그인 버튼 클릭 이벤트
-    $("#registerBtn").click(function() {
-        const loginId = $("#loginId").val();
-        const profileImage = $("#profileImage").val();
-        const nickname = $("#nickname").val();
-        const password = $("#loginPw").val();
-        $.ajax({
-            url: domainURL + "/join",
-            method: "POST",
-            contentType: "application/json",
-            dataType: "text",
-            data: JSON.stringify({
-                "memId" : loginId,
-                "memImage" : profileImage,
-                "memName" : nickname,
-                "memPw" : password}),
-            success: function(result) {
-                if (result == "OK") {
-                    location.href = domainURL + "/";
-                } else {
-                    $("#message").val(result);
-                }
-            },
-            error: function(error) {
-                alert("비밀번호로 로그인 중 에러 발생 : " + error.status);
-            }
-        });
-    });
-</script>
+<script th:src="@{/js/registerForm.js}" src="../static/js/registerForm.js"></script>
 </body>
 </html>
