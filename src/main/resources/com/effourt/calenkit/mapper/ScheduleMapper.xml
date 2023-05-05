@@ -4,7 +4,7 @@
     <!-- INSERT -->
     <!-- 상세페이지 내용 최초 입력 -->
     <insert id="save">
-        INSERT INTO SCHEDULE(SC_TITLE, SC_CONTENT, SC_SDATE, SC_EDATE, SC_STATUS, SC_PROGRESS) VALUES('제목 없음', null, now(), null, 1, 1)
+        INSERT INTO SCHEDULE(SC_TITLE, SC_CONTENT, SC_SDATE, SC_EDATE, SC_STATUS, SC_PROGRESS) VALUES('제목 없음', null, #{date}, null, 1, 1)
     </insert>
 
     <!-- UPDATE -->

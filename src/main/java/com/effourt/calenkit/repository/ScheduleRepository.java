@@ -8,7 +8,7 @@ import java.util.Map;
 
 
 public interface ScheduleRepository {
-    Integer save();
+    Integer save(String date);
     Integer update(Schedule schedule);
     Integer updateStatus(Schedule schedule);
     Integer delete(Integer scNo);

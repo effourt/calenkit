@@ -11,7 +11,7 @@ import java.util.List;
 @Mapper
 public interface ScheduleMapper {
 
-    Integer save();
+    Integer save(String date);
     Integer update(Schedule schedule);
     Integer updateStatus(Schedule schedule);
     Integer delete(Integer scNo);

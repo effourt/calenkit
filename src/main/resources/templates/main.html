@@ -51,13 +51,14 @@
                    });
 
                    calendar.on('dateClick', function(info) {
-                       location.href="localhost:8080/add";
+                       var date=info.dateStr;
+                       location.href="/add?date="+date;
                    });
 
                    calendar.render();
                },
                error: function (xhr){
-                   location.href="localhost:8080/error"; //에러페이지로 이동
+                   location.href="/error"; //에러페이지로 이동
                }
             });
 
@@ -77,6 +78,10 @@
             margin: 30px auto;
             width: 90%;
             height: 90vh;
+        }
+
+        td .fc-day:hover {
+            background-color: pink;
         }
     </style>
 </head>
