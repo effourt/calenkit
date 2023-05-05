@@ -104,7 +104,7 @@
 
         $.ajax({
             type: "put",
-            url: "/admin/modifystatus/"+memId,
+            url: "/admin_statusModify"+memId,
             contentType: "application/json",
             data : JSON.stringify({"memStatus":memStatus}),
             dataType: "text",
@@ -134,7 +134,7 @@
             if(confirm("회원 정보를 삭제 하시겠습니까?")) {
                 $.ajax({
                     type: "post",
-                    url: "$/admin/remove",
+                    url: "$/admin_delete",
                     data: {host : removearray},
                     dataType: "text",
                     success: function(result) {
