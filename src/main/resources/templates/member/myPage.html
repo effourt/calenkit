@@ -57,18 +57,16 @@
 
 </head>
 <body class="text-center">
-<form method="post" enctype="multipart/form-data" action="/modify_image">
+<form id="ajaxform" method="post" enctype="multipart/form-data">
     <h1>계정 정보</h1>
     <hr>
-    <p>프로필 사진</p>
+    <p>프로필</p>
 
-    <!-- 미리보기 이미지 -->
-    <img id="preview" th:src="@{/img/} + ${memImage}" onclick="document.getElementById('memImage').click()"
-         style="cursor: pointer;"/>
 
     <!-- 이미지 파일 업로드 input -->
-    <input type="file" id="memImage" name="memImage" onchange="this.form.submit()" style="display: none">
-    <input type="submit" style="display: none">
+    <img id="image-preview"  th:src="@{/img/} + ${memImage}" alt="Image Preview" style="width: 200px; height: 200px;" onclick="document.getElementById('memImage').click()" >
+    <input type="file" id="memImage" name="memImage" style="display: none">
+    <div><input type="button" id="files_send" value="이미지 변경"></div>
 
 
     <!-- name ajax 중복체크 -->
@@ -88,17 +86,52 @@
 </body>
 <script type="text/javascript">
 
-    // 파일 선택 시 미리보기 기능 제공
-    $('#memImage').change(function() {
+    //유효성 검사
+    $(document).on('change', '#memImage', function () {
         var input = this;
-        if (input.files && input.files[0]) {
+        var url = $(this).val();
+        var ext = url.substring(url.lastIndexOf('.') + 1).toLowerCase();
+        if (input.files && input.files[0] && (ext == "gif" || ext == "png" || ext == "jpeg" || ext == "jpg")) {
             var reader = new FileReader();
+
             reader.onload = function (e) {
-                $('#preview').attr('src', e.target.result);
+                $('#image-preview').attr('src', e.target.result);
+                $('#image-preview').show();
             }
+
             reader.readAsDataURL(input.files[0]);
         }
+        else {
+            $('#image-preview').attr('src', '#');
+            $('#image-preview').hide();
+            alert("올바른 이미지 파일을 선택해주세요. (gif, png, jpg, jpeg 형식만 가능)");
+            $(this).val('');
+        }
     });
+
+    //파일 미리보기 + 저장
+    $(document).on('click', '#files_send', function () {
+        var formData = new FormData();
+
+        for(var i=0; i<$('#memImage')[0].files.length; i++){
+            formData.append('memImage', $('#memImage')[0].files[i]);
+        }
+
+        $.ajax({
+            url: '/modify_image',
+            data: formData,
+            processData: false,
+            contentType: false,
+            type: 'POST',
+            success: function (data) {
+                alert("이미지 업로드 성공");
+            }
+        });
+    });
+
+
+
+
 
 
     //삭제 팝업창
