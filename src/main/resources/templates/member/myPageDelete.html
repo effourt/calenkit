@@ -28,6 +28,7 @@
 </head>
 <body>
 <form method="post" action="/myPage_delete" >
+
     <p>이 작업은 실행 취소할 수 없습니다.전체 계정이</p>
     <p>삭제됩니다. 모든 개인 워크스페이스가 삭제되고 </p>
     <p>모든 공유 워크스페이스에서 이 계정이 제거됩니다.</p>
@@ -39,7 +40,7 @@
     <!-- memId ajax 중복체크 -->
     <span class="id_ok" style="display: none">이메일이 일치합니다.</span>
     <span class="id_already" style="display: none">이메일이 일치하지 않습니다.</span>
-    <button>계정 및 워크스페이스 삭제</button>
+    <button style="display: block" class="deleteButton" onclick="window.close()">계정 및 워크스페이스 삭제</button>
 </form>
 
 </body>
@@ -57,6 +58,7 @@
                 } else { // cnt가 1일 경우 -> 일치하는 아이디
                     $('.id_ok').css("display","inline-block");
                     $('.id_already').css("display", "none");
+                    $('.deleteButton').css("display","inline-block");
                 }
             },
             error:function(){

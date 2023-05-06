@@ -6,6 +6,7 @@ import com.effourt.calenkit.exception.MemberNotFoundException;
 import com.effourt.calenkit.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,6 +16,7 @@ import javax.servlet.http.HttpSession;
 @RequiredArgsConstructor
 public class MyPageService {
     private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
     // [내정보 변경 행위] : modifyMe()
     // => MemberRepository.find
     // => MemberRepository.update
@@ -50,7 +52,7 @@ public class MyPageService {
 //        }
         //전달받은 회원정보의 비밀번호가 존재할 경우 암호화된 비밀번호로 필드값 변경
         if(loginmember.getMemPw()!=null && !loginmember.getMemPw().equals("")) {
-            loginmember.setMemPw(BCrypt.hashpw(password1,BCrypt.gensalt()));
+            loginmember.setMemPw(passwordEncoder.encode(password1));
         }
        memberRepository.updatePassword(loginmember);
     }

@@ -6,11 +6,14 @@ import com.effourt.calenkit.repository.MemberRepository;
 import com.effourt.calenkit.service.AdminService;
 import com.effourt.calenkit.service.MyPageService;
 import com.effourt.calenkit.util.ImageUpload;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 @Slf4j
@@ -29,6 +33,7 @@ public class MemberController2 {
     private final AdminService adminService;
     private final MemberRepository memberRepository;
     private final ImageUpload imageUploadService;
+    private final PasswordEncoder passwordEncoder;
 
     /** 관리자 */
     // Admin
@@ -58,18 +63,21 @@ public class MemberController2 {
     @PatchMapping(value ="/admin_statusModify")
     public String AdminModify(@ModelAttribute Member member) throws MemberNotFoundException {
         Member selectMember=memberRepository.findByMemId(member.getMemId());
-        return "adminPage";
+        return "admin";
     }
 
     // Admin
     // 멤버 삭제(DELETE)
     // 로그인세션에서 아이디값을 전달받아 member_list 페이지로 이동
-    @DeleteMapping(value ="/admin_delete")
-    public String AdminDelete(@ModelAttribute Member member) throws MemberNotFoundException {
-        adminService.removeMember(member);
-        return "adminPage";
+    @PostMapping(value ="/admin_delete")
+    public String adminDelete(@RequestParam("memIdList") List<String> memIdList) throws MemberNotFoundException {
+        for (String memId : memIdList) {
+            System.out.println("memId: " + memId);
+            System.out.println("memId: " + memIdList);
+            adminService.removeMember(memId);
+        }
+        return "member/admin";
     }
-
     /** 마이 페이지 */
 
 
@@ -83,16 +91,6 @@ public class MemberController2 {
         System.out.println(loginMember.getMemImage());
         return "member/myPage";
     }
-    @GetMapping(value = "/myPage_delete")
-    public String myPageDelete() {
-
-        return "member/myPageDelete";
-    }
-    @GetMapping(value = "/myPage_pwModify")
-    public String myPagePwModify() {
-        return "member/mypageModify";
-    }
-
 
     // MyPage
     // 멤버 닉네임 검색 후 중복 확인(GET)
@@ -160,7 +158,14 @@ public class MemberController2 {
         return "redirect:/myPage";
     }
 
-
+    @GetMapping(value ="/myPage_pwModify")
+    public String MyPagePwModify(){
+        return "member/myPageModify";
+    }
+    @GetMapping(value ="/myPage_delete")
+    public String MyPageDelete(){
+        return "member/myPageDelete";
+    }
 
     // MyPage
     // 멤버 비밀번호 정보변경(Put)
@@ -169,16 +174,21 @@ public class MemberController2 {
     public String MyPagePwModify(HttpSession session,String memPw,String password1) throws MemberNotFoundException {
         String loginId=(String)session.getAttribute("loginId");
         Member loginMember=memberRepository.findByMemId(loginId);
-        System.out.println(BCrypt.checkpw(memPw, loginMember.getMemPw()));
-        if(BCrypt.checkpw(memPw, loginMember.getMemPw())){
-        //if (loginMember.getMemPw().equals(memPw))
+        
+        //비밀번호 없을 경우
+        if(loginMember.getMemPw()==null){
             myPageService.modifyPassword(loginMember,password1);
             return "member/myPage";
         }
+        //기존 비밀번호 있을 경우
         else {
-            return "member/myPage";
+            if (passwordEncoder.matches(memPw, loginMember.getMemPw())) {
+                myPageService.modifyPassword(loginMember, password1);
+                return "member/myPage";
+            } else {
+                return "member/myPage";
+            }
         }
-
     }
     // MyPage
     // 멤버 상태 변경(Put)
