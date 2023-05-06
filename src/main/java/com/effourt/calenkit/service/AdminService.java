@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class AdminService {
@@ -37,10 +39,8 @@ public class AdminService {
     // [회원 말소 행위] : removeMember()
     // => MemberRepository.delete
     @Transactional
-    public void removeMember(Member member) throws MemberNotFoundException{
-        if(memberRepository.findByMemId(member.getMemId())==null) {
-            throw new MemberNotFoundException("아이디의 회원정보가 존재하지 않습니다.");
-        }
-            memberRepository.delete(member.getMemId());
+    public void removeMember(String memId) throws MemberNotFoundException{
+
+            memberRepository.delete(memId);
     }
 }
