@@ -71,13 +71,16 @@ public class MemberController2 {
     // 로그인세션에서 아이디값을 전달받아 member_list 페이지로 이동
     @PostMapping(value ="/admin_delete")
     public String adminDelete(@RequestParam("memIdList") List<String> memIdList) throws MemberNotFoundException {
-        for (String memId : memIdList) {
-            System.out.println("memId: " + memId);
-            System.out.println("memId: " + memIdList);
+       //체크 된 멤버리스트 삭제하기 위해 for문 사용.
+        for (String originMemId : memIdList) {
+            //리스트로 객체 받아올 경우 [,],"가 포함되어있는데 이걸 제거하기 위해 사용함.
+            String originalString =originMemId.toString();
+            String memId = originalString.replaceAll("[\\[\\]\",]", "");
             adminService.removeMember(memId);
         }
         return "member/admin";
     }
+
     /** 마이 페이지 */
 
 
