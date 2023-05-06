@@ -39,7 +39,7 @@
         <!-- memberList를 통해 내용이 들어갈 부분 -->
         </tbody>
     </table>
-    <button>선택 회원 삭제</button>
+    <button id="delete_btn" onclick="remove()">선택 회원 삭제</button>
 </div>
 
 <!-- Bootstrap 5 JS -->
@@ -97,6 +97,37 @@
         }
     });
 
+
+    //호스트정보 삭제
+    function remove() {
+        var count = $("input[type='checkbox']:checked").length;
+        var removeArray = new Array();
+        $("input[type='checkbox']:checked").each(function() {
+            removeArray.push($(this).val());
+        });
+        if (count == 0) {
+            alert("선택된 회원이 없습니다.");
+        } else {
+            if (confirm("회원 정보를 삭제 하시겠습니까?")) {
+                $.ajax({
+                    type: "POST",
+                    url: "/admin_delete",
+                    data: { memIdList: JSON.stringify(removeArray) },
+                    dataType: "text",
+                    success: function(result) {
+                        if (result == "success") {
+                            // 삭제 성공 시 처리할 코드 작성
+                        }
+                    },
+                    error: function(xhr) {
+                        alert("에러코드(회원 정보 삭제) = " + xhr.status);
+                    }
+                });
+            }
+        }
+    }
+
+
     //호스트상태정보 수정
     function modify(memId) {
         var memId=memId;
@@ -120,35 +151,6 @@
     }
 
 
-
-    //호스트정보 삭제
-    function remove() {
-        var count=$("input[name='checkId']:checked").length;
-        var removearray= new Array();
-        $("input[name='checkId']:checked").each(function () {
-            removearray.push($(this).attr('id'));
-        });
-        if(count==0){
-            alert("선택된 회원이 없습니다.");
-        } else{
-            if(confirm("회원 정보를 삭제 하시겠습니까?")) {
-                $.ajax({
-                    type: "post",
-                    url: "$/admin_delete",
-                    data: {host : removearray},
-                    dataType: "text",
-                    success: function(result) {
-                        if(result=="success") {
-                            memberTableBody(page);
-                        }
-                    },
-                    error: function(xhr) {
-                        alert("에러코드(회원 정보 삭제) = "+xhr.status)
-                    }
-                });
-            }
-        }
-    }
 </script>
 
 </body>
