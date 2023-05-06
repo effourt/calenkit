@@ -36,7 +36,7 @@
 
       <p>최소 8자의 문자와 숫자조합을 비밀번호로 이용해주세요.</p>
 
-      <button>비밀번호 변경</button>
+      <button style="display: none" class="deleteButton" onclick="window.close()">비밀번호 변경</button>
 </form>
 
 </body>
@@ -60,6 +60,7 @@
                 } else { // cnt가 1일 경우 -> 일치하는 아이디
                     $('.password_ok').css("display","inline-block");
                     $('.password_already').css("display", "none");
+                    $('.deleteButton').css("display","inline-block");
                 }
             },
             error:function(){
