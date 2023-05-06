@@ -1,10 +1,13 @@
 package com.effourt.calenkit.controller;
 
 import com.effourt.calenkit.domain.Alarm;
+import com.effourt.calenkit.domain.Member;
 import com.effourt.calenkit.domain.Schedule;
 import com.effourt.calenkit.domain.Team;
+import com.effourt.calenkit.dto.TeamShare;
 import com.effourt.calenkit.repository.*;
 import com.effourt.calenkit.service.MyScheduleService;
+import com.effourt.calenkit.service.TeamScheduleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.math.raw.Mod;
@@ -23,11 +26,18 @@ import java.util.*;
 @RequiredArgsConstructor
 public class ScheduleController {
     private final MyScheduleService myScheduleService;
+    private final TeamScheduleService teamScheduleService;
     private final TeamRepository teamRepository;
     private final ScheduleRepository scheduleRepository;
     private final MemberRepository memberRepository;
     private final AlarmRepository alarmRepository;
     private final HttpSession session;
+
+    @ModelAttribute("loginMember")
+    public Member getLoginMember(HttpSession session){
+       String loginId = (String)session.getAttribute("loginId");
+       return memberRepository.findByMemId(loginId);
+    }
 
     //http://localhost:8080/
     //http://localhost:8080/main
@@ -99,15 +109,19 @@ public class ScheduleController {
     //http://localhost:8080/schedules?scNo=1
     @GetMapping("/schedules")
     public String getMyTeam(@RequestParam int scNo, Model model) {
-        Schedule schedule = scheduleRepository.findByScNo(scNo); //일정 데이터
-        List<Team> teamList = teamRepository.findBySno(scNo); //권한 데이터
-        List<String> imageList = new ArrayList<>(); //이미지 리스트
-        for(int i=0; i<teamList.size(); i++){
-            imageList.add(memberRepository.findByMemId(teamList.get(i).getTeamMid()).getMemImage());
+        String loginId = (String)session.getAttribute("loginId");
+        List<TeamShare> teamShareList = teamScheduleService.getTeam(scNo);
+
+        for(TeamShare teamShrare:teamShareList){
+            if(teamShrare.getTeamMid().equals(loginId)){
+                model.addAttribute("loginTeam",teamShrare);
+            }
         }
+        Schedule schedule = scheduleRepository.findByScNo(scNo); //일정 데이터
+
         model.addAttribute("schedule",schedule);
-        model.addAttribute("teamList",teamList);
-        model.addAttribute("imageList",imageList);
+        model.addAttribute("teamShareList",teamShareList);
+        log.debug("teamShareList = {}", teamShareList.get(0).getTeamLevel());
 
         return "detail";
     }
