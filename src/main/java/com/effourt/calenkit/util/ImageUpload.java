@@ -21,7 +21,9 @@ public class ImageUpload {
         String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
         String filename = UUID.randomUUID().toString() + extension;
         //이미지가 저장될 경로
-        Path path = Paths.get("C:/Users/이진규/IdeaProjects/calenkit6/src/main/resources/static/img/" + filename);
+        String savePath = "C:/Users/이진규/IdeaProjects/calenkit6/src/main/resources/static/img/";
+
+        Path path = Paths.get(savePath + filename);
         //파일 저장
         Files.write(path, bytes);
         return filename;
