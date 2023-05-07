@@ -28,6 +28,7 @@ import java.util.*;
 public class ScheduleController {
     private final MyScheduleService myScheduleService;
     private final TeamScheduleService teamScheduleService;
+    private final TeamRepository teamRepository;
     private final ScheduleRepository scheduleRepository;
     private final MemberRepository memberRepository;
     private final AlarmRepository alarmRepository;
