@@ -116,13 +116,13 @@ public class ScheduleController {
 
         for(TeamShare teamShrare:teamShareList){
             if(teamShrare.getTeamMid().equals(loginId)){
-                model.addAttribute("loginTeam",teamShrare);
+                model.addAttribute("loginTeam",teamShrare);//현재 로그인한 team + image
             }
         }
         Schedule schedule = scheduleRepository.findByScNo(scNo); //일정 데이터
 
         model.addAttribute("schedule",schedule);
-        model.addAttribute("teamShareList",teamShareList);
+        model.addAttribute("teamShareList",teamShareList); //team + image
         log.debug("teamShareList = {}", teamShareList.get(0).getTeamLevel());
 
         return "detail";
