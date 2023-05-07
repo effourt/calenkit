@@ -1,10 +1,14 @@
 package com.effourt.calenkit.controller;
 
 import com.effourt.calenkit.domain.Alarm;
+import com.effourt.calenkit.domain.Member;
 import com.effourt.calenkit.domain.Schedule;
 import com.effourt.calenkit.domain.Team;
+import com.effourt.calenkit.dto.TeamShare;
 import com.effourt.calenkit.repository.*;
+import com.effourt.calenkit.service.AlarmService;
 import com.effourt.calenkit.service.MyScheduleService;
+import com.effourt.calenkit.service.TeamScheduleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.math.raw.Mod;
@@ -23,11 +27,19 @@ import java.util.*;
 @RequiredArgsConstructor
 public class ScheduleController {
     private final MyScheduleService myScheduleService;
+    private final TeamScheduleService teamScheduleService;
     private final TeamRepository teamRepository;
     private final ScheduleRepository scheduleRepository;
     private final MemberRepository memberRepository;
     private final AlarmRepository alarmRepository;
+    private final AlarmService alarmService;
     private final HttpSession session;
+
+    @ModelAttribute("loginMember")
+    public Member getLoginMember(HttpSession session){
+       String loginId = (String)session.getAttribute("loginId");
+       return memberRepository.findByMemId(loginId);
+    }
 
     //http://localhost:8080/
     //http://localhost:8080/main
@@ -99,22 +111,26 @@ public class ScheduleController {
     //http://localhost:8080/schedules?scNo=1
     @GetMapping("/schedules")
     public String getMyTeam(@RequestParam int scNo, Model model) {
-        Schedule schedule = scheduleRepository.findByScNo(scNo); //일정 데이터
-        List<Team> teamList = teamRepository.findBySno(scNo); //권한 데이터
-        List<String> imageList = new ArrayList<>(); //이미지 리스트
-        for(int i=0; i<teamList.size(); i++){
-            imageList.add(memberRepository.findByMemId(teamList.get(i).getTeamMid()).getMemImage());
+        String loginId = (String)session.getAttribute("loginId");
+        List<TeamShare> teamShareList = teamScheduleService.getTeam(scNo);
+
+        for(TeamShare teamShrare:teamShareList){
+            if(teamShrare.getTeamMid().equals(loginId)){
+                model.addAttribute("loginTeam",teamShrare);
+            }
         }
+        Schedule schedule = scheduleRepository.findByScNo(scNo); //일정 데이터
+
         model.addAttribute("schedule",schedule);
-        model.addAttribute("teamList",teamList);
-        model.addAttribute("imageList",imageList);
+        model.addAttribute("teamShareList",teamShareList);
+        log.debug("teamShareList = {}", teamShareList.get(0).getTeamLevel());
 
         return "detail";
     }
 
     /** 일정 추가
      *
-     * @return 일정 상세 페이지 URL
+     * @return 일정 상세 페이지로 redirect
      */
     @GetMapping("/add")
     public String addSchedule(@RequestParam String date) {
@@ -127,31 +143,39 @@ public class ScheduleController {
     /** 일정 휴지통 이동
      *
      * @param scNo
-     * @return
+     * @return 메인페이지로 redirect
      */
    @GetMapping("/goToRecycleBin")
     public String goToRecycleBin(@RequestParam Integer scNo) {
-        myScheduleService.goToRecycleBin(scNo);
+        myScheduleService.goToRecycleBin(scNo); //일정 휴지통 이동
+        alarmService.addAlarmByDeleteSchedule(scNo); //관련 알람 미출력, 일정 삭제 알람 추가
         return "redirect:/";
     }
 
     /** 일정 완전 삭제
      *
      * @param scNo
-     * @return
+     * @return 메인페이지로 redirect
      */
     @GetMapping("/delete")
     public String deleteSchedule(@RequestParam Integer scNo) {
         String loginId = (String)session.getAttribute("loginId"); //session으로 현재 아이디 받아오기
+        alarmService.removeAlarmByScno(scNo);
         myScheduleService.removeSchedule(scNo, loginId);
 
         return "redirect:/";
     }
 
+    /** 휴지통에서 일정 복원
+     *
+     * @param scNo
+     * @return 메인페이지로 redirect
+     */
     @GetMapping("/restore")
     public String restoreSchedule(@RequestParam Integer scNo) {
         String loginId = (String)session.getAttribute("loginId"); //session으로 현재 아이디 받아오기
-        myScheduleService.restoreSchedule(scNo, null);
+        alarmService.restoreAlarm(scNo);
+        myScheduleService.restoreSchedule(scNo);
 
         return "redirect:/";
     }

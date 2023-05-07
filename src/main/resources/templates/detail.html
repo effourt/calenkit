@@ -20,6 +20,7 @@
 
 <div style="width: 90%; margin: 0 auto;">
   <button type="button" id="myTeam" class="btn btn-sm btn-dark"  data-bs-toggle="modal" data-bs-target="#teamShare">일정공유</button>
+  <button type="button" class="btn btn-sm btn-secondary" onclick="location.href='/'">메인가기</button>
   <textarea name="text" id="editor">
     제목 : <p th:text="${schedule.getScTitle()}">drgbksbgkjsbkdfb</p> <li>sfsdfhskdhfkshkd</li>
     시작일 : <p th:text="${schedule.getScSdate()}"></p>
@@ -56,22 +57,22 @@
         <div class="card mt-5" style="width: 100%">
           <ul class="list-group list-group-flush" id="teamList">
             <!-- 동행 -->
-            <th:block th:each="team : ${teamList}">
-              <li class="list-group-item d-flex justify-content-between" th:id="${team.teamNo}">
+            <th:block th:each="teamShare : ${teamShareList}">
+              <li class="list-group-item d-flex justify-content-between" th:id="${teamShare.teamNo}">
                 <!-- 동행 이미지 & 아이디 -->
                 <span>
-                    <img th:if="${team.teamLevel!=9}" th:id="'remove'+${team.teamNo}" src="https://icongr.am/entypo/remove-user.svg?size=15&color=ababab">
+                    <img th:if="${teamShare.teamLevel!=9}" th:id="'remove'+${teamShare.teamNo}" src="https://icongr.am/entypo/remove-user.svg?size=15&color=ababab">
                     <span style="display: inline-block; width: 24px; line-height: 30px; height: 30px; border: 1px solid gray; border-radius: 30px; overflow: hidden;">
-                        <img style="width: 100%; height: 100%; object-fit: cover;" src=""/>
-                    </span> [[${team.teamMid}]] [[${imageList.get(teamStat.index)}]]
+                        <img style="width: 100%; height: 100%; object-fit: cover;" th:if="${teamShare.image!=null}" th:src="${teamShare.image}" src=""/>
+                    </span> [[${teamShare.teamMid}]]
                 </span>
                 <!-- 권한 변경 dropdown -->
                 <div class="btn-group">
-                  <select id="team" th:id="'team'+${team.teamNo}">
-                    <option class="btn-secondary" value="0" th:selected="${team.getTeamLevel()==0}" th:disabled="${team.getTeamLevel()==9}">읽기권한</option>
-                    <option class="btn-secondary" value="1" th:selected="${team.getTeamLevel()==1}" th:disabled="${team.getTeamLevel()==9}">수정권한</option>
+                  <select id="team" th:id="'team'+${teamShare.teamNo}">
+                    <option class="btn-secondary" value="0" th:readonly="${loginTeam.teamLevel!=9}" th:selected="${teamShare.teamLevel==0}" th:disabled="${teamShare.teamLevel==9 || loginTeam.teamLevel!=9}">읽기권한</option>
+                    <option class="btn-secondary" value="1" th:readonly="${loginTeam.teamLevel!=9}" th:selected="${teamShare.teamLevel==1}" th:disabled="${teamShare.teamLevel==9 || loginTeam.teamLevel!=9}">수정권한</option>
                     <hr>
-                    <option class="btn-secondary" value="9" th:selected="${team.getTeamLevel()==9}" th:disabled="${team.getTeamLevel()==1 || team.getTeamLevel()==0}">호스트</option>
+                    <option class="btn-secondary" value="9" th:readonly="${loginTeam.teamLevel!=9}" th:selected="${teamShare.teamLevel==9}" th:disabled="${teamShare.teamLevel==1 || teamShare.teamLevel==0 || loginTeam.teamLevel!=9}">호스트</option>
                   </select>
                 </div>
               </li>

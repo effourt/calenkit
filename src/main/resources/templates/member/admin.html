@@ -85,8 +85,6 @@
             }
         });
     });
-
-
     // "all_checkbox" 체크박스 클릭 이벤트 처리
     $('#all_checkbox').click(function() {
         // 만약 "all_checkbox" 체크박스가 체크되어 있다면
@@ -131,24 +129,27 @@
 
 
     //호스트상태정보 수정
-    $('.status-select').on('change', function() {
-        var memId = $(this).closest('tr').find('td:nth-child(2)').text();
-        var memStatus = $(this).val();
+    function modify(memId) {
+        var memId=memId;
+        var memstatus=$("#memStatus_"+memId).val();
+
         $.ajax({
-            url: "/admin_statusModify",
-            method: "POST",
-            data: {
-                memId: memId,
-                memStatus: memStatus
+            type: "put",
+            url: "/admin_statusModify"+memId,
+            contentType: "application/json",
+            data : JSON.stringify({"memStatus":memStatus}),
+            dataType: "text",
+            success: function (result) {
+                if(result=="success"){
+                    memberTableBody(page);
+                }
             },
-            success: function(data) {
-                // Ajax 요청이 성공했을 때 실행할 코드 작성
-            },
-            error: function(xhr, status, error) {
-                // Ajax 요청이 실패했을 때 실행할 코드 작성
+            error: function(xhr) {
+                alert("에러코드(호스트 상태 변경) = "+xhr.status)
             }
         });
-    });
+    }
+
 
 </script>
 
