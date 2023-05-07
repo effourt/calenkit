@@ -61,15 +61,14 @@ public class TeamController {
         return teamScheduleService.getTeam(scNo);
     }
 
-
     /**
-     * 동행 추가 (동행추가 + 알람서비스)
+     * 동행 추가 (동행추가 + 알람서비스)  - rest API
      * */
     // http://localhost:8080/teams/share/1  : memId=member
     // http://localhost:8080/teams/share/1  : memId=test@test.com
     // http://localhost:8080/teams/share/1  : memId=employee
 
-    @PostMapping ("/teams/share/{scNo}")
+    //@PostMapping ("/teams/share/{scNo}")
     @ResponseBody
     public Team shareTeam(@PathVariable int scNo, @RequestBody Map<String,Object> map) {
         String memId = (String)map.get("memId");
@@ -77,6 +76,25 @@ public class TeamController {
         alarmService.addAlarmBySaveTeam(scNo,memId); //알람서비스
         return newTeam;
     }
+
+    // http://localhost:8080/teams/share/confirm/99/teams/share/99?memId=jhla456%40kakao.com
+    /**
+     * 동행 추가 (동행추가 + 알람서비스)
+     * */
+    // http://localhost:8080/teams/share/1  : memId=member
+    // http://localhost:8080/teams/share/1  : memId=test@test.com
+    // http://localhost:8080/teams/share/1  : memId=employee
+    @PostMapping ("/teams/share/{scNo}")
+    public String shareTeam2(@PathVariable int scNo, @RequestParam String memId) {
+        log.info("scNo = {}",scNo);
+        log.info("memId = {}",memId);
+        teamScheduleService.addTeam(scNo,memId);
+        log.info("1");
+        alarmService.addAlarmBySaveTeam(scNo,memId); //알람서비스
+        log.info("2");
+        return "redirect:/schedules?scNo="+scNo;
+    }
+
 
 
     /***
@@ -154,13 +172,14 @@ public class TeamController {
     /**
      * 이메일 받은 동행이 링크 클릭할 시 이동될 페이지 - teamShareConfirm.html
      * @param scNo
-     * @param teamMid
+     * @param memId
      * @param model
      * @return
      */
-    @GetMapping("/teams/share/confirm/{scNo}/{teamMid}")
-    public String showTeamShareAuth(@PathVariable int scNo, @PathVariable String teamMid, Model model) {
-        model.addAttribute("teamMid", teamMid);
+    //http://localhost:8080/teams/share/confirm/111/jhla456@kakao.com
+    @GetMapping("/teams/share/confirm/{scNo}/{memId}")
+    public String showTeamShareAuth(@PathVariable int scNo, @PathVariable String memId, Model model) {
+        model.addAttribute("memId", memId);
         model.addAttribute("scNo", scNo);
         return "teamShareConfirm";
     }
