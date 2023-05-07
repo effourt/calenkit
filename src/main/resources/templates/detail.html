@@ -44,7 +44,7 @@
       <div class="modal-body">
         <!-- 1.검색창-->
         <div class="input-group">
-          <input type="text" class="form-control"style="width:80%;" id="inputBox">
+          <input type="text" class="form-control"style="width:80%;" id="inputBox" th:readonly="${loginTeam.teamLevel!=9}">
           <button class="btn btn-outline-dark">search</button>
         </div>
         <!-- 2.검색시 출력될 박스 -->
