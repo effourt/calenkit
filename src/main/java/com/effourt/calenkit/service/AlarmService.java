@@ -8,6 +8,7 @@ import com.effourt.calenkit.repository.ScheduleRepository;
 import com.effourt.calenkit.repository.TeamRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,7 +46,7 @@ public class AlarmService {
     }
 
     /**
-     * 일정 삭제 시 울릴 알람 서비스
+     * 일정 삭제(휴지통 이동) 시 관련 알람 미출력+삭제 알람 출력 서비스
      * 1. 모든 동행이 가지고 있던 그동안 출력해온 해당 일정에 대한 알람을 모두 삭제해서 모두에게 출력이 안되게끔 제공 - 일괄처리 update
      * 2. 일정 삭제의 다수의 알람 객체가 DB에 저장될 것임 - 일괄처리 save
      * @param scNo : 일정 번호
@@ -85,6 +86,20 @@ public class AlarmService {
         for(int i=0; i<idList.length; i++){
             alarmRepository.delete(idList[i],scNo); //알람삭제
         }
+    }
+
+    public void restoreAlarm(Integer scNo) {
+       List<Alarm> alarmList=alarmRepository.findByAlScno(scNo); //해당 일정 알람 리스트
+
+       for(Alarm alarm:alarmList) { //개별 출력
+           if(alarm.getAlCate()==0) { //일정 삭제 알람일 경우
+               alarmRepository.delete(alarm.getAlMid(), alarm.getAlScno()); //알람 삭제
+           }
+           if(alarm.getAlStatus()==0 && alarm.getAlCate()!=0) { //휴지통에 있는 알람이며 일정 삭제 알람이 아닐 경우
+               alarm.setAlStatus(1); //상태 : 출력으로 변경
+           }
+           alarmRepository.update(alarm);
+       }
     }
 
     /**
