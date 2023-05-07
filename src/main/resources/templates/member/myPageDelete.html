@@ -47,12 +47,11 @@
 <script type="text/javascript">
     function checkId(){
         var memId = $('#memId').val(); //memId값이 "memId"인 입력란의 값을 저장
-        var memStatus = 0;
+
         $.ajax({
             url:'/idCheck', //Controller에서 요청 받을 주소
             type:'get', //GET 방식으로 전달
-            data:{memId:memId,
-                  memStatus:memStatus},
+            data:{memId:memId},
             success:function(cnt){ //컨트롤러에서 넘어온 cnt값을 받는다
                 if(cnt == 0){ //cnt가 1이 아니면(=0일 경우) -> 일치하지 않는 아이디
                     $('.id_already').css("display","inline-block");
