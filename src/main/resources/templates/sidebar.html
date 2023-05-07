@@ -12,9 +12,9 @@
 <div th:fragment="sidebar">
     <div class="menu text-white" tabindex="0">
         <header class="avatar">
-            <a href="myPage" style="text-decoration: none">
-            <img class="img-fluid" src="https://images.unsplash.com/photo-1533738363-b7f9aef128ce?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80" />
-            <h2>cat</h2>
+            <a href="/myPage" style="text-decoration: none">
+                <img class="img-fluid" th:src="${loginMember?.memImage}" src="https://images.unsplash.com/photo-1533738363-b7f9aef128ce?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80" />
+<!--                <p class="mt-3">[[${loginMember.memId}]]</p>-->
             </a>
         </header>
         <div class="ul">
@@ -48,7 +48,7 @@
                 <ul style="height: 80px; overflow: scroll;">
                     <th:block th:each="bookmark : ${bookmarkList}">
                         <th:block th:if="${bookmark.scStatus}==1">
-                            <li>[[${bookmark.getScSdate()}]] ~ [[${bookmark.getScEdate()}]] / <a th:href="@{/schedules?scNo={scNo}(scNo=${bookmark.getScNo})}">[[${bookmark.getScTitle()}]]</a></li>
+                            <li>[[${bookmark.getScSdate()}]] ~ [[${bookmark.getScEdate()}]] / <a  th:href="@{/schedules?scNo={scNo}(scNo=${bookmark.getScNo})}">[[${bookmark.getScTitle()}]]</a></li>
                         </th:block>
                     </th:block>
                 </ul>
@@ -131,7 +131,7 @@
                                     <li>
                                         <Strong>([[${schedule.getScNo}]])</Strong>
                                         [[${schedule.getScSdate}]] ~ [[${schedule.getScEdate}]] / [[${schedule.getScTitle}]]
-                                        <a th:href="@{restore?scNo={scNo}(scNo=${schedule.getScNo()})}">복원</a> <a th:href="@{delete?scNo={scNo}(scNo=${schedule.getScNo()})}">삭제</a>
+                                        <a class="myBtn" th:href="@{restore?scNo={scNo}(scNo=${schedule.getScNo()})}">복원</a> <a class="myBtn" th:href="@{delete?scNo={scNo}(scNo=${schedule.getScNo()})}">삭제</a>
                                     </li>
                                 </th:block>
                             </th:block>
