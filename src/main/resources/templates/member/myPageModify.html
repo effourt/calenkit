@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
@@ -10,10 +11,10 @@
         font-weight: bold;
         margin-left: 10px;
     }
-    .password_ok {
+    .password_ok,pw_ok {
         color: green;
     }
-    .password_already {
+    .password_already,pw_already {
         color: red;
     }
 
@@ -24,24 +25,58 @@
 
 <body>
 <form method="post" action="/myPage_pwModify" >
-      <p>이전 비밀번호</p>
-      <input type="password" name="memPw" id="memPw"></input>
+
+      <!-- 비밀번호가 존재하지 않을 경우 창이 표시되지 않게 한다 -->
+    <div if="${loginMember.memPw != null}" >
+          <p>이전 비밀번호</p>
+          <input type="password" name="memPw" id="memPw" oninput="checkPw()">
+          <span class="pw_ok" style="display: none">비밀번호가 일치합니다.</span>
+          <span class="pw_already" style="display: none">비밀번호가 일치하지 않습니다.</span>
+      </div>
+
       <p>새 비밀번호</p>
-      <input type="password" name="password1" id="password1"></input>
+      <input type="password" name="password1" id="password1">
       <p>비밀번호 확인</p>
-      <input type="password" name="password2" id="password2" oninput="checkPassword()"></input>
+      <input type="password" name="password2" id="password2" oninput="checkPassword()">
       <!-- memId ajax 중복체크 -->
       <span class="password_ok" style="display: none">비밀번호가 일치합니다.</span>
       <span class="password_already" style="display: none">비밀번호가 일치하지 않습니다.</span>
 
       <p>최소 8자의 문자와 숫자조합을 비밀번호로 이용해주세요.</p>
 
-      <button style="display: none" class="deleteButton" onclick="window.close()">비밀번호 변경</button>
+      <button style="display: none" class="deleteButton" >비밀번호 변경</button>
 </form>
 
 </body>
 
 <script type="text/javascript">
+
+
+    function checkPw(){
+
+        var memPw = $('#memPw').val(); //memId값이 "memId"인 입력란의 값을 저장
+        var checkMemPw = $('#checkMemPw').val();//memId값이 "memId"인 입력란의 값을 저장
+
+        $.ajax({
+            url:'/pwCheck', //Controller에서 요청 받을 주소
+            type:'get', //GET 방식으로 전달
+            data:{ memPw: memPw,
+                checkMemPw: checkMemPw},
+            success:function(cnt){ //컨트롤러에서 넘어온 cnt값을 받는다
+                if(cnt == 0){ //cnt가 1이 아니면(=0일 경우) -> 일치하지 않는 아이디
+                    $('.pw_already').css("display","inline-block");
+                    $('.pw_ok').css("display", "none");
+                } else { // cnt가 1일 경우 -> 일치하는 아이디
+                    $('.pw_ok').css("display","inline-block");
+                    $('.pw_already').css("display", "none");
+                }
+            },
+            error:function(){
+
+            }
+        });
+    };
+
     function checkPassword(){
         var password1 = $('#password1').val(); //memId값이 "memId"인 입력란의 값을 저장
           console.log(password1);
