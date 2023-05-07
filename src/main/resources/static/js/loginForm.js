@@ -1,5 +1,5 @@
 //도메인 주소
-const domainURL = "http://localhost:8080";
+const domainURL = "";
 
 //아이디, 비밀번호 존재 여부 체크
 $("#checkIdBtn").click(function () {
@@ -12,16 +12,16 @@ $("#checkIdBtn").click(function () {
         data: JSON.stringify({"id": loginId}),
         success: function (result) {
             if (result == "PASSWORD_LOGIN") {
-                $("#passwordDiv").css("display", "block");
-                $("#checkIdBtn").css("display", "none");
+                $("#passwordDiv").show()
+                $("#checkId").hide()
             } else if (result == "CODE_LOGIN") {
                 sendCode(loginId);
-                $("#loginCodeDiv").css("display", "block");
-                $("#checkIdBtn").css("display", "none");
+                $("#loginCodeDiv").show();
+                $("#checkId").hide();
             } else if (result == "JOIN_LOGIN") {
                 sendCode(loginId);
-                $("#registerCodeDiv").css("display", "block");
-                $("#checkIdBtn").css("display", "none");
+                $("#registerCodeDiv").show();
+                $("#checkId").hide();
             } else {
                 $("#message").text(result);
             }
@@ -33,6 +33,7 @@ $("#checkIdBtn").click(function () {
 });
 
 function sendCode(loginId) {
+    $("#message").text("이메일로 코드를 전송하였습니다.")
     let value = "";
     $.ajax({
         url: domainURL + "/login/send-code",
@@ -42,6 +43,9 @@ function sendCode(loginId) {
         data: JSON.stringify({"id": loginId}),
         success: function(result) {
             value = result;
+            if (result != "OK") {
+                $("#message").text(result);
+            }
         },
         error: function(error) {
             alert("이메일 전송 API 호출 중 에러 발생 : " + error.status);
@@ -53,11 +57,11 @@ function sendCode(loginId) {
 //보일 태그, 감출 태그, 값 초기화할 태그 설정 함수
 function showTag(visible, invisible, initial) {
     for (let i in visible) {
-        visible[i].css("display", "block");
+        visible[i].show();
     }
 
     for (let i in invisible) {
-        invisible[i].css("display", "none");
+        invisible[i].hide();
     }
 
     for (let i in initial) {
@@ -65,11 +69,19 @@ function showTag(visible, invisible, initial) {
     }
 }
 
-//이메일 입력창이 비었을 때, 입력창 상태 초기화
-$("#loginId").keyup(function () {
-    const visible = [$("#findPasswordBtn"), $("#checkIdBtn")];
-    const invisible = [$("#passwordDiv"), $("#loginCodeDiv"), $("#registerCodeDiv"), $("#initializeCodeDiv"), $("#initializePasswordBtn")];
-    const initial = [$("#loginPw"), $("#loginCode"), $("#loginId"), $("#initializeCode"), $("#message")];
+//입력한 이메일이 변경되었을 때, 입력창 상태 초기화
+$("#loginId").change(function () {
+    const visible = [$("#findPassword"), $("#checkId")];
+    const invisible = [$("#passwordDiv"), $("#loginCodeDiv"), $("#registerCodeDiv")];
+    const initial = [$("#loginPw"), $("#loginCode"), $("#initializeCode"), $("#message")];
+    showTag(visible, invisible, initial);
+});
+
+//비밀번호 찾기 이메일이 변경되었을 때, 입력창 상태 초기화
+$("#findPasswordId").change(function () {
+    const visible = [$("#initializePassword")];
+    const invisible = [$("#initializeCodeDiv")];
+    const initial = [$("#initializeCode"), $("#message")];
     showTag(visible, invisible, initial);
 });
 
@@ -152,17 +164,25 @@ $("#registerCodeBtn").click(function () {
     });
 });
 
+//로그인 입력창 버튼 클릭 이벤트
+$("#loginBtn").click(function() {
+    const visible = [$("#loginId"), $("#findPassword"), $("#checkId")];
+    const invisible = [$("#findPasswordId"), $("#initializePassword"), $("#initializeCodeDiv"), $("#login")];
+    const initial = [$("#findPasswordId"), $("#initializeCode"), $("#message")];
+    showTag(visible, invisible, initial);
+});
+
 //비밀번호 찾기 버튼 클릭 이벤트
 $("#findPasswordBtn").click(function() {
-    const visible = [$("#initializePasswordBtn")];
-    const invisible = [$("#findPasswordBtn"), $("#checkIdBtn"), $("#registerCodeDiv"), $("#loginCodeDiv"), $("#passwordDiv")];
-    const initial = [$("#loginId"), $("#message")];
+    const visible = [$("#findPasswordId"), $("#initializePassword"), $("#login")];
+    const invisible = [$("#loginId"), $("#findPassword"), $("#checkId"), $("#registerCodeDiv"), $("#loginCodeDiv"), $("#passwordDiv")];
+    const initial = [$("#loginId"), $("#loginPw"), $("#loginCode"), $("#registerCode"), $("#message")];
     showTag(visible, invisible, initial);
 });
 
 //비밀번호 초기화용 로그인 코드 이메일로 전송
 $("#initializePasswordBtn").click(function() {
-    const loginId = $("#loginId").val();
+    const loginId = $("#findPasswordId").val();
     $.ajax({
         url: domainURL + "/login/check",
         method: "POST",
@@ -173,9 +193,14 @@ $("#initializePasswordBtn").click(function() {
             if (result == "JOIN_LOGIN") {
                 $("#message").text("이메일이 올바르지 않습니다.");
             } else if (result == "PASSWORD_LOGIN" || result == "CODE_LOGIN") {
-                sendCode(loginId);
-                $("#initializePasswordBtn").css("display", "none");
-                $("#initializeCodeDiv").css("display", "block");
+                let value = sendCode(loginId);
+                //이메일 전송 성공 시 [초기화 코드 보내기] 버튼 숨기고, 초기화 코드로 로그인 div 보이기
+                $("#initializePassword").hide();
+                $("#initializeCodeDiv").show();
+                if (value != "") {
+                    $("#initializePassword").show();
+                    $("#initializeCodeDiv").hide();
+                }
             } else {
                 $("#message").text(result);
             }
@@ -188,7 +213,7 @@ $("#initializePasswordBtn").click(function() {
 
 //비밀번호 초기화 코드로 로그인 버튼 클릭 이벤트
 $("#initializeCodeBtn").click(function() {
-    const loginId = $("#loginId").val();
+    const loginId = $("#findPasswordId").val();
     const initializeCode = $("#initializeCode").val();
     $.ajax({
         url: domainURL + "/login/initialize-code",
@@ -207,4 +232,34 @@ $("#initializeCodeBtn").click(function() {
             alert("비밀번호로 로그인 중 에러 발생 : " + error.status);
         }
     });
+});
+
+//입력창에서 Enter키 누르면 현재 보여지는 submit 버튼 클릭 이벤트 실행
+$("input").keydown(function(key) {
+    console.log("PRESS ENTER");
+    if (key.keyCode == 13) {
+        console.log("PRESS 13");
+        const btnList = [$("#checkId"), $("#passwordDiv"), $("#loginCodeDiv"), $("#registerCodeDiv"), $("#initializeCodeDiv"), $("#initializePassword")];
+        for (let i in btnList) {
+            console.log("for문 시작-" + i);
+            if (btnList[i].css("display") == "block") {
+                console.log("if문 시작-" + i);
+                if (btnList[i].is($("#checkId"))) {
+                    console.log("checkId CLICK");
+                    $("#checkIdBtn").trigger("click");
+                    return;
+                } else if (btnList[i].is($("#initializePassword"))) {
+                    console.log("initializePassword CLICK");
+                    $("#initializePasswordBtn").trigger("click");
+                    return;
+                } else {
+                    console.log("ETC CLICK");
+                    btnList[i].children("button").trigger("click");
+                    return;
+                }
+                console.log("if문 끝-" + i);
+            }
+            console.log("for문 끝-" + i);
+        }
+    }
 });

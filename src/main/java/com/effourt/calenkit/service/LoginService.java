@@ -28,7 +28,6 @@ public class LoginService {
 
     private final MemberRepository memberRepository;
     private final AuthRepository authRepository;
-    private final EmailSend emailSend;
     private final KakaoFeignClient kakaoFeignClient;
     private final KakaoApiClient kakaoApiClient;
 

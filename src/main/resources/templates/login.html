@@ -27,43 +27,45 @@
                                             <form id="loginForm" method="post">
                                                 <!-- 이메일 입력창 -->
                                                 <div class="form-group">
-                                                    <input type="email" name="memId" class="form-style" placeholder="이메일을 입력하세요" id="loginId" autocomplete="off">
+                                                    <input type="email" id="loginId" name="memId" class="form-style" placeholder="이메일을 입력하세요" autocomplete="off">
+                                                    <input type="email" id="findPasswordId" class="form-style" placeholder="이메일을 입력하세요" autocomplete="off" style="display: none;">
                                                     <i class="input-icon uil uil-at"></i>
                                                 </div>
                                                 <!-- 패스워드 입력창 -->
-                                                <div id="passwordDiv" class="form-group mt-2" style="display: none">
+                                                <div id="passwordDiv" class="form-group mt-2" style="display: none;">
                                                     <input type="password" name="memPw" class="form-style" placeholder="비밀번호를 입력하세요" id="loginPw" autocomplete="off">
                                                     <i class="input-icon uil uil-lock-alt"></i>
                                                     <button type="button" id="passwordBtn" class="btn mt-4">비밀번호로 로그인</button>
                                                 </div>
                                                 <!-- 로그인 코드 입력창 -->
-                                                <div id="loginCodeDiv" class="form-group mt-2" style="display: none">
+                                                <div id="loginCodeDiv" class="form-group mt-2" style="display: none;">
                                                     <input type="password" name="loginCode" class="form-style" placeholder="로그인 코드를 입력하세요" id="loginCode" autocomplete="off">
                                                     <i class="input-icon uil uil-lock-alt"></i>
                                                     <button type="button" id="loginCodeBtn" class="btn mt-4">로그인 코드로 로그인</button>
                                                 </div>
                                                 <!-- 회원가입 코드 입력창 -->
-                                                <div id="registerCodeDiv" class="form-group mt-2" style="display: none">
+                                                <div id="registerCodeDiv" class="form-group mt-2" style="display: none;">
                                                     <input type="password" name="registerCode" class="form-style" placeholder="회원가입 코드를 입력하세요" id="registerCode" autocomplete="off">
                                                     <i class="input-icon uil uil-lock-alt"></i>
                                                     <button type="button" id="registerCodeBtn" class="btn mt-4">이메일로 회원가입</button>
                                                 </div>
                                                 <!-- 초기화 코드 입력창 -->
-                                                <div id="initializeCodeDiv" class="form-group mt-2" style="display: none">
+                                                <div id="initializeCodeDiv" class="form-group mt-2" style="display: none;">
                                                     <input type="password" name="initializeCode" class="form-style" placeholder="초기화 코드를 입력하세요" id="initializeCode" autocomplete="off">
                                                     <i class="input-icon uil uil-lock-alt"></i>
                                                     <button type="button" id="initializeCodeBtn" class="btn mt-4">초기화 코드로 로그인</button>
                                                 </div>
                                                 <p id="message" class="mb-0 mt-4 text-center"></p>
 
-                                                <p class="mb-0 mt-4 text-center" id="checkIdBtn">
-                                                    <button type="button" class="btn mt-4">이메일로 계속하기</button>
+                                                <p class="mb-0 mt-4 text-center" id="checkId">
+                                                    <button type="button" id="checkIdBtn" class="btn mt-4">이메일로 계속하기</button>
                                                 </p>
-                                                <p class="mb-0 mt-4 text-center" id="initializePasswordBtn" style="display: none;">
-                                                    <button type="button" class="btn mt-4">초기화 코드 보내기</button>
+                                                <p class="mb-0 mt-4 text-center" id="initializePassword" style="display: none;">
+                                                    <button type="button" id="initializePasswordBtn" class="btn mt-4">초기화 코드 보내기</button>
                                                 </p>
                                             </form>
-                                            <p class="mb-0 mt-4 text-center" id="findPasswordBtn"><button type="button">비밀번호 찾기</button></p>
+                                            <p class="mb-0 mt-4 text-center" id="findPassword"><button type="button" id="findPasswordBtn">비밀번호 찾기</button></p>
+                                            <p class="mb-0 mt-4 text-center" id="login" style="display: none;"><button type="button" id="loginBtn">로그인 입력창</button></p>
                                         </div>
                                     </div>
                                 </div>

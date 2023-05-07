@@ -3,18 +3,33 @@ const domainURL = "http://localhost:8080";
 
 //프로필 이미지 검증
 let profileImageConfirm = true;
-$("#profileImage").change(function() {
+$("#profileImage").change(function(event) {
     const profileImage = $("#profileImage").val();
     const extension = profileImage.substring(profileImage.lastIndexOf("."));
+
+    //이미지 미리보기 설정
+    let file = event.target.files[0];
+    let reader = new FileReader();
+    reader.onload = function(e) {
+        $("#imageContainer").prop("src", e.target.result);
+    }
+    reader.readAsDataURL(file);
+
+    //선택한 이미지가 없으면 기본 메시지 출력, 있으면 선택한 이미지의 경로를 제외하고 이름만 출력하도록 설정
+    if (profileImage == "") {
+        $("#profileImageName").text("사진 추가");
+    } else {
+        $("#profileImageName").text(profileImage.substring(profileImage.lastIndexOf("\\") + 1));
+    }
     if (profileImage != ""
         && extension != ".jpg"
         && extension != ".jpeg"
         && extension != ".png") {
         profileImageConfirm = false;
-        $("#profileImageMessage").text("이미지 파일 형식에 맞춰 재등록해주세요.(jpg, jpeg, png)");
+        $("#message").text("이미지 파일 형식에 맞춰 재등록해주세요.(jpg, jpeg, png)");
     } else {
         profileImageConfirm = true;
-        $("#profileImageMessage").text("");
+        $("#message").text("");
     }
 });
 
@@ -24,10 +39,10 @@ const nicknameReg = /^[a-zA-Z가-힣]{2,10}$/;
 $("#nickname").focusout(function() {
     if (!nicknameReg.test($("#nickname").val())) {
         nicknameConfirm = false;
-        $("#nicknameMessage").text("2자리 이상 10자리 이하의 영문, 한글을 사용하세요.");
+        $("#message").text("2자리 이상 10자리 이하의 영문, 한글을 사용하세요.");
     } else {
         nicknameConfirm = true;
-        $("#nicknameMessage").text("");
+        $("#message").text("");
     }
 });
 
@@ -37,10 +52,10 @@ const passwordReg = /^.*(?=^.{8,15}$)(?=.*\d)(?=.*[a-zA-Z])(?=.*[!@#$%^&+=]).*$/
 $("#loginPw").focusout(function() {
     if (!passwordReg.test($("#loginPw").val())) {
         passwordConfirm = false;
-        $("#passwordMessage").text("8자리 이상 15자리 이하의 영문, 숫자, 특수문자를 사용하세요.");
+        $("#message").text("8자리 이상 15자리 이하의 영문, 숫자, 특수문자를 사용하세요.");
     } else {
         passwordConfirm = true;
-        $("#passwordMessage").text("");
+        $("#message").text("");
     }
 });
 
@@ -49,10 +64,10 @@ let passwordCheckConfirm = false;
 $("#loginPwCheck").focusout(function() {
     if ($("#loginPw").val() != $("#loginPwCheck").val()) {
         passwordCheckConfirm = false;
-        $("#passwordCheckMessage").text("입력한 비밀번호와 같은 값을 입력해주세요.");
+        $("#message").text("입력한 비밀번호와 같은 값을 입력해주세요.");
     } else {
         passwordCheckConfirm = true;
-        $("#passwordCheckMessage").text("");
+        $("#message").text("");
     }
 });
 
@@ -90,4 +105,11 @@ $("#registerBtn").click(function() {
             alert("비밀번호로 로그인 중 에러 발생 : " + error.status);
         }
     });
+});
+
+//입력창에서 Enter키 입력 시 submit 버튼 클릭 이벤트 실행
+$("input").keydown(function(key) {
+    if (key.keyCode == 13) {
+        $("#registerBtn").trigger("click");
+    }
 });
