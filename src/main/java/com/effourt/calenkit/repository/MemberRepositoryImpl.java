@@ -27,7 +27,10 @@ public class MemberRepositoryImpl implements MemberRepository {
     public Integer updatePassword(Member member) {
         return sqlSessionTemplate.getMapper(MemberMapper.class).updatePassword(member);
     }
-
+    @Override
+    public Integer update(Member member) {
+        return sqlSessionTemplate.getMapper(MemberMapper.class).update(member);
+    }
     @Override
     public Integer updateStatus(Member member) {
         return sqlSessionTemplate.getMapper(MemberMapper.class).updateStatus(member);
