@@ -60,10 +60,10 @@ public class MemberController2 {
     // Admin
     // 멤버 상태변경(PATCH)
     //  member_list 페이지로 이동
-    @PatchMapping(value ="/admin_statusModify")
+    @PostMapping(value ="/admin_statusModify")
     public String AdminModify(@ModelAttribute Member member) throws MemberNotFoundException {
-        Member selectMember=memberRepository.findByMemId(member.getMemId());
-        return "admin";
+        adminService.modifyMember(member);
+        return "member/admin";
     }
 
     // Admin
@@ -100,10 +100,17 @@ public class MemberController2 {
     // Ajax 처리를 위해 닉네임 중복 갯수 반환
     @GetMapping("/nameCheck")
     @ResponseBody
-    public int nameCheck(@RequestParam("memName") String memName) {
-        int cnt = memberRepository.findByMemName(memName);
-        return cnt;
+    public int nameCheck(@RequestParam("memName") String memName,HttpSession session) {
 
+        if (!memName.matches("^[a-zA-Z가-힣]{2,10}$")) {
+            int cnt = memberRepository.findByMemName(memName);
+            return cnt;
+        }
+        else{
+            int cnt=2;
+            session.setAttribute("errorMessage", "닉네임은 2~10자의 한글 또는 영문으로 입력해주세요.");
+            return cnt;
+        }
     }
     // MyPage
     // 아이디 검색 후 중복 확인(GET)
@@ -136,6 +143,19 @@ public class MemberController2 {
         }
         return cnt;
     }
+    @GetMapping("/pwCheck")
+    @ResponseBody
+    public int pwCheck(String memPw,HttpSession session) {
+        String loginId=(String)session.getAttribute("loginId");
+        Member loginMember=memberRepository.findByMemId(loginId);
+        int cnt=0;
+        if (passwordEncoder.matches(memPw,loginMember.getMemPw())){
+          cnt++;
+            return cnt;
+        }
+        return cnt;
+    }
+
     @PostMapping("/modify_image")
     public String saveMember(@RequestParam(value="memImage",required = false ) MultipartFile memImage,HttpSession session) throws MemberNotFoundException, IOException {
         String loginId=(String)session.getAttribute("loginId");
@@ -162,7 +182,11 @@ public class MemberController2 {
     }
 
     @GetMapping(value ="/myPage_pwModify")
-    public String MyPagePwModify(){
+    public String MyPagePwModify(HttpSession session,Model model){
+        String loginId=(String)session.getAttribute("loginId");
+        Member loginMember=memberRepository.findByMemId(loginId);
+        System.out.println(loginMember);
+        model.addAttribute("loginMember"+loginMember);
         return "member/myPageModify";
     }
     @GetMapping(value ="/myPage_delete")
@@ -177,7 +201,7 @@ public class MemberController2 {
     public String MyPagePwModify(HttpSession session,String memPw,String password1) throws MemberNotFoundException {
         String loginId=(String)session.getAttribute("loginId");
         Member loginMember=memberRepository.findByMemId(loginId);
-        
+        System.out.println(loginMember.getMemPw()+password1);
         //비밀번호 없을 경우
         if(loginMember.getMemPw()==null){
             myPageService.modifyPassword(loginMember,password1);
@@ -198,17 +222,14 @@ public class MemberController2 {
     // 로그인세션에서 아이디값을 전달받아 member_delete 페이지로 이동처리.
     @PostMapping(value ="/myPage_delete")
     public String MyPageDelete(HttpSession session,String memId) throws MemberNotFoundException {
-        String loginId=(String)session.getAttribute("loginId");
-        Member loginMember=memberRepository.findByMemId(loginId);
-        Integer memStatus=0;
-        if(loginMember.getMemId().equals(memId)) {
-            myPageService.removeMe(loginMember, memStatus);
-            System.out.println("memStatus"+memStatus+loginMember.getMemId());
+        Member member=memberRepository.findByMemId(memId);
 
-            return "member/myPage";
+        if(member.getMemId().equals(memId)) {
+            myPageService.removeMe(member);
+            return "login";
         }
         else{
-            return "/myPage_delete";
+            return "login";
         }
     }
 }
