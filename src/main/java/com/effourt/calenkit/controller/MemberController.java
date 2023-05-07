@@ -11,16 +11,20 @@ import com.effourt.calenkit.repository.MemberRepository;
 import com.effourt.calenkit.service.JoinService;
 import com.effourt.calenkit.service.LoginService;
 import com.effourt.calenkit.util.EmailSend;
+import com.effourt.calenkit.util.ImageUpload;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
+import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
 import java.util.Map;
 
 @Slf4j
@@ -36,6 +40,7 @@ public class MemberController {
 
     private final MessageSource ms;
     private final EmailSend emailSend;
+    private final ImageUpload imageUpload;
     private final PasswordEncoder passwordEncoder;
 
 
@@ -200,11 +205,18 @@ public class MemberController {
      * @param member 아이디(이메일), 비밀번호, 닉네임, 프로필 이미지(선택) 정보 저장 객체
      * @return
      */
-    @PostMapping("/join")
+    @PostMapping(value = "/join", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseBody
-    public String join(@RequestBody Member member, HttpSession session) {
+    public String join(@RequestPart Member member, @RequestPart MultipartFile profileImage, HttpSession session) {
         //비밀번호를 암호화
         member.setMemPw(passwordEncoder.encode(member.getMemPw()));
+        try {
+            String filename = imageUpload.uploadImage(profileImage);
+            member.setMemImage(filename);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
         //아이디(이메일), 프로필 이미지, 닉네임, 비밀번호를 회원 테이블에 저장
         joinService.joinByEmail(member);
         session.setAttribute("loginId", member.getMemId());
