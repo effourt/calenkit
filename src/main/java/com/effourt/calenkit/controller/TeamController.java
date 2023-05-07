@@ -13,6 +13,8 @@ import com.effourt.calenkit.util.EmailSend;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -161,6 +163,21 @@ public class TeamController {
         model.addAttribute("teamMid", teamMid);
         model.addAttribute("scNo", scNo);
         return "teamShareConfirm";
+    }
+
+
+    @MessageMapping("/search") // 클라이언트가 '/app/search'로 메시지를 보내면 해당 메서드가 호출됨
+    @SendTo("/topic/searchResults") // 서버가 '/topic/searchResults'를 구독하고 있는 클라이언트들에게 메시지 전송
+    public String processSearch(String message) {
+        // 검색 처리 로직 수행
+        return "검색 결과: " + message;
+    }
+
+    @MessageMapping("/alert") // 클라이언트가 '/app/alert'로 메시지를 보내면 해당 메서드가 호출됨
+    @SendTo("/topic/alerts") // 서버가 '/topic/alerts'를 구독하고 있는 클라이언트들에게 메시지 전송
+    public String sendAlert(String message) {
+        // 알림 전송 로직 수행
+        return "알림: " + message;
     }
 
 
