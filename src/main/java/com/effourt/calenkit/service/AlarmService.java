@@ -92,11 +92,11 @@ public class AlarmService {
        List<Alarm> alarmList=alarmRepository.findByAlScno(scNo); //해당 일정 알람 리스트
 
        for(Alarm alarm:alarmList) { //개별 출력
-           if(alarm.getAlStatus()==0) { //휴지통에 있는 알람일 경우
-               alarm.setAlStatus(1); //상태 : 출력으로 변경
-           }
            if(alarm.getAlCate()==0) { //일정 삭제 알람일 경우
-               alarmRepository.delete(alarm.getAlMid(), alarm.getAlNo()); //알람 삭제
+               alarmRepository.delete(alarm.getAlMid(), alarm.getAlScno()); //알람 삭제
+           }
+           if(alarm.getAlStatus()==0 && alarm.getAlCate()!=0) { //휴지통에 있는 알람이며 일정 삭제 알람이 아닐 경우
+               alarm.setAlStatus(1); //상태 : 출력으로 변경
            }
            alarmRepository.update(alarm);
        }

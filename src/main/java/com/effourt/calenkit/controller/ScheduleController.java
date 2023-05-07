@@ -159,8 +159,8 @@ public class ScheduleController {
     @GetMapping("/delete")
     public String deleteSchedule(@RequestParam Integer scNo) {
         String loginId = (String)session.getAttribute("loginId"); //session으로 현재 아이디 받아오기
-        myScheduleService.removeSchedule(scNo, loginId);
         alarmService.removeAlarmByScno(scNo);
+        myScheduleService.removeSchedule(scNo, loginId);
 
         return "redirect:/";
     }
@@ -173,8 +173,8 @@ public class ScheduleController {
     @GetMapping("/restore")
     public String restoreSchedule(@RequestParam Integer scNo) {
         String loginId = (String)session.getAttribute("loginId"); //session으로 현재 아이디 받아오기
-        myScheduleService.restoreSchedule(scNo, null);
         alarmService.restoreAlarm(scNo);
+        myScheduleService.restoreSchedule(scNo);
 
         return "redirect:/";
     }
