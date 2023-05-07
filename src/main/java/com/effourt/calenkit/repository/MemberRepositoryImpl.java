@@ -29,8 +29,8 @@ public class MemberRepositoryImpl implements MemberRepository {
     }
 
     @Override
-    public Integer update(Member member) {
-        return sqlSessionTemplate.getMapper(MemberMapper.class).update(member);
+    public Integer updateStatus(Member member) {
+        return sqlSessionTemplate.getMapper(MemberMapper.class).updateStatus(member);
     }
 
     @Override

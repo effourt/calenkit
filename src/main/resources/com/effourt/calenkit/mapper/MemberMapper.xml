@@ -18,6 +18,11 @@
     <!-- UPDATE -->
     <!-- 회원정보변경 시 호출 -->
     <!-- 로그인 처리 후 마지막로그인날짜 업데이트 처리 시 호출 -->
+    <update id="updateStatus">
+        UPDATE MEMBER SET MEM_STATUS=0 WHERE MEM_ID=#{memId}
+    </update>
+
+
     <update id="update">
         UPDATE MEMBER
         <set>
@@ -42,7 +47,6 @@
         </set>
         WHERE MEM_ID=#{memId}
     </update>
-
     <!-- DELETE -->
     <!-- 회원 정보 말소 시 호출 -->
     <delete id="delete">
