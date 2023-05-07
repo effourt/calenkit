@@ -221,8 +221,9 @@ public class MemberController2 {
     // 멤버 상태 변경(Put)
     // 로그인세션에서 아이디값을 전달받아 member_delete 페이지로 이동처리.
     @PostMapping(value ="/myPage_delete")
-    public String MyPageDelete(HttpSession session,String memId) throws MemberNotFoundException {
-        Member member=memberRepository.findByMemId(memId);
+    public String MyPageDelete(HttpSession session,String memId,String memStatus) throws MemberNotFoundException {
+        String loginId=(String)session.getAttribute("loginId");
+        Member member=memberRepository.findByMemId(loginId);
 
         if(member.getMemId().equals(memId)) {
             myPageService.removeMe(member);
