@@ -69,7 +69,7 @@ public class TeamController {
     // http://localhost:8080/teams/share/1  : memId=employee
 
     //@PostMapping ("/teams/share/{scNo}")
-    @ResponseBody
+    //@ResponseBody
     public Team shareTeam(@PathVariable int scNo, @RequestBody Map<String,Object> map) {
         String memId = (String)map.get("memId");
         Team newTeam = teamScheduleService.addTeam(scNo,memId);
@@ -77,7 +77,6 @@ public class TeamController {
         return newTeam;
     }
 
-    // http://localhost:8080/teams/share/confirm/99/teams/share/99?memId=jhla456%40kakao.com
     /**
      * 동행 추가 (동행추가 + 알람서비스)
      * */
@@ -85,13 +84,17 @@ public class TeamController {
     // http://localhost:8080/teams/share/1  : memId=test@test.com
     // http://localhost:8080/teams/share/1  : memId=employee
     @PostMapping ("/teams/share/{scNo}")
-    public String shareTeam2(@PathVariable int scNo, @RequestParam String memId) {
-        log.info("scNo = {}",scNo);
-        log.info("memId = {}",memId);
-        teamScheduleService.addTeam(scNo,memId);
-        log.info("1");
-        alarmService.addAlarmBySaveTeam(scNo,memId); //알람서비스
-        log.info("2");
+    public String shareTeam2(@PathVariable int scNo, @RequestParam String memId, HttpSession session) {
+        String loginId = (String) session.getAttribute("loginId");
+        log.info("[shareTeam2] scNo = {}",scNo);
+        log.info("[shareTeam2] memId = {}",memId);
+        log.info("[shareTeam2] loginId = {}",loginId);
+        if(loginId.equals(memId)){
+            teamScheduleService.addTeam(scNo,memId);
+            log.info("[shareTeam2] teamScheduleService.addTeam");
+            alarmService.addAlarmBySaveTeam(scNo,memId); //알람서비스
+            log.info("[shareTeam2] alarmService.addAlarmBySaveTeam");
+        }
         return "redirect:/schedules?scNo="+scNo;
     }
 
