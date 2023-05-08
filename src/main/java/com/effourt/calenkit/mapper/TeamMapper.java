@@ -14,7 +14,7 @@ public interface TeamMapper {
     Integer delete(@Param("teamSno") Integer teamSno, @Param("teamMid")String teamMid);
     List<Team> findByMid(String teamMid);
     List<Integer> findByid(String teamMid);
-
+    Team findBySnoAndMid(@Param("teamSno") Integer teamSno,@Param("teamMid") String teamMid);
     List<Integer> findByBookmark(String teamMid);
     List<Team> findBySno(Integer teamSno);
 }
