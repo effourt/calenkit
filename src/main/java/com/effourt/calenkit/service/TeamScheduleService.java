@@ -59,31 +59,29 @@ public class TeamScheduleService {
 
     /**
      * 공유할 사람을 찾아서 추가하는서비스
-     * @param findId : 공유받을 아이디
+     * @param addId : 공유받을 아이디
      * @param scNo   : 일정 번호
      */
     @Transactional
-    public Team addTeam(Integer scNo, String findId) {
+    public Team addTeam(Integer scNo, String addId) {
 
         //findId 유효값인지 확인
-        /*
-        Member findMember = memberRepository.findByMemId(findId);
-        if(!findMember.getMemId().equals(findId)){ //같지 않을 경우
+        Member findMember = memberRepository.findByMemId(addId);
+        if(!findMember.getMemId().equals(addId)){ //같지 않을 경우
             return null; //예외 처리 - throw new
         }
 
         //scNo 유효값인지 확인
-        List<Integer> teamSnoList = teamRepository.findByid(findId);
+        List<Integer> teamSnoList = teamRepository.findByid(addId);
         for(Integer teamSno:teamSnoList){
             if(teamSno==scNo) { //이미 존재할 경우
                 return null; //예외 처리  - throw new
             }
         }
-         */
 
         //Team 추가
         Team newTeam = new Team();
-        newTeam.setTeamMid(findId);
+        newTeam.setTeamMid(addId);
         newTeam.setTeamSno(scNo);
         newTeam.setTeamLevel(0); //처음 insert 시는 권한레벨을 읽기로 준다(후에 수정 가능) - 읽기권한:0, 수정권한:1
         teamRepository.save(newTeam);
@@ -92,60 +90,41 @@ public class TeamScheduleService {
 
     /**
      * 공유된 일정의 권한 정보를 변경하는서비스
-     * @param teamMid         : 공유받은아이디
+     * @param updateId         : 공유받은아이디
      * @param scNo            : 일정번호
      * @param updateTeamLevel : 변경할권한레밸 (0,1)
      */
     //=> 컨트롤러에서 API로 요청 사용 [사용자가 드롭다운으로 권한을 변경할 때 페이지 리로드 없이 비동기 처리로 변경되게 만들 것임 - [부분변경:PATCH]
     @Transactional
-    public Team modifyTeamLevel(int scNo, String teamMid, int updateTeamLevel) {
-        Boolean isvalid = false;
-
+    public Team modifyTeamLevel(int scNo, String updateId, int updateTeamLevel) {
         //team 유효값인지 확인
-        List<Integer> teamSnoList = teamRepository.findByid(teamMid);
-        for (int teamSno : teamSnoList) {
-            if (teamSno == scNo) {
-                isvalid = true;
-            }
+        if(teamRepository.findBySnoAndMid(scNo,updateId)==null
+                || teamRepository.findBySnoAndMid(scNo,updateId).equals("")){ //team이 존재하지 않는다면
+            return null;
         }
 
         Team updateTeam = new Team();
-        if (isvalid) {
-            updateTeam.setTeamSno(scNo);
-            updateTeam.setTeamMid(teamMid);
-            updateTeam.setTeamLevel(updateTeamLevel);
-            teamRepository.update(updateTeam);//team에 최종적으로 권한레벨 변경
-        }
+        updateTeam.setTeamSno(scNo);
+        updateTeam.setTeamMid(updateId);
+        updateTeam.setTeamLevel(updateTeamLevel);
+        teamRepository.update(updateTeam);//team에 최종적으로 권한레벨 변경
         return updateTeam;
     }
 
     /**
      * 공유한 사람을 삭제하는 서비스
      * @param scNo
-     * @param teamMid
+     * @param removeId
      * @return
      */
     @Transactional
-    public Boolean removeTeam(int scNo, String teamMid) {
-        Boolean result = false;
-
-        //teamMid 유효값인지 확인
-        Member findMember = memberRepository.findByMemId(teamMid);
-        if(findMember.equals("") || findMember==null){ //존재하지 않을 경우
-            return false; //예외 처리 - throw new
+    public int removeTeam(int scNo, String removeId) {
+        //team 유효값인지 확인
+        if(teamRepository.findBySnoAndMid(scNo,removeId)==null
+                || teamRepository.findBySnoAndMid(scNo,removeId).equals("")){ //team이 존재하지 않는다면
+            return -1;
         }
-
-        //scNo 유효값인지 확인
-        List<Integer> teamSnoList = teamRepository.findByid(teamMid);
-        for(Integer teamSno:teamSnoList){
-            if(teamSno==scNo) {//sc==scNo 일때만
-                result = true; //Team 삭제
-            }
-        }
-        if(result) teamRepository.delete(scNo,teamMid);
-
-        return result;
-
+        return teamRepository.delete(scNo,removeId);
     }
 
 
