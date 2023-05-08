@@ -34,6 +34,7 @@ public class MemberController2 {
     private final MemberRepository memberRepository;
     private final ImageUpload imageUploadService;
     private final PasswordEncoder passwordEncoder;
+    private final HttpSession session;
 
     /** 관리자 */
     // Admin
@@ -70,7 +71,7 @@ public class MemberController2 {
     // 멤버 삭제(DELETE)
     // 로그인세션에서 아이디값을 전달받아 member_list 페이지로 이동
     @PostMapping(value ="/admin_delete")
-    public String adminDelete(@RequestParam("memIdList") List<String> memIdList) throws MemberNotFoundException {
+    public String adminDelete(List<String> memIdList) throws MemberNotFoundException {
        //체크 된 멤버리스트 삭제하기 위해 for문 사용.
         for (String originMemId : memIdList) {
             //리스트로 객체 받아올 경우 [,],"가 포함되어있는데 이걸 제거하기 위해 사용함.
@@ -86,12 +87,10 @@ public class MemberController2 {
 
     //MyPage 이동
     @GetMapping(value = "/myPage")
-    public String MyPage(HttpSession session,Model model) {
+    public String MyPage(Model model) {
         String loginId=(String)session.getAttribute("loginId");
         Member loginMember=memberRepository.findByMemId(loginId);
-        model.addAttribute("memName",loginMember.getMemName());
-        model.addAttribute("memImage",loginMember.getMemImage());
-        System.out.println(loginMember.getMemImage());
+        model.addAttribute("loginMember",loginMember);
         return "member/myPage";
     }
 
@@ -100,7 +99,7 @@ public class MemberController2 {
     // Ajax 처리를 위해 닉네임 중복 갯수 반환
     @GetMapping("/nameCheck")
     @ResponseBody
-    public int nameCheck(@RequestParam("memName") String memName,HttpSession session) {
+    public int nameCheck(String memName) {
 
         if (!memName.matches("^[a-zA-Z가-힣]{2,10}$")) {
             int cnt = memberRepository.findByMemName(memName);
@@ -117,7 +116,7 @@ public class MemberController2 {
     // Ajax 처리를 위해 아이디 중복 갯수 반환
     @GetMapping("/idCheck")
     @ResponseBody
-    public int idCheck(@RequestParam("memId") String memId,HttpSession session) {
+    public int idCheck(String memId) {
         String loginId=(String)session.getAttribute("loginId");
         int cnt=0;
         if(loginId.equals(memId)){
@@ -147,7 +146,7 @@ public class MemberController2 {
 
     @GetMapping("/pwCheck")
     @ResponseBody
-    public int pwCheck(String memPw,HttpSession session) {
+    public int pwCheck(String memPw) {
         String loginId=(String)session.getAttribute("loginId");
         Member loginMember=memberRepository.findByMemId(loginId);
         int cnt=0;
@@ -161,7 +160,7 @@ public class MemberController2 {
     }
 
     @PostMapping("/modify_image")
-    public String saveMember(@RequestParam(value="memImage",required = false ) MultipartFile memImage,HttpSession session) throws MemberNotFoundException, IOException {
+    public String saveMember(@RequestParam(required = false ) MultipartFile memImage) throws MemberNotFoundException, IOException {
         String loginId=(String)session.getAttribute("loginId");
         Member loginMember=memberRepository.findByMemId(loginId);
         // 이미지 업로드 후 파일명 반환
@@ -175,7 +174,7 @@ public class MemberController2 {
     }
 
     @PostMapping("/modify_name")
-    public String Member(@RequestParam("memName") String memName,HttpSession session) throws MemberNotFoundException, IOException {
+    public String Member(String memName) throws MemberNotFoundException, IOException {
         String loginId=(String)session.getAttribute("loginId");
         Member loginMember=memberRepository.findByMemId(loginId);
         // 닉네임 업로드
@@ -188,7 +187,7 @@ public class MemberController2 {
 
 
     @GetMapping(value ="/myPage_pwModify")
-    public String MyPagePwModify(HttpSession session,Model model){
+    public String MyPagePwModify(Model model){
         String loginId=(String)session.getAttribute("loginId");
         Member loginMember=memberRepository.findByMemId(loginId);
 
@@ -200,7 +199,7 @@ public class MemberController2 {
     // 멤버 비밀번호 정보변경(Put)
     // 로그인세션에서 아이디값을 전달받아 member_pwModify 페이지로 이동처리.
     @PostMapping(value ="/myPage_pwModify")
-    public String MyPagePwModify(HttpSession session,String memPw,String password1) throws MemberNotFoundException {
+    public String MyPagePwModify(String memPw,String password1) throws MemberNotFoundException {
         String loginId=(String)session.getAttribute("loginId");
         Member loginMember=memberRepository.findByMemId(loginId);
         System.out.println(loginMember.getMemPw()+password1);
@@ -208,7 +207,7 @@ public class MemberController2 {
         if(loginMember.getMemPw()==null){
 
             myPageService.modifyPassword(loginMember,password1);
-            return "member/myPage";
+            return "member/endPage";
         }
         //기존 비밀번호 있을 경우
         else {
@@ -231,7 +230,7 @@ public class MemberController2 {
     // 멤버 상태 변경(Put)
     // 로그인세션에서 아이디값을 전달받아 member_delete 페이지로 이동처리.
     @PostMapping(value ="/myPage_delete")
-    public String MyPageDelete(HttpSession session,String memId) throws MemberNotFoundException {
+    public String MyPageDelete(String memId) throws MemberNotFoundException {
         Integer memStatus=0;
         String loginId=(String)session.getAttribute("loginId");
         Member member=memberRepository.findByMemId(loginId);
