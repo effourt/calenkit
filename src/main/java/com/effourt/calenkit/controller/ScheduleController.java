@@ -48,6 +48,10 @@ public class ScheduleController {
      */
     @GetMapping(value={"/","/main"})
     public String main(Model model) {
+        String returnURI = (String)session.getAttribute("returnURI");
+        if(returnURI!=null || !returnURI.equals("")){
+            return "redirect:"+returnURI;
+        }
         //세션에서 로그인아이디 반환받아 저장
         String loginId = (String)session.getAttribute("loginId");
 
@@ -70,7 +74,6 @@ public class ScheduleController {
         //개인 즐겨찾기리스트 조회
         List<Schedule> bookmarkList=myScheduleService.getBookmark(loginId, null);
         model.addAttribute("bookmarkList", bookmarkList);
-
         return "main";
     }
 
