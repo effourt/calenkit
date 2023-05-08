@@ -205,7 +205,7 @@ public class MemberController {
      * @param member 아이디(이메일), 비밀번호, 닉네임, 프로필 이미지(선택) 정보 저장 객체
      * @return
      */
-    @PostMapping(value = "/join", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/join", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     @ResponseBody
     public String join(@RequestPart Member member, @RequestPart MultipartFile profileImage, HttpSession session) {
         //비밀번호를 암호화
@@ -283,6 +283,6 @@ public class MemberController {
             loginService.expireToken(authRepository.findByAuthId(authId).getAuthAccess());
         }
         session.invalidate();
-        return "login";
+        return "redirect:/login/form";
     }
 }
