@@ -37,6 +37,11 @@ public class TeamRepositoryImpl implements TeamRepository {
     }
 
     @Override
+    public Team findBySnoAndMid(Integer teamSno, String teamMid) {
+        return sqlSessionTemplate.getMapper(TeamMapper.class).findBySnoAndMid(teamSno,teamMid);
+    }
+
+    @Override
     public List<Integer> findByid(String teamMid) {
         return sqlSessionTemplate.getMapper(TeamMapper.class).findByid(teamMid);
     }

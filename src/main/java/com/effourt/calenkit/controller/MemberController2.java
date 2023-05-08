@@ -135,20 +135,24 @@ public class MemberController2 {
     // Ajax 처리를 위해 비밀번호 중복 갯수 반환
     @GetMapping("/passwordCheck")
     @ResponseBody
-    public int passwordCheck(String password1,String password2) {
-        int cnt=0;
-        if (password1.equals(password2)){
+    public int passwordCheck(String password1, String password2) {
+        int cnt = 0;
+        if (password1.equals(password2)) {
             cnt++;
-            return cnt;
+        } else if (password1.matches("^(?=.*\\d)(?=.*[a-zA-Z])(?=.*[!@#$%^&+=])(?=^.{8,15}$)")) {
+            cnt = 2;
         }
         return cnt;
     }
+
     @GetMapping("/pwCheck")
     @ResponseBody
     public int pwCheck(String memPw,HttpSession session) {
         String loginId=(String)session.getAttribute("loginId");
         Member loginMember=memberRepository.findByMemId(loginId);
         int cnt=0;
+        if(memPw==null){
+        }
         if (passwordEncoder.matches(memPw,loginMember.getMemPw())){
           cnt++;
             return cnt;
@@ -181,17 +185,15 @@ public class MemberController2 {
         return "redirect:/myPage";
     }
 
+
+
     @GetMapping(value ="/myPage_pwModify")
     public String MyPagePwModify(HttpSession session,Model model){
         String loginId=(String)session.getAttribute("loginId");
         Member loginMember=memberRepository.findByMemId(loginId);
-        System.out.println(loginMember);
+
         model.addAttribute("loginMember"+loginMember);
         return "member/myPageModify";
-    }
-    @GetMapping(value ="/myPage_delete")
-    public String MyPageDelete(){
-        return "member/myPageDelete";
     }
 
     // MyPage
@@ -204,6 +206,7 @@ public class MemberController2 {
         System.out.println(loginMember.getMemPw()+password1);
         //비밀번호 없을 경우
         if(loginMember.getMemPw()==null){
+
             myPageService.modifyPassword(loginMember,password1);
             return "member/myPage";
         }
@@ -211,23 +214,31 @@ public class MemberController2 {
         else {
             if (passwordEncoder.matches(memPw, loginMember.getMemPw())) {
                 myPageService.modifyPassword(loginMember, password1);
-                return "member/myPage";
+                return "member/endPage";
             } else {
                 return "member/myPage";
             }
         }
     }
+
+
+    @GetMapping(value ="/myPage_delete")
+    public String MyPageDelete(){
+        return "member/myPageDelete";
+    }
+
     // MyPage
     // 멤버 상태 변경(Put)
     // 로그인세션에서 아이디값을 전달받아 member_delete 페이지로 이동처리.
     @PostMapping(value ="/myPage_delete")
-    public String MyPageDelete(HttpSession session,String memId,String memStatus) throws MemberNotFoundException {
+    public String MyPageDelete(HttpSession session,String memId) throws MemberNotFoundException {
+        Integer memStatus=0;
         String loginId=(String)session.getAttribute("loginId");
         Member member=memberRepository.findByMemId(loginId);
-
-        if(member.getMemId().equals(memId)) {
+      if(member.getMemId().equals(memId)) {
+            member.setMemStatus(memStatus);
             myPageService.removeMe(member);
-            return "login";
+            return "member/endPage";
         }
         else{
             return "login";

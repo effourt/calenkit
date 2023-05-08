@@ -8,11 +8,14 @@ li a {
   text-decoration: none;
   outline: none
 }
-
 a:hover, a:active{
   text-decoration: none;
   color:#fff;
   background-color:rgba(0,0,0,0.1);
+}
+
+.myBtn{
+  color: black;
 }
 
 main {

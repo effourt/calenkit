@@ -61,6 +61,21 @@ public class TeamController {
         return teamScheduleService.getTeam(scNo);
     }
 
+    /**
+     * 동행 추가 (동행추가 + 알람서비스)  - rest API
+     * */
+    // http://localhost:8080/teams/share/1  : memId=member
+    // http://localhost:8080/teams/share/1  : memId=test@test.com
+    // http://localhost:8080/teams/share/1  : memId=employee
+
+    //@PostMapping ("/teams/share/{scNo}")
+    //@ResponseBody
+    public Team shareTeam(@PathVariable int scNo, @RequestBody Map<String,Object> map) {
+        String memId = (String)map.get("memId");
+        Team newTeam = teamScheduleService.addTeam(scNo,memId);
+        alarmService.addAlarmBySaveTeam(scNo,memId); //알람서비스
+        return newTeam;
+    }
 
     /**
      * 동행 추가 (동행추가 + 알람서비스)
@@ -68,15 +83,21 @@ public class TeamController {
     // http://localhost:8080/teams/share/1  : memId=member
     // http://localhost:8080/teams/share/1  : memId=test@test.com
     // http://localhost:8080/teams/share/1  : memId=employee
-
     @PostMapping ("/teams/share/{scNo}")
-    @ResponseBody
-    public Team shareTeam(@PathVariable int scNo, @RequestBody Map<String,Object> map) {
-        String memId = (String)map.get("memId");
-        Team newTeam = teamScheduleService.addTeam(scNo,memId);
-        alarmService.addAlarmBySaveTeam(scNo,memId); //알람서비스
-        return newTeam;
+    public String shareTeam2(@PathVariable int scNo, @RequestParam String memId, HttpSession session) {
+        String loginId = (String) session.getAttribute("loginId");
+        log.info("[shareTeam2] scNo = {}",scNo);
+        log.info("[shareTeam2] memId = {}",memId);
+        log.info("[shareTeam2] loginId = {}",loginId);
+        if(loginId.equals(memId)){
+            teamScheduleService.addTeam(scNo,memId);
+            log.info("[shareTeam2] teamScheduleService.addTeam");
+            alarmService.addAlarmBySaveTeam(scNo,memId); //알람서비스
+            log.info("[shareTeam2] alarmService.addAlarmBySaveTeam");
+        }
+        return "redirect:/schedules?scNo="+scNo;
     }
+
 
 
     /***
@@ -154,13 +175,14 @@ public class TeamController {
     /**
      * 이메일 받은 동행이 링크 클릭할 시 이동될 페이지 - teamShareConfirm.html
      * @param scNo
-     * @param teamMid
+     * @param memId
      * @param model
      * @return
      */
-    @GetMapping("/teams/share/confirm/{scNo}/{teamMid}")
-    public String showTeamShareAuth(@PathVariable int scNo, @PathVariable String teamMid, Model model) {
-        model.addAttribute("teamMid", teamMid);
+    //http://localhost:8080/teams/share/confirm/111/jhla456@kakao.com
+    @GetMapping("/teams/share/confirm/{scNo}/{memId}")
+    public String showTeamShareAuth(@PathVariable int scNo, @PathVariable String memId, Model model) {
+        model.addAttribute("memId", memId);
         model.addAttribute("scNo", scNo);
         return "teamShareConfirm";
     }

@@ -2,38 +2,41 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>동행 인증 화면</title>
+    <title>calenkit confirm</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 </head>
-<body>
-  <h3><span th:text="${teamMid}"/>님, 일정공유에 참여하시겠습니까?</h3>
-      <input type="hidden" id="scNo" th:value="${scNo}">
-      <input type="hidden" id="teamMid" th:value="${teamMid}">
-      <button id="teamShare"> 참여하기 </button>
+<body style="background-color: #6c757d; text-align: center; color: white; margin-top: 10%">
+<!--    <div><img src="/static/img/calenkit.png"></div>-->
+    <h3><span th:text="${memId}"/>님, 일정공유에 참여하시겠습니까?</h3>
+    <form th:action="@{/teams/share/{scNo}(scNo=${scNo})}" method="post">
+        <!--          <input type="hidden" id="scNo" th:value="${scNo}">-->
+        <input type="hidden" id="memId" name="memId" th:value="${memId}">
+        <button type="submit" id="teamShare">참여하기</button>
+    </form>
 </body>
   <script>
+      const domainURL = "http://localhost:8080";
+      const memId = $("#memId").val();
+      const scNo = $("#scNo").val();
 
-  const domainURL = "http://localhost:8080";
-  const teamMid = $("#teamMid").val();
-  const scNo = $("#scNo").val();
+      /*
+      $("#teamShare").click(function () {
+          $.ajax({ //동행 추가
+            url: domainURL+"/teams/share/"+scNo,
+            type: "POST",
+            contentType: "application/json",
+            dataType: "json",
+            data: JSON.stringify({"memId": memId}),
+            success: function(result) {
+                location.href= "/schedules?scNo="+scNo;
+            },
+            error: function(xhr, status, error) {
+              console.error("error: ", status, ", ", error);
+            }
+          });
 
-  $("#teamShare").click(function () {
-      $.ajax({ //동행 추가
-        url: domainURL+"/teams/share/"+scNo,
-        type: "POST",
-        contentType: "application/json",
-        dataType: "json",
-        data: JSON.stringify({"memId": teamMid}),
-        success: function(result) {
-            location.href= "/schedules?scNo="+scNo;
-        },
-        error: function(xhr, status, error) {
-          console.error("error: ", status, ", ", error);
-        }
-      });
-
-    });
-
+        });
+       */
   </script>
 
 </html>
