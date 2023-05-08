@@ -188,10 +188,10 @@ public class MemberController2 {
 
     @GetMapping(value ="/myPage_pwModify")
     public String MyPagePwModify(Model model){
+
         String loginId=(String)session.getAttribute("loginId");
         Member loginMember=memberRepository.findByMemId(loginId);
-
-        model.addAttribute("loginMember"+loginMember);
+        model.addAttribute("loginMember",loginMember);
         return "member/myPageModify";
     }
 
