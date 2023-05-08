@@ -64,14 +64,14 @@
 
 
     <!-- 이미지 파일 업로드 input -->
-    <img id="image-preview"  th:src="@{/img/} + ${memImage}" alt="Image Preview" style="width: 200px; height: 200px;" onclick="document.getElementById('memImage').click()" >
+    <img id="image-preview"  th:src="@{/img/} + ${loginMember?.memImage}" alt="Image Preview" style="width: 200px; height: 200px;" onclick="document.getElementById('memImage').click()" >
     <input type="file" id="memImage" name="memImage" style="display: none">
     <div><input type="button" id="files_send" value="이미지 변경"></div>
 
 
     <!-- name ajax 중복체크 -->
     <div for="memName" >닉네임</div>
-    <input type="text" id="memName" name="memName" oninput = "checkName()" th:value="${memName}">
+    <input type="text" id="memName" name="memName" oninput = "checkName()" th:value="${loginMember?.memName}">
     <button class="name_ok" type="submit" style="display: none" formaction="/modify_name">닉네임 사용하기</button>
     <span class="name_already" style="display: none">사용 중 닉네임입니다.</span>
 

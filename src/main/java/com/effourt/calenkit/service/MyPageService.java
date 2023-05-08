@@ -47,14 +47,8 @@ public class MyPageService {
 
     @Transactional
     public void modifyPassword(Member loginmember,String password1) throws MemberNotFoundException{
-//        if(memberRepository.findByMemId(loginmember.getMemId())==null) {
-//            throw new MemberNotFoundException("아이디의 회원정보가 존재하지 않습니다.");
-//        }
-        //전달받은 회원정보의 비밀번호가 존재할 경우 암호화된 비밀번호로 필드값 변경
-        if(loginmember.getMemPw()!=null && !loginmember.getMemPw().equals("")) {
-            loginmember.setMemPw(passwordEncoder.encode(password1));
-        }
-       memberRepository.updatePassword(loginmember);
+        loginmember.setMemPw(passwordEncoder.encode(password1));
+        memberRepository.updatePassword(loginmember);
     }
     // [회원탈퇴 행위] : removeMe()
     // => MemberRepository.update
