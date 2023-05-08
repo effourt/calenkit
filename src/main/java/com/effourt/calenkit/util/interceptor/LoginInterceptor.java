@@ -18,7 +18,14 @@ public class LoginInterceptor implements HandlerInterceptor {
         String loginId = (String) session.getAttribute("loginId");
         log.info("LoginInterceptor loginId={}", loginId);
         if (loginId == null) {
+            String requestURI = request.getRequestURI();
+            String queryString = request.getQueryString();
+            log.info("requestURI={}", requestURI);
+            log.info("queryString={}", queryString);
+            if(queryString==null || queryString.equals("")) session.setAttribute("returnURI",requestURI);
+            else session.setAttribute("returnURI",requestURI+"?"+queryString);
             response.sendRedirect(request.getContextPath() + "/login/form");
+            return false;
         }
         return true;
     }
