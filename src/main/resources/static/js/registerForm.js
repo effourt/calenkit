@@ -81,19 +81,26 @@ $("#registerBtn").click(function() {
     }
 
     const loginId = $("#loginId").val();
-    const profileImage = $("#profileImage").val();
+    const profileImage = $("#profileImage")[0].files[0];
     const nickname = $("#nickname").val();
     const password = $("#loginPw").val();
+
+    let form = new FormData();
+    const data = {
+        "memId" : loginId,
+        "profileImage" : profileImage,
+        "memName" : nickname,
+        "memPw" : password
+    }
+    form.append("member", new Blob([JSON.stringify(data)], {type : "application/json"}));
+    form.append("profileImage", profileImage);
     $.ajax({
         url: domainURL + "/join",
         method: "POST",
-        contentType: "application/json",
+        contentType: false,
+        processData: false,
         dataType: "text",
-        data: JSON.stringify({
-            "memId" : loginId,
-            "memImage" : profileImage,
-            "memName" : nickname,
-            "memPw" : password}),
+        data: form,
         success: function(result) {
             if (result == "OK") {
                 location.href = domainURL + "/";
