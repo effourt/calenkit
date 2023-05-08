@@ -25,20 +25,22 @@ public class AdminService {
     // [회원 상태 변경 행위] : modifyMember()
     // => MemberRepository.delete
     @Transactional
-    public void modifyMember(Member member) throws MemberNotFoundException{
-        Member selectMember=memberRepository.findByMemId(member.getMemId());
-        selectMember.setMemStatus(member.getMemStatus());
-        memberRepository.updateStatus(selectMember);
+    public void modifyPassword(Member member) throws MemberNotFoundException{
+        if(memberRepository.findByMemId(member.getMemId())==null) {
+            throw new MemberNotFoundException("아이디의 회원정보가 존재하지 않습니다.");
+        }
+        //전달받은 회원정보의 상태가 존재할 경우, 상태 필드값 변경
+        if(member.getMemStatus()!=null && !member.getMemStatus().equals("")) {
+            member.setMemStatus(member.getMemStatus());
+        }
+        memberRepository.update(member);
     }
 
     // [회원 말소 행위] : removeMember()
     // => MemberRepository.delete
     @Transactional
     public void removeMember(String memId) throws MemberNotFoundException{
-            memberRepository.delete(memId);
+
+        memberRepository.delete(memId);
     }
-
-
-
-
 }
