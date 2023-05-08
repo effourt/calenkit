@@ -34,7 +34,7 @@ public class ImageUpload {
         return filename;
     }
 
-    public String getOriginalName(String filename) {
+    public String getOriginalFilename(String filename) {
         return filename.substring(filename.indexOf("_") + 1);
     }
 }
