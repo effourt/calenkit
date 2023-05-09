@@ -59,7 +59,11 @@
 
 
     <!-- 이미지 파일 업로드 input -->
-    <img id="image-preview"  th:src="@{/img/} + ${loginMember?.memImage}" alt="Image Preview" style="width: 200px; height: 200px;" onclick="document.getElementById('memImage').click()" >
+    <!-- http 경로-->
+    <img id="image-preview" th:if="${loginMember?.memImage.startsWith('http')}" th:src="${loginMember?.memImage}" alt="Image Preview" style="width: 200px; height: 200px;" onclick="document.getElementById('memImage').click()" />
+    <!-- 로컬 경로-->
+    <img id="image-preview2" th:if="${!loginMember?.memImage.startsWith('http')}" th:src="@{/img/} + ${loginMember?.memImage}" alt="Image Preview" style="width: 200px; height: 200px;" onclick="document.getElementById('memImage').click()" />
+
     <input type="file" id="memImage" name="memImage" style="display: none">
     <div><input type="button" id="files_send" value="이미지 변경"></div>
 
@@ -91,7 +95,10 @@
 
             reader.onload = function (e) {
                 $('#image-preview').attr('src', e.target.result);
+                $('#image-preview2').attr('src', e.target.result);
+
                 $('#image-preview').show();
+                $('#image-preview2').show();
             }
 
             reader.readAsDataURL(input.files[0]);
@@ -99,6 +106,8 @@
         else {
             $('#image-preview').attr('src', '#');
             $('#image-preview').hide();
+            $('#image-preview2').attr('src', '#');
+            $('#image-preview2').hide();
             alert("올바른 이미지 파일을 선택해주세요. (gif, png, jpg, jpeg 형식만 가능)");
             $(this).val('');
         }
