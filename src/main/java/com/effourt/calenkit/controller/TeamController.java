@@ -51,22 +51,6 @@ public class TeamController {
         return memberRepository.findByMemId(memId);
     }
 
-    @GetMapping("/return-uri")
-    public String returnURI(HttpSession session) {
-        String returnURI= (String)session.getAttribute("returnURI");
-        if (returnURI != null) {
-            session.removeAttribute("returnURI");
-            log.info("returnURI = {}",returnURI);
-        }
-
-        if (returnURI == null) {
-            return "redirect:/";
-        } else if ((returnURI != null || !returnURI.equals("")) && returnURI.contains("/teams/share/confirm")) {
-            return "redirect:"+returnURI;
-        }
-        return "redirect:/";
-    }
-
     /**
      * 동행 조회 - rest API
      * */

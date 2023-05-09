@@ -271,6 +271,25 @@ public class MemberController {
     }
 
     /**
+     * 로그인 후 Redirect 할 경로 지정
+     * @param session
+     * @return
+     */
+    @GetMapping("/return-uri")
+    public String returnURI(HttpSession session) {
+        String returnURI= (String)session.getAttribute("returnURI");
+        if (returnURI != null || !returnURI.equals("")) {
+            session.removeAttribute("returnURI");
+            log.info("returnURI = {}",returnURI);
+            return "redirect:"+returnURI;
+        } else if (returnURI == null) {
+            return "redirect:/";
+        }
+
+        return "redirect:/";
+    }
+
+    /**
      * 로그아웃
      * @param session
      * @return
