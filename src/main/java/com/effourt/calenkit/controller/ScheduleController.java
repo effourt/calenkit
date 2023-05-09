@@ -176,4 +176,16 @@ public class ScheduleController {
 
         return "redirect:/";
     }
+
+    /** 즐겨찾기 추가/삭제
+     *
+     * @param scNo
+     */
+    @GetMapping("/bookmark")
+    public String bookmarkSchedule(@RequestParam Integer scNo) {
+        String loginId = (String)session.getAttribute("loginId"); //session으로 현재 아이디 받아오기
+        myScheduleService.updateBookmark(scNo, loginId);
+
+        return "redirect:/schedules?scNo="+scNo;
+    }
 }
