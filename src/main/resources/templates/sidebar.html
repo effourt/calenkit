@@ -12,9 +12,9 @@
 <div th:fragment="sidebar">
     <div class="menu text-white" tabindex="0">
         <header class="avatar">
-            <a href="/myPage" style="text-decoration: none">
+            <a href="member/myPage.html" th:href="@{/myPage}" style="text-decoration: none">
                 <img class="img-fluid" th:src="${loginMember?.memImage}" src="https://images.unsplash.com/photo-1533738363-b7f9aef128ce?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80" />
-<!--                <p class="mt-3">[[${loginMember.memId}]]</p>-->
+                <p class="mt-3">[[${loginMember.memId}]]</p>
             </a>
         </header>
         <div class="ul">
@@ -69,10 +69,10 @@
 
 
             <div class="position-absolute bottom-0">
-            <!-- trash -->
-            <div tabindex="0" class="icon-trash li" id="trash" data-bs-toggle="modal" data-bs-target="#trashbox"><span class="m-auto">휴지통</span></div>
-            <!-- login -->
-            <span tabindex="0" class="icon-logout li"><span><a th:href="@{/logout}">로그아웃</a></span></span>
+                <!-- trash -->
+                <div tabindex="0" class="icon-trash li" id="trash" data-bs-toggle="modal" data-bs-target="#trashbox"><span class="m-auto">휴지통</span></div>
+                <!-- login -->
+                <span tabindex="0" class="icon-logout li"><span><a th:href="@{/logout}">로그아웃</a></span></span>
             </div>
         </div>
     </div>

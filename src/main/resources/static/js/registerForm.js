@@ -105,7 +105,7 @@ $("#registerBtn").click(function() {
         data: form,
         success: function(result) {
             if (result == "OK") {
-                location.href = domainURL + "/";
+                location.href = domainURL + "/return-uri";
             } else {
                 $("#message").val(result);
             }

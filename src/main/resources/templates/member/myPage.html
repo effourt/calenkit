@@ -4,23 +4,18 @@
 <head>
     <meta charset="UTF-8">
     <title>마이 페이지</title>
-    <link th:href="@{/packages/list/main.css}" href='../../static/packages/list/main.css' rel='stylesheet' />
-    <script th:src="@{/packages/core/main.js}" src='../../static/packages/core/main.js'></script>
+    <link th:href="@{/library/packages/list/main.css}" href='../../static/packages/list/main.css' rel='stylesheet' />
+    <script th:src="@{/library/packages/core/main.js}" src='../../static/packages/core/main.js'></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <style>
 
-        #preview {
-            max-width: 200px;
-            max-height: 200px;
-            margin-bottom: 10px;
-        }
         #memName {
             width: 50%;
             height: 30px;
             margin-bottom: 10px;
             font-size: 16px;
         }
-        .name_ok, .name_already {
+        .name_ok, .name_already, .name_not-ready {
             display: inline-block;
             font-size: 14px;
             font-weight: bold;
@@ -29,7 +24,7 @@
         .name_ok {
             color: green;
         }
-        .name_already {
+        .name_already,.name_not-ready {
             color: red;
         }
 
@@ -74,7 +69,7 @@
     <input type="text" id="memName" name="memName" oninput = "checkName()" th:value="${loginMember?.memName}">
     <button class="name_ok" type="submit" style="display: none" formaction="/modify_name">닉네임 사용하기</button>
     <span class="name_already" style="display: none">사용 중 닉네임입니다.</span>
-
+    <span class="name_not-ready" style="display: none">숫자,영문,한글로 작성해주세요(2~10글자)</span>
     <!-- 비밀번호 변경 -->
     <div id="pwModifyButton" onclick="openPwModifyPopup()">비밀번호 변경</div>
 
@@ -158,16 +153,20 @@
             type: 'get', // GET 방식으로 전달
             data: {memName: memName},
             success: function(cnt) { // Controller에서 넘어온 cnt 값을 받는다
-                if(cnt == 0) { // cnt가 1이 아니면(=0일 경우) -> 사용 가능한 아이디
+                if(cnt == 0) { // cnt가 0일 경우 -> 중복된 아이디
                     $('.name_ok').css("display", "inline-block");
                     $('.name_already').css("display", "none");
-                } if(cnt == 1) { // cnt가 1일 경우 -> 이미 존재하는 아이디
+                    $('.name_not-ready').css("display", "none");
+                } if(cnt == 1) { // cnt가 1일 경우 -> 사용 가능한 아이디
                     $('.name_already').css("display", "inline-block");
                     $('.name_ok').css("display", "none");
+                    $('.name_not-ready').css("display", "none");
                 }
-                if(cnt == 2){
-                    $('.name_already').css("display", "inline-block");
+                if(cnt == 2){ //형식에 맞지 않는 아이디
+                    $('.name_already').css("display", "none");
                     $('.name_ok').css("display", "none");
+                    $('.name_not-ready').css("display", "inline-block");
+
                 }
             },
             error: function() {

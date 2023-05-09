@@ -15,7 +15,7 @@
             <if test="teamLevel == 0 or teamLevel == 1">
                 TEAM_LEVEL=#{teamLevel},
             </if>
-            <if test="teamBookmark == 0 and teamBookmark == 1">
+            <if test="teamBookmark == 0 or teamBookmark == 1">
                 TEAM_BOOKMARK=#{teamBookmark},
             </if>
         </set>

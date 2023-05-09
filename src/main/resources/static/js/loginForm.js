@@ -106,7 +106,7 @@ $("#passwordBtn").click(function () {
         data: JSON.stringify({"memId" : loginId, "memPw" : loginPw}),
         success: function(result) {
             if (result == "OK") {
-                location.href = domainURL + "/";
+                location.href = domainURL + "/return-uri";
             } else {
                 $("#message").text(result);
             }
@@ -129,7 +129,7 @@ $("#loginCodeBtn").click(function () {
         data: JSON.stringify({"id" : loginId, "loginCode" : loginCode}),
         success: function(result) {
             if (result == "OK") {
-                location.href = domainURL + "/";
+                location.href = domainURL + "/return-uri";
             } else {
                 $("#message").text(result);
             }
@@ -223,7 +223,7 @@ $("#initializeCodeBtn").click(function() {
         data: JSON.stringify({"id" : loginId, "initializeCode" : initializeCode}),
         success: function(result) {
             if (result == "OK") {
-                location.href = domainURL + "/";
+                location.href = domainURL + "/return-uri";
             } else {
                 $("#message").text(result);
             }
