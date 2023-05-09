@@ -28,6 +28,7 @@
     동행 : <p></p>
     상태 : <p th:if="${schedule.getScProgress()}==1"></p>
     <a th:href="@{goToRecycleBin?scNo={scNo}(scNo=${schedule.getScNo()})}">휴지통 이동</a>
+    <a th:href="@{bookmark?scNo={scNo}(scNo=${schedule.getScNo()})}">즐겨찾기</a>
   </textarea>
 </div>
 

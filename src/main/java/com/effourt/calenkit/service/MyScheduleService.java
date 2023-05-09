@@ -102,8 +102,13 @@ public class MyScheduleService {
     // [내 스케줄 즐겨찾기 버튼 클릭 행위]
     // => 즐겨찾기 상태(teamBookmark) 변경
     @Transactional
-    public void addBookmark(Team team) {
-        team.setTeamBookmark(1); //즐겨찾기 등록
+    public void updateBookmark(Integer scNo, String id) {
+        Team team=teamRepository.findBySnoAndMid(scNo, id);
+        if(team.getTeamBookmark()==0) {
+            team.setTeamBookmark(1); //즐겨찾기 등록
+        } else {
+            team.setTeamBookmark(0); //즐겨찾기 해제
+        }
         teamRepository.update(team);
     }
 
