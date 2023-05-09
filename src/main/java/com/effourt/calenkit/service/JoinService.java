@@ -8,6 +8,7 @@ import com.effourt.calenkit.repository.AuthRepository;
 import com.effourt.calenkit.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -16,17 +17,23 @@ public class JoinService {
     private final MemberRepository memberRepository;
     private final AuthRepository authRepository;
 
-    //[email로 회원가입 행위] : joinByEmail()
-    // => EmailSend
-    // => MemberRepository.save
-    // **** 필수 정보 입력 처리 요망 ****
+    /**
+     * 이메일로 회원가입
+     * @param member 회원가입 할 회원 정보
+     */
+    @Transactional
     public void joinByEmail(Member member) {
         memberRepository.save(member);
     }
 
-    //[sns로 회원가입 행위] : joinBySNS()
-    // => MemberRepository.save
-    // => AuthRepository.save
+    /**
+     * 소셜로그인 시 회원가입
+     * 액세스 토큰, 리프레시 토큰 저장 및 회원 정보 저장
+     * @param authUserInfoResponse 저장할 회원 정보
+     * @param accessTokenResponse 저장할 액세스 토큰, 리프레스 토큰 정보
+     * @return 저장된 회원 정보
+     */
+    @Transactional
     public Member joinBySns(AuthUserInfoResponse authUserInfoResponse, AccessTokenResponse accessTokenResponse) {
         Auth auth = new Auth();
         auth.setAuthRefresh(accessTokenResponse.getRefreshToken());

@@ -31,12 +31,21 @@ public class LoginService {
     private final KakaoFeignClient kakaoFeignClient;
     private final KakaoApiClient kakaoApiClient;
 
-    //Member 테이블에 회원 정보 저장
+    /**
+     * Member 테이블에 회원 정보 저장
+     * @param member 저장할 회원 정보
+     */
+    @Transactional
     public void saveMember(Member member) {
         memberRepository.save(member);
     }
 
-    //회원 비밀번호 UPDATE
+    /**
+     * 회원 비밀번호 UPDATE
+     * @param memId 비밀번호를 갱신할 회원 아이디
+     * @param password 갱신할 비밀번호
+     */
+    @Transactional
     public void updatePassword(String memId, String password) {
         Member member = new Member();
         member.setMemId(memId);
@@ -44,12 +53,19 @@ public class LoginService {
         memberRepository.updatePassword(member);
     }
 
-    //회원 정보 UPDATE
+    /**
+     * 회원 정보 UPDATE
+     * @param member 갱신할 회원 정보
+     */
+    @Transactional
     public void update(Member member) {
         memberRepository.update(member);
     }
-    
-    //최근 로그인 시각 갱신
+
+    /**
+     * 최근 로그인 시각 갱신
+     * @param memId 회원 아이디(이메일 주소)
+     */
     @Transactional
     public void updateLastLogin(String memId) {
         Member member = new Member();
@@ -60,17 +76,23 @@ public class LoginService {
         memberRepository.update(member);
     }
 
-    //Member 테이블에서 이메일에 해당하는 회원 정보 조회
+    /**
+     * Member 테이블에서 이메일에 해당하는 회원 정보 조회
+     * @param id 회원 아이디(이메일 주소)
+     * @return 아이디에 해당하는 회원 정보
+     */
+    @Transactional
     public Member getMemberById(String id) {
         return memberRepository.findByMemId(id);
     }
 
-    /**[email로 로그인 행위] : loginByEmail() */
-    // => MemberRepository.find
-    // => EmailSend
-    // => 세션 값 저장
-
-    // [이메일 로그인] 아이디/비밀번호 존재 여부 확인
+    /**
+     * [이메일 로그인] 아이디/비밀번호 존재 여부 확인
+     * @param memberId
+     * @return 로그인 타입
+     * PASSWORD_LOGIN : 비밀번호로 로그인, CODE_LOGIN : 로그인 코드로 로그인, JOIN_LOGIN : 회원가입 코드로 회원가입 후 로그인
+     */
+    @Transactional
     public String checkMember(String memberId) {
         Member member = memberRepository.findByMemId(memberId);
         String loginType = "";
@@ -95,7 +117,7 @@ public class LoginService {
     /**
      * 인가 코드로 Access 토큰 발급
      * @param accessTokenRequest 액세스 토큰 요청을 위한 정보를 담은 객체
-     * @return
+     * @return 액세스 토큰 정보를 담은 AccessTokenResponse 객체
      */
     public AccessTokenResponse getAccessToken(AccessTokenRequest accessTokenRequest) {
         AccessTokenResponse accessToken = kakaoFeignClient.getAccessToken(
@@ -112,7 +134,7 @@ public class LoginService {
     /**
      * 인가 코드로 Access 토큰을 받아온 뒤, Access 토큰으로 카카오 리소스 서버에서 유저 정보 가져오기
      * @param accessToken 사용자 정보 조회를 위한 액세스 토큰
-     * @return
+     * @return 사용자 정보를 담은 AuthUserInfoResponse 객체
      */
     public AuthUserInfoResponse getAuthUserInfo(String accessToken) {
         String propertyKeys = "[\"id\",\"kakao_account.email\",\"kakao_account.profile.nickname\",\"kakao_account.profile.profile_image_url\"]";
@@ -142,6 +164,7 @@ public class LoginService {
      * @param token DB에 저장할 토큰 정보를 담은 객체
      * @return 토큰 정보 (Access Token, Refresh Token)
      */
+    @Transactional
     public Auth saveToken(AccessTokenResponse token) {
         Auth auth = new Auth();
         auth.setAuthAccess(token.getAccessToken());
@@ -155,6 +178,7 @@ public class LoginService {
      * @param authId DB에 저장된 토큰 인덱스
      * @param accessTokenResponse 액세스 토큰, 리프레시 토큰 정보를 담은 객체
      */
+    @Transactional
     public void updateToken(Integer authId, AccessTokenResponse accessTokenResponse) {
         Auth auth = new Auth();
         auth.setAuthId(authId);
