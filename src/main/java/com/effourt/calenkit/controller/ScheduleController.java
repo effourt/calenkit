@@ -35,12 +35,6 @@ public class ScheduleController {
     private final AlarmService alarmService;
     private final HttpSession session;
 
-    @ModelAttribute("loginMember")
-    public Member getLoginMember(HttpSession session){
-       String loginId = (String)session.getAttribute("loginId");
-       return memberRepository.findByMemId(loginId);
-    }
-
     //http://localhost:8080/
     //http://localhost:8080/main
     /**
@@ -48,19 +42,17 @@ public class ScheduleController {
      */
     @GetMapping(value={"/","/main"})
     public String main(Model model) {
-        /*
-        String returnURI = (String)session.getAttribute("returnURI");
-        if(returnURI!=null || !returnURI.equals("")){
-            return "redirect:"+returnURI;
-        }
-        */
+
         //세션에서 로그인아이디 반환받아 저장
         String loginId = (String)session.getAttribute("loginId");
+        Member loginMember  = memberRepository.findByMemId(loginId);
+
+        //개인 조회 (로그인 멤버)
+        model.addAttribute("loginMember", loginMember);
 
         //개인 알람리스트 조회
         List<Alarm> alarmList = alarmRepository.findByAlMid(loginId);
         List<String> titleList = new ArrayList<>();
-
         for(int i=0; i<alarmList.size(); i++){
             titleList.add(scheduleRepository.findByScNo(alarmList.get(i).getAlScno()).getScTitle());
         }
