@@ -10,7 +10,6 @@
     <!-- 개별 -->
     <title th:replace="${title}"></title>
     <th:block th:replace="${links}"></th:block>
-    <th:block th:replace="${scripts}"></th:block>
     <th:block th:replace="${style}"></th:block>
 <head>
 <body>
@@ -23,5 +22,6 @@
     컨텐츠
 </section>
 </div>
+<th:block th:replace="${scripts}"></th:block>
 </body>
 </html>
