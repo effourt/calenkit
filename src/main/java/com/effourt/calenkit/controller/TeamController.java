@@ -54,10 +54,11 @@ public class TeamController {
     @GetMapping("/return-uri")
     public String returnURI(HttpSession session) {
         String returnURI= (String)session.getAttribute("returnURI");
-        log.info("returnURI = {}",returnURI);
-        if(returnURI==null) {
+        if (returnURI == null) {
             return "redirect:/";
-        } else if(returnURI.contains("/teams/share/confirm") && (!returnURI.equals("") || returnURI!=null)) {
+        } else if ((returnURI != null || !returnURI.equals("")) && returnURI.contains("/teams/share/confirm")) {
+            session.removeAttribute("returnURI");
+            log.info("returnURI = {}",returnURI);
             return "redirect:"+returnURI;
         }
         return "redirect:/";
