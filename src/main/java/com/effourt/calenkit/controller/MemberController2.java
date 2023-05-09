@@ -6,23 +6,16 @@ import com.effourt.calenkit.repository.MemberRepository;
 import com.effourt.calenkit.service.AdminService;
 import com.effourt.calenkit.service.MyPageService;
 import com.effourt.calenkit.util.ImageUpload;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 
 @Slf4j
@@ -58,12 +51,12 @@ public class MemberController2 {
     }
 
 
-    // Admin
-    // 멤버 상태변경(PATCH)
-    //  member_list 페이지로 이동
-    @PostMapping(value ="/admin_statusModify")
-    public String AdminModify(@ModelAttribute Member member) throws MemberNotFoundException {
-        adminService.modifyMember(member);
+
+    @GetMapping(value = "/admin_modifyMember")
+    public String AdminIdList(@RequestParam("selectedValue") Integer memStatus, String memId) {
+        Member member = memberRepository.findByMemId(memId);
+        member.setMemStatus(memStatus);
+        adminService.modifyPassword(member);
         return "member/admin";
     }
 
@@ -71,14 +64,19 @@ public class MemberController2 {
     // 멤버 삭제(DELETE)
     // 로그인세션에서 아이디값을 전달받아 member_list 페이지로 이동
     @PostMapping(value ="/admin_delete")
-    public String adminDelete(List<String> memIdList) throws MemberNotFoundException {
-       //체크 된 멤버리스트 삭제하기 위해 for문 사용.
+    public String adminDelete(@RequestParam("memIdList") List<String> memIdList) throws MemberNotFoundException {
+        //체크 된 멤버리스트 삭제하기 위해 for문 사용.
         for (String originMemId : memIdList) {
             //리스트로 객체 받아올 경우 [,],"가 포함되어있는데 이걸 제거하기 위해 사용함.
             String originalString =originMemId.toString();
             String memId = originalString.replaceAll("[\\[\\]\",]", "");
+            //본인 계정 삭제 불가능
+            if(memId.equals((String)session.getAttribute("loginId"))){
+                return "member/admin";
+            }
+            else
             adminService.removeMember(memId);
-        }
+       }
         return "member/admin";
     }
 
@@ -107,8 +105,7 @@ public class MemberController2 {
         }
         else{
             int cnt=2;
-            session.setAttribute("errorMessage", "닉네임은 2~10자의 한글 또는 영문으로 입력해주세요.");
-            return cnt;
+           return cnt;
         }
     }
     // MyPage
@@ -136,12 +133,15 @@ public class MemberController2 {
     @ResponseBody
     public int passwordCheck(String password1, String password2) {
         int cnt = 0;
-        if (password1.equals(password2)) {
+        if (password1.matches("member")) {
             cnt++;
-        } else if (password1.matches("^(?=.*\\d)(?=.*[a-zA-Z])(?=.*[!@#$%^&+=])(?=^.{8,15}$)")) {
-            cnt = 2;
+            if(password2.equals(password1)){
+                cnt++;
+                return cnt; //2 출력
+            }
+            return cnt; // 1 출력
         }
-        return cnt;
+        return cnt; //0 출력
     }
 
     @GetMapping("/pwCheck")
