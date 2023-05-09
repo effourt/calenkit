@@ -26,12 +26,14 @@ public class UserAuthInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         HttpSession session = request.getSession();
         String loginId = (String) session.getAttribute("loginId");
-        log.info("UserAuthInterceptor loginId={}", loginId);
-
         Member findMember = memberRepository.findByMemId(loginId);
+
+        log.info("UserAuthInterceptor loginId={}", loginId);
         log.info("UserAuthInterceptor findMemberId={}, findMemberStatus={}", findMember.getMemId(), findMember.getMemStatus());
+
         if (findMember.getMemStatus() == 9) {
-            response.sendRedirect("/admin");
+            response.sendRedirect(request.getContextPath() + "/admin");
+            return false;
         }
         return true;
     }
