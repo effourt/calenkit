@@ -71,11 +71,12 @@ public class MemberController2 {
             String originalString =originMemId.toString();
             String memId = originalString.replaceAll("[\\[\\]\",]", "");
             //본인 계정 삭제 불가능
-            if(memId.equals((String)session.getAttribute("loginId"))){
+            if(memId.equals(session.getAttribute("loginId"))){
                 return "member/admin";
             }
-            else
-            adminService.removeMember(memId);
+            else {
+                adminService.removeMember(memId);
+            }
        }
         return "member/admin";
     }
