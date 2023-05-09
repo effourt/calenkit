@@ -32,7 +32,7 @@ public class MemberController2 {
     /** 관리자 */
     // Admin
     @GetMapping(value = "/admin")
-    public String AdminList(@RequestParam(required = false) String keyword, Model model) {
+    public String Admin(@RequestParam(required = false) String keyword, Model model) {
         model.addAttribute("keyword", keyword);
         return "member/admin";
     }
@@ -53,10 +53,10 @@ public class MemberController2 {
 
 
     @GetMapping(value = "/admin_modifyMember")
-    public String AdminIdList(@RequestParam("selectedValue") Integer memStatus, String memId) {
+    public String AdminModify(@RequestParam("selectedValue") Integer memStatus, String memId) {
         Member member = memberRepository.findByMemId(memId);
         member.setMemStatus(memStatus);
-        adminService.modifyPassword(member);
+        adminService.modifyStatus(member);
         return "member/admin";
     }
 
@@ -99,15 +99,14 @@ public class MemberController2 {
     @GetMapping("/nameCheck")
     @ResponseBody
     public int nameCheck(String memName) {
-
-        if (!memName.matches("^[a-zA-Z가-힣]{2,10}$")) {
-            int cnt = memberRepository.findByMemName(memName);
-            return cnt;
-        }
-        else{
-            int cnt=2;
-           return cnt;
-        }
+        int cnt=0;
+            if (memName.matches("^[a-zA-Z가-힣0-9]{2,10}$")) {
+                cnt = memberRepository.findByMemName(memName);
+                return cnt;
+            } else {
+                cnt = 2;
+                return cnt;
+            }
     }
     // MyPage
     // 아이디 검색 후 중복 확인(GET)
@@ -127,41 +126,9 @@ public class MemberController2 {
         return cnt;
     }
 
-    // MyPage
-    // 아이디 검색 후 중복 확인(GET)
-    // Ajax 처리를 위해 비밀번호 중복 갯수 반환
-    @GetMapping("/passwordCheck")
-    @ResponseBody
-    public int passwordCheck(String password1, String password2) {
-        int cnt = 0;
-        if (password1.matches("member")) {
-            cnt++;
-            if(password2.equals(password1)){
-                cnt++;
-                return cnt; //2 출력
-            }
-            return cnt; // 1 출력
-        }
-        return cnt; //0 출력
-    }
-
-    @GetMapping("/pwCheck")
-    @ResponseBody
-    public int pwCheck(String memPw) {
-        String loginId=(String)session.getAttribute("loginId");
-        Member loginMember=memberRepository.findByMemId(loginId);
-        int cnt=0;
-        if(memPw==null){
-        }
-        if (passwordEncoder.matches(memPw,loginMember.getMemPw())){
-          cnt++;
-            return cnt;
-        }
-        return cnt;
-    }
 
     @PostMapping("/modify_image")
-    public String saveMember(@RequestParam(required = false ) MultipartFile memImage) throws MemberNotFoundException, IOException {
+    public String saveImage(@RequestParam(required = false ) MultipartFile memImage) throws MemberNotFoundException, IOException {
         String loginId=(String)session.getAttribute("loginId");
         Member loginMember=memberRepository.findByMemId(loginId);
         // 이미지 업로드 후 파일명 반환
@@ -174,8 +141,11 @@ public class MemberController2 {
         return "redirect:/myPage";
     }
 
+    // MyPage
+    // 닉네임 검색 후 중복 확인(GET)
+    // 형식에 맞거나 사용하지 않는 닉네임 Ajax처리.
     @PostMapping("/modify_name")
-    public String Member(String memName) throws MemberNotFoundException, IOException {
+    public String saveName(String memName) throws MemberNotFoundException, IOException {
         String loginId=(String)session.getAttribute("loginId");
         Member loginMember=memberRepository.findByMemId(loginId);
         // 닉네임 업로드
@@ -187,11 +157,54 @@ public class MemberController2 {
 
 
 
-    @GetMapping(value ="/myPage_pwModify")
-    public String MyPagePwModify(Model model){
-
+    // MyPage
+    // 아이디 검색 후 중복 확인(GET)
+    // 로그인 계정 비밀번호와 비밀번호 확인 Ajax 비교
+    @GetMapping("/pwCheck")
+    @ResponseBody
+    public int pwCheck(String memPw) {
         String loginId=(String)session.getAttribute("loginId");
         Member loginMember=memberRepository.findByMemId(loginId);
+        int cnt=0;
+        if(memPw==null){
+        }
+        if (passwordEncoder.matches(memPw,loginMember.getMemPw())){
+            cnt++;
+            return cnt;
+        }
+        return cnt;
+    }
+
+
+    // MyPage
+    // 아이디 검색 후 중복 확인(GET)
+    // Ajax 처리를 위해 비밀번호 중복 갯수 반환
+    @GetMapping("/passwordCheck")
+    @ResponseBody
+    public int passwordCheck(String password1, String password2) {
+        int cnt = 0;
+        if(password1.matches("(?=.*\\d)(?=.*[a-z])(?=.*[!@#])[\\da-zA-Z!@#]{8,15}")) {
+
+            cnt++;
+            System.out.println("cnt1="+cnt);
+            if (password2.equals(password1)) {
+                cnt++;
+
+                System.out.println("cnt2="+cnt);
+                return cnt; //1 출력 password2와 password1이 일치할 경우
+            }
+        }
+        return cnt; //0 출력
+    }
+
+    // MyPage
+    // 멤버 비밀번호 정보변경(Get)
+    @GetMapping(value ="/myPage_pwModify")
+    public String savePw(Model model){
+        String loginId=(String)session.getAttribute("loginId");
+        Member loginMember=memberRepository.findByMemId(loginId);
+        System.out.print("loginId="+loginId);
+        System.out.print("loginId="+loginMember.getMemPw());
         model.addAttribute("loginMember",loginMember);
         return "member/myPageModify";
     }
