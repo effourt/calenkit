@@ -51,6 +51,18 @@ public class TeamController {
         return memberRepository.findByMemId(memId);
     }
 
+    @GetMapping("/return-uri")
+    public String returnURI(HttpSession session) {
+        String returnURI= (String)session.getAttribute("returnURI");
+        log.info("returnURI = {}",returnURI);
+        if(returnURI==null) {
+            return "redirect:/";
+        } else if(returnURI.contains("/teams/share/confirm") && (!returnURI.equals("") || returnURI!=null)) {
+            return "redirect:"+returnURI;
+        }
+        return "redirect:/";
+    }
+
     /**
      * 동행 조회 - rest API
      * */
@@ -62,19 +74,28 @@ public class TeamController {
     }
 
     /**
-     * 동행 추가 (동행추가 + 알람서비스)  - rest API
+     * 동행 추가 (동행추가 + 알람서비스)
      * */
     // http://localhost:8080/teams/share/1  : memId=member
     // http://localhost:8080/teams/share/1  : memId=test@test.com
     // http://localhost:8080/teams/share/1  : memId=employee
-
-    //@PostMapping ("/teams/share/{scNo}")
-    //@ResponseBody
-    public Team shareTeam(@PathVariable int scNo, @RequestBody Map<String,Object> map) {
+    @PostMapping ("/teams/share/{scNo}")
+    @ResponseBody
+    public String shareTeam(@PathVariable int scNo, @RequestBody Map<String,Object> map, HttpSession session) {
+        String loginId = (String) session.getAttribute("loginId");
         String memId = (String)map.get("memId");
-        Team newTeam = teamScheduleService.addTeam(scNo,memId);
-        alarmService.addAlarmBySaveTeam(scNo,memId); //알람서비스
-        return newTeam;
+        log.info("[shareTeam] scNo = {}",scNo);
+        log.info("[shareTeam] memId = {}",memId);
+        log.info("[shareTeam] loginId = {}",loginId);
+        if(loginId.equals(memId)){
+            teamScheduleService.addTeam(scNo,memId);
+            alarmService.addAlarmBySaveTeam(scNo,memId); //알람서비스
+            log.info("[shareTeam] ok");
+            return "ok";
+        } else{
+            log.info("[shareTeam] fail");
+            return "fail";
+        }
     }
 
     /**
@@ -83,12 +104,9 @@ public class TeamController {
     // http://localhost:8080/teams/share/1  : memId=member
     // http://localhost:8080/teams/share/1  : memId=test@test.com
     // http://localhost:8080/teams/share/1  : memId=employee
-    @PostMapping ("/teams/share/{scNo}")
+    //@PostMapping ("/teams/share/{scNo}")
     public String shareTeam2(@PathVariable int scNo, @RequestParam String memId, HttpSession session) {
         String loginId = (String) session.getAttribute("loginId");
-        log.info("[shareTeam2] scNo = {}",scNo);
-        log.info("[shareTeam2] memId = {}",memId);
-        log.info("[shareTeam2] loginId = {}",loginId);
         if(loginId.equals(memId)){
             teamScheduleService.addTeam(scNo,memId);
             log.info("[shareTeam2] teamScheduleService.addTeam");

@@ -267,7 +267,7 @@ public class MemberController {
 
         session.setAttribute("loginId", userInfo.getEmail());
         loginService.updateLastLogin(userInfo.getEmail());
-        return "redirect:/";
+        return "redirect:/return-uri";
     }
 
     /**
