@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.math.raw.Mod;
 import org.mybatis.spring.SqlSessionTemplate;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -41,7 +42,7 @@ public class ScheduleController {
      * 달력에 일정 출력(메인페이지)
      */
     @GetMapping(value={"/","/main"})
-    public String main(Model model) {
+    public String main(Model model, @RequestParam(required = false) String keyword, @RequestParam(required = false) String filter) {
 
         //세션에서 로그인아이디 반환받아 저장
         String loginId = (String)session.getAttribute("loginId");
@@ -68,6 +69,14 @@ public class ScheduleController {
         //개인 즐겨찾기리스트 조회
         List<Schedule> bookmarkList=myScheduleService.getBookmark(loginId, null);
         model.addAttribute("bookmarkList", bookmarkList);
+
+        //검색
+        List<Schedule> searchList=myScheduleService.searchSchedule(loginId, keyword, filter);
+        if(filter==null) {
+            searchList=null;
+        }
+        model.addAttribute("searchList", searchList);
+
         return "main";
     }
 
