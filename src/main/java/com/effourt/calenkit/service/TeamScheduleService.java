@@ -63,20 +63,18 @@ public class TeamScheduleService {
      * @param scNo   : 일정 번호
      */
     @Transactional
-    public Team addTeam(Integer scNo, String addId) {
+    public void addTeam(Integer scNo, String addId) {
 
         //findId 유효값인지 확인
         Member findMember = memberRepository.findByMemId(addId);
         if(!findMember.getMemId().equals(addId)){ //같지 않을 경우
-            return null; //예외 처리 - throw new
+            log.debug("findId ERROR");
         }
 
-        //scNo 유효값인지 확인
-        List<Integer> teamSnoList = teamRepository.findByid(addId);
-        for(Integer teamSno:teamSnoList){
-            if(teamSno==scNo) { //이미 존재할 경우
-                return null; //예외 처리  - throw new
-            }
+        //Team 유효성검사
+        if(teamRepository.findBySnoAndMid(scNo, addId)!=null ||
+                !teamRepository.findBySnoAndMid(scNo, addId).equals("")) { //이미 권한이 존재하면
+            log.debug("Team ERROR");
         }
 
         //Team 추가
@@ -85,7 +83,7 @@ public class TeamScheduleService {
         newTeam.setTeamSno(scNo);
         newTeam.setTeamLevel(0); //처음 insert 시는 권한레벨을 읽기로 준다(후에 수정 가능) - 읽기권한:0, 수정권한:1
         teamRepository.save(newTeam);
-        return newTeam;
+        /*return newTeam;*/
     }
 
     /**
