@@ -36,12 +36,13 @@
 
       <p>새 비밀번호</p>
       <input type="password" name="password1" id="password1">
+      <span class="password_not-ready" style="display: none">비밀번호 형식이 일치하지 않습니다.</span>
       <p>비밀번호 확인</p>
       <input type="password" name="password2" id="password2" oninput="checkPassword()">
       <!-- memId ajax 중복체크 -->
       <span class="password_ok" style="display: none">비밀번호가 일치합니다.</span>
       <span class="password_already" style="display: none">비밀번호가 일치하지 않습니다.</span>
-      <span class="password_notready" style="display: none">비밀번호 형식이 일치하지 않습니다.</span>
+
       <p>최소 8자의 문자와 숫자조합을 비밀번호로 이용해주세요.</p>
 
       <button style="display: none" class="updateButton" >비밀번호 변경</button>
@@ -54,8 +55,8 @@
     //비밀번호 null이 아닐 경우 현재 비밀번호 입력 창 출력.
     var passwordDiv = document.querySelector('.password');
     var mPw = $('#mPw').val();
-    console.log(mPw);
-    if (mPw !=null) {
+    console.log("mPw="+mPw);
+    if (mPw != null && mPw !== "") {
         passwordDiv.style.display = 'block';
     }
 
@@ -77,10 +78,6 @@
                 }if(cnt == 1){ // cnt가 1일 경우 -> 일치하는 아이디
                     $('.pw_ok').css("display","inline-block");
                     $('.pw_already').css("display", "none");
-                } else{
-                    $('.pw_ok').css("display","none");
-                    $('.pw_already').css("display", "none");
-                    $('.pw_notready').css("display","inline-block");
                 }
             },
             error:function(){
@@ -91,15 +88,15 @@
 
     function checkPassword(){
         var password1 = $('#password1').val(); //memId값이 "memId"인 입력란의 값을 저장
-          console.log(password1);
+        console.log(password1);
 
         var password2 = $('#password2').val(); //memId값이 "memId"인 입력란의 값을 저장
-          console.log(password2);
+        console.log(password2);
         $.ajax({
             url:'/passwordCheck', //Controller에서 요청 받을 주소
             type:'get', //GET 방식으로 전달
             data:{ password1: password1,
-                   password2: password2},
+                password2: password2},
             success:function(cnt){ //컨트롤러에서 넘어온 cnt값을 받는다
                 if(cnt == 0){ //cnt가 1이 아니면(=0일 경우) -> 일치하지 않는 아이디
                     $('.password_already').css("display","inline-block");
