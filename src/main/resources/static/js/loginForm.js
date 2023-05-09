@@ -236,30 +236,21 @@ $("#initializeCodeBtn").click(function() {
 
 //입력창에서 Enter키 누르면 현재 보여지는 submit 버튼 클릭 이벤트 실행
 $("input").keydown(function(key) {
-    console.log("PRESS ENTER");
     if (key.keyCode == 13) {
-        console.log("PRESS 13");
         const btnList = [$("#checkId"), $("#passwordDiv"), $("#loginCodeDiv"), $("#registerCodeDiv"), $("#initializeCodeDiv"), $("#initializePassword")];
         for (let i in btnList) {
-            console.log("for문 시작-" + i);
             if (btnList[i].css("display") == "block") {
-                console.log("if문 시작-" + i);
                 if (btnList[i].is($("#checkId"))) {
-                    console.log("checkId CLICK");
                     $("#checkIdBtn").trigger("click");
                     return;
                 } else if (btnList[i].is($("#initializePassword"))) {
-                    console.log("initializePassword CLICK");
                     $("#initializePasswordBtn").trigger("click");
                     return;
                 } else {
-                    console.log("ETC CLICK");
                     btnList[i].children("button").trigger("click");
                     return;
                 }
-                console.log("if문 끝-" + i);
             }
-            console.log("for문 끝-" + i);
         }
     }
 });
