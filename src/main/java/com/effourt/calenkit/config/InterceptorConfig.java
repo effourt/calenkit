@@ -23,8 +23,9 @@ public class InterceptorConfig implements WebMvcConfigurer {
                 .addPathPatterns("/**")
                 .excludePathPatterns("/css/**", "/js/**", "/img/**", "/library/**", "/login/**", "/join/**");
         //유저 권한 체크 인터셉터
-//        registry.addInterceptor(userAuthInterceptor)
-//                .order(2)
-//                .addPathPatterns("");
+        registry.addInterceptor(userAuthInterceptor)
+                .order(2)
+                .addPathPatterns("/**")
+                .excludePathPatterns("/css/**", "/js/**", "/img/**", "/library/**", "/login/**", "/join/**");
     }
 }
