@@ -183,10 +183,17 @@ public class MemberController2 {
     @ResponseBody
     public int passwordCheck(String password1, String password2) {
         int cnt = 0;
-            if(password2.equals(password1)){
+        if(password1.matches("(?=.*\\d)(?=.*[a-z])(?=.*[!@#])[\\da-zA-Z!@#]{8,15}")) {
+
+            cnt++;
+            System.out.println("cnt1="+cnt);
+            if (password2.equals(password1)) {
                 cnt++;
+
+                System.out.println("cnt2="+cnt);
                 return cnt; //1 출력 password2와 password1이 일치할 경우
             }
+        }
         return cnt; //0 출력
     }
 
