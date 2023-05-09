@@ -78,6 +78,6 @@
                 MEM_ID LIKE #{keyword}
             </if>
         </where>
-        ORDER BY MEM_ID
+        ORDER BY CASE WHEN MEM_STATUS = 9 THEN 0 ELSE 1 END, MEM_ID ASC
     </select>
 </mapper>

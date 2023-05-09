@@ -25,20 +25,16 @@ public class AdminService {
     // [회원 상태 변경 행위] : modifyMember()
     // => MemberRepository.delete
     @Transactional
-    public void modifyMember(Member member) throws MemberNotFoundException{
-        Member selectMember=memberRepository.findByMemId(member.getMemId());
-        selectMember.setMemStatus(member.getMemStatus());
-        memberRepository.updateStatus(selectMember);
+    public void modifyStatus(Member member){
+
+        memberRepository.updateStatus(member);
     }
 
     // [회원 말소 행위] : removeMember()
     // => MemberRepository.delete
     @Transactional
     public void removeMember(String memId) throws MemberNotFoundException{
-            memberRepository.delete(memId);
+
+        memberRepository.delete(memId);
     }
-
-
-
-
 }
