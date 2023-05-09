@@ -5,16 +5,16 @@
     <title>Title</title>
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <style>
-    .password_ok, .password_already,.pw_ok,.pw_already,.password_match {
+    .password_ok, .password_already,.pw_ok,.pw_already,.password_match,.password_nonematch {
         display: inline-block;
         font-size: 14px;
         font-weight: bold;
         margin-left: 10px;
     }
-    .password_ok,.pw_ok {
+    .password_ok,.pw_ok,.password_match {
         color: green;
     }
-    .password_already,.pw_already,.password_match {
+    .password_already,.pw_already,.password_nonematch {
         color: red;
     }
 
@@ -35,9 +35,11 @@
 
 
       <p>새 비밀번호</p>
-      <input type="password" name="password1" id="password1">
-      <span class="password_match" style="display: none">영어(소문자),숫자,특수문자를 하나씩 포함해서 8~15글자로 작성해주세요.</span>
-      <p>비밀번호 확인</p>
+      <input type="password" name="password1" id="password1" oninput="checkPassword2()">
+      <span class="password_nonematch" style="display: none">영어(소문자),숫자,특수문자를 하나씩 포함해서 8~15글자로 작성해주세요.</span>
+      <span class="password_match" style="display: none">형식에 맞습니다.</span>
+
+    <p>비밀번호 확인</p>
       <input type="password" name="password2" id="password2" oninput="checkPassword()">
       <!-- memId ajax 중복체크 -->
       <span class="password_ok" style="display: none">비밀번호가 일치합니다.</span>
@@ -99,27 +101,45 @@
                 password2: password2},
             success:function(cnt){ //컨트롤러에서 넘어온 cnt값을 받는다
                 if(cnt == 0){ //cnt : 0 = 조건 미일치
-                    $('.password_already').css("display","none");
+                    $('.password_already').css("display","inline-block");
                     $('.password_ok').css("display", "none");
-                    $('.password_match').css("display","inline-block");
                     $('.updateButton').css("display","none");
 
+                }
+                if(cnt == 1) { // cnt가 1일 경우 = 조건 일치, 아이디 미일치
+                    $('.password_ok').css("display","inline-block");
+                    $('.password_already').css("display", "none");
+                    $('.updateButton').css("display","inline-block");
+                }
+
+            },
+            error:function(){
+
+            }
+        });
+    };
+
+    function checkPassword2(){
+        var password1 = $('#password1').val(); //memId값이 "memId"인 입력란의 값을 저장
+        console.log(password1);
+
+        $.ajax({
+            url:'/passwordCheck2', //Controller에서 요청 받을 주소
+            type:'get', //GET 방식으로 전달
+            data:{ password1: password1},
+            success:function(cnt){ //컨트롤러에서 넘어온 cnt값을 받는다
+                if(cnt == 0){ //cnt : 0 = 조건 미일치
+                    $('.password_nonematch').css("display","inline-block");
+                    $('.password_match').css("display","none");
+                    $('.updateButton').css("display","none");
                 }
 
                 if(cnt == 1) { // cnt가 1일 경우 = 조건 일치, 아이디 미일치
-                    $('.password_ok').css("display","none");
-                    $('.password_already').css("display", "none");
-                    $('.password_match').css("display","none");
+                    $('.password_nonematch').css("display","none");
+                    $('.password_match').css("display","inline-block");
                     $('.updateButton').css("display","none");
                 }
-
-                if(cnt == 2) { // cnt가 2일 경우 =조건 일치, 아이디 일치
-                    $('.password_ok').css("display","inline-block");
-                    $('.password_already').css("display", "none");
-                    $('.password_match').css("display","none");
-                    $('.updateButton').css("display","inline-block");
-                }
-            },
+              },
             error:function(){
 
             }

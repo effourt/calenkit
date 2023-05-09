@@ -184,19 +184,27 @@ public class MemberController2 {
     public int passwordCheck(String password1, String password2) {
         int cnt = 0;
         if(password1.matches("(?=.*\\d)(?=.*[a-z])(?=.*[!@#])[\\da-zA-Z!@#]{8,15}")) {
-
-            cnt++;
             System.out.println("cnt1="+cnt);
             if (password2.equals(password1)) {
-                cnt++;
-
+                cnt++; //
                 System.out.println("cnt2="+cnt);
                 return cnt; //1 출력 password2와 password1이 일치할 경우
             }
         }
         return cnt; //0 출력
     }
-
+    @GetMapping("/passwordCheck2")
+    @ResponseBody
+    public int passwordCheck2(String password1) {
+        int cnt = 0;
+        if(password1.matches("(?=.*\\d)(?=.*[a-z])(?=.*[!@#])[\\da-zA-Z!@#]{8,15}")) {
+            System.out.println("cnt1="+cnt);
+                cnt++;
+                System.out.println("cnt2="+cnt);
+                return cnt; //1 출력 password2와 password1이 일치할 경우
+        }
+        return cnt; //0 출력
+    }
     // MyPage
     // 멤버 비밀번호 정보변경(Get)
     @GetMapping(value ="/myPage_pwModify")
