@@ -80,11 +80,13 @@ $("#registerBtn").click(function() {
         return;
     }
 
+    //회원가입 정보
     const loginId = $("#loginId").val();
     const profileImage = $("#profileImage")[0].files[0];
     const nickname = $("#nickname").val();
     const password = $("#loginPw").val();
 
+    //프로필 이미지, 닉네임, 비밀번호를 DB에 저장 후 회원가입
     let form = new FormData();
     const data = {
         "memId" : loginId,
