@@ -129,9 +129,10 @@
                             <th:block th:each="schedule : ${scheduleList}">
                                 <th:block th:if="${schedule.scStatus}==0">
                                     <li>
+                                        <input type="hidden" id="scNo" th:value="${schedule.scNo}" />
                                         <Strong>([[${schedule.getScNo}]])</Strong>
                                         [[${schedule.getScSdate}]] ~ [[${schedule.getScEdate}]] / [[${schedule.getScTitle}]]
-                                        <a class="myBtn" th:href="@{restore?scNo={scNo}(scNo=${schedule.getScNo()})}">복원</a> <a class="myBtn" th:href="@{delete?scNo={scNo}(scNo=${schedule.getScNo()})}">삭제</a>
+                                        <a class="myBtn" th:href="@{restore?scNo={scNo}(scNo=${schedule.getScNo()})}">복원</a> <a class="myBtn" onclick="deleteSchedule();">삭제</a>
                                     </li>
                                 </th:block>
                             </th:block>
@@ -146,6 +147,14 @@
         </div>
     </div>
     <script>
+        function deleteSchedule() {
+            var scNo=$('#scNo').val();
+            var con_test=confirm("정말 삭제하시겠습니까?");
+            if(con_test==true) {
+                location.href="delete?scNo="+scNo;
+            }
+        }
+
         document.getElementById("inputBox").onkeyup= function() {
             let typedText = this.value;
             if (typedText == "") {
