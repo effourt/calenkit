@@ -86,6 +86,7 @@
             AND SC_TITLE LIKE #{keyword}
         </if>
         AND SC_STATUS=0
+        LIMIT #{startRowNum}, #{rowCount}
     </select>
 
     <!-- SELECT -->
@@ -110,6 +111,7 @@
             AND SC_CONTENT LIKE #{keyword}
         </if>
         AND SC_STATUS=1
+        LIMIT #{startRowNum}, #{rowCount}
     </select>
 
 

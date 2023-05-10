@@ -88,7 +88,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form method="get" action="/">
+                    <form method="post" action="/">
                         <div class="input-group">
                             <input type="text" class="form-control"style="width:80%;" id="inputBox" name="keyword">
                             <select style="background-color: gray; color:white; width: 20%;" class="form-select" aria-label="Default select example" name="filter">
@@ -97,13 +97,15 @@
                             </select>
                         </div>
                         <div id="searchButton"><button type="submit">검색</button></div>
-                    </form>
-                    <th:block th:if="${searchList}==null">
-                        검색 결과가 없습니다.
-                    </th:block>
-                    <th:block th:each="search : ${searchList}">
-                        <p>검색결과 : [[${search.getScNo}]] / [[${search.getScSdate}]] ~ [[${search.getScEdate}]]</p>
-                    </th:block>
+
+                        <th:block th:if="${searchList}==null or ${searchList.size()==0}">
+                            검색 결과가 없습니다.
+                        </th:block>
+                        <th:block th:if="${searchList}!=null">
+                            <th:block th:each="search : ${searchList}">
+                                <p>검색결과 : [[${search.getScNo}]] / [[${search.getScSdate}]] ~ [[${search.getScEdate}]]</p>
+                            </th:block>
+                        </th:block>
                 </div>
             </div>
         </div>
