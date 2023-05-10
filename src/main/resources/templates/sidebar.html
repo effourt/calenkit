@@ -144,6 +144,9 @@
                                 </th:block>
                             </th:block>
                         </ul>
+                        <div class="loading-Bar">
+                            <img src="" />
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -176,6 +179,52 @@
         document.getElementById("alarm").onclick= function() {
             document.getElementById('alarmBox').style.display = 'block';
         };
+
+
+
+        let currentPage=1;
+        let isLoading=false;
+
+        $("#schedule ul").on("scroll", function () {
+            var scrollTop = $(this).scrollTop();
+            var innerHeight = $(this).innerHeight();
+            var scrollHeight = $(this).prop('scrollHeight');
+
+            if(scrollTop + innerHeight >= scrollHeight) { //스크롤 바닥에 닿을 때
+                alert("event");
+               /*if(currentPage==[[${totalPageCount}]] || isLoading) { //현재 마지막 페이지일 경우
+                   return; //함수 끝
+               }
+               //로딩 중으로 설정
+               isLoading=true;
+               //로딩바 출력
+               $(".loadingBar").show();
+               //요청할 페이지 번호 증가(다음 페이지 요청)
+               currentPage++;
+               //ajax로 받아올 페이지 요청
+               GetList(currentPage);
+               */
+           }
+        });
+        const GetList = function (currentPage) {
+            console.log("inGetList = "+currentPage);
+
+            //무한 스크롤
+            $.ajax({
+               url:"",
+               method:"",
+               data:"",
+                success: function (data) {
+
+                },
+                error: function (xhr){
+                   console.log("ERROR STATUS = "+xhr.status);
+                }
+            });
+        }
+
+
+
     </script>
 </div>
 
