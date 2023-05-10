@@ -86,6 +86,7 @@
             AND SC_TITLE LIKE #{keyword}
         </if>
         AND SC_STATUS=0
+        LIMIT #{startRowNum}, #{rowCount}
     </select>
 
     <!-- SELECT -->
@@ -110,8 +111,46 @@
             AND SC_CONTENT LIKE #{keyword}
         </if>
         AND SC_STATUS=1
+        LIMIT #{startRowNum}, #{rowCount}
     </select>
 
+    <!-- 검색 일정 총 갯수 -->
+    <select id="findByFilterCount" resultType="Integer">
+        SELECT COUNT(*)
+        FROM SCHEDULE WHERE SC_NO IN (
+        <!-- scNoList를 scNo를 구분자로하여 출력. 정수인 scNo만 출력되게했음. -->
+        <foreach collection="scNoList" item="scNo" separator=",">
+            <if test="scNo instanceof Integer">
+                #{scNo}
+            </if>
+        </foreach>)
+        <if test="filter == 'title'">
+            <bind name="keyword" value="'%' + keyword + '%'"/>
+            AND SC_TITLE LIKE #{keyword}
+        </if>
+        <if test="filter == 'content'">
+            <bind name="keyword" value="'%' + keyword + '%'"/>
+            AND SC_CONTENT LIKE #{keyword}
+        </if>
+        AND SC_STATUS=1
+    </select>
+
+    <!-- 휴지통 일정 총 갯수 -->
+    <select id="findByRecycleBinCount" resultType="Integer">
+        SELECT COUNT(*)
+        FROM SCHEDULE WHERE SC_NO IN (
+        <!-- scNoList를 scNo를 구분자로하여 출력. 정수인 scNo만 출력되게했음. -->
+        <foreach collection="scNoList" item="scNo" separator=",">
+            <if test="scNo instanceof Integer">
+                #{scNo}
+            </if>
+        </foreach>)
+        <if test="keyword != null and keyword != ''">
+            <bind name="keyword" value="'%' + keyword + '%'"/>
+            AND SC_TITLE LIKE #{keyword}
+        </if>
+        AND SC_STATUS=0
+    </select>
 
     <!--    <select id="findByFilter" resultType="Schedule">-->
     <!--        SELECT *-->

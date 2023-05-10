@@ -20,6 +20,13 @@ public class EmailSend {
 
     private final JavaMailSender javaMailSender;
 
+    /**
+     * 메일 전송 기능
+     * @param emailMessage 이메일 전송을 위한 정보를 담은 객체
+     *                     Recipient : 받을 이메일
+     *                     Subject : 메일 제목
+     *                     Message : 메일 내용
+     */
     public void sendMail(EmailMessage emailMessage) {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
 
@@ -33,15 +40,18 @@ public class EmailSend {
             mimeMessageHelper.setText(emailMessage.getMessage());
             javaMailSender.send(mimeMessage);
         } catch (MessagingException e) {
-            log.error("mail send error");
+            log.error("Email send error to.'{}'", emailMessage.getRecipient(), e);
             e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
 
-    //로그인/회원가입 코드 생성
-    //세션명 : loginCode
-    //세션 Value : ${id}ACCESS
+    /**
+     * 로그인/회원가입 코드 생성
+     * @param id 로그인된 아이디
+     * @param session 세션에 로그인/회원가입 코드를 임시 저장 (형식 : {ID} + ACCESS)
+     * @return 로그인/회원가입 코드
+     */
     public String createAccessCode(String id, HttpSession session) {
         String accessCode = UUID.randomUUID().toString();
         session.setAttribute(accessCode, id + "ACCESS");
