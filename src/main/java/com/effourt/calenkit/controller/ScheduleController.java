@@ -5,6 +5,8 @@ import com.effourt.calenkit.domain.Member;
 import com.effourt.calenkit.domain.Schedule;
 import com.effourt.calenkit.domain.Team;
 import com.effourt.calenkit.dto.TeamShare;
+import com.effourt.calenkit.exception.ScheduleNotFoundException;
+import com.effourt.calenkit.exception.TeamNotFoundException;
 import com.effourt.calenkit.repository.*;
 import com.effourt.calenkit.service.AlarmService;
 import com.effourt.calenkit.service.MyScheduleService;
@@ -107,7 +109,7 @@ public class ScheduleController {
      */
     //http://localhost:8080/schedules?scNo=1
     @GetMapping("/schedules")
-    public String getMyTeam(@RequestParam int scNo, Model model) {
+    public String getMyTeam(@RequestParam int scNo, Model model) throws TeamNotFoundException, ScheduleNotFoundException {
         String loginId = (String)session.getAttribute("loginId");
         List<TeamShare> teamShareList = teamScheduleService.getTeam(scNo);
 
@@ -142,7 +144,7 @@ public class ScheduleController {
      * @param scNo
      * @return 메인페이지로 redirect
      */
-   @GetMapping("/goToRecycleBin")
+    @GetMapping("/goToRecycleBin")
     public String goToRecycleBin(@RequestParam Integer scNo) {
         myScheduleService.goToRecycleBin(scNo); //일정 휴지통 이동
         alarmService.addAlarmByDeleteSchedule(scNo); //관련 알람 미출력, 일정 삭제 알람 추가
