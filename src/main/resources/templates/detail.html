@@ -130,15 +130,14 @@
 
     //#inputBox의 키이벤트 발생 시 호출
     $("#inputBox").on("keyup", function() {
-      // 키보드 입력값 가져오기
       let typedText = this.value;
-      if (typedText == "") { // 키보드 입력값이 없다면 제시어 숨기고 함수 종료
-        document.getElementById("resultBox").style.display = "none";
+      if (typedText == "") {
+        $("#resultBox").hide();
         return;
       }
-      //입력값을 typedText 변수에 담아 AJAX 요청으로 DB에 저장된 스케줄 출력될 수 있도록 구현하기
-      document.getElementById('resultBox').style.display = 'block';
-      document.getElementById('typedText').textContent = typedText;
+      $("#resultBox").show();
+      $("#typedText").show();
+      $("#typedText").text(typedText);
 
       $.ajax({
         url: "/members?memId="+typedText,
@@ -150,15 +149,11 @@
           } else{
             button += "onclick='addTeam()'></button>";
           }
-          console.log("button = " +button);
           if(result.memId==typedText){
             $('#typedText').text("");
             $("#typedText").append(button);
           }
         },
-        error: function(xhr, status, error) {
-          console.error("error: ", status, ", ", error);
-        }
       });
     });
 
