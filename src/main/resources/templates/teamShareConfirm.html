@@ -34,12 +34,12 @@
             success: function(result) {
                 if(result == "ok") {
                     location.href= "/schedules?scNo="+scNo;
-                } else if(result == "fail"){
+                } else if(result == "login-again"){
                     alert("초대한 사용자의 계정으로 다시 로그인을 시도해주세요.");
                 }
             },
-            error: function(xhr, status, error) {
-              alert("죄송합니다. 이미 스케줄이 삭제되어 일정 공유에 참여하실 수 없습니다");
+            error: function(error) {
+                alert(error.responseText);
             }
           });
 
