@@ -32,7 +32,7 @@ public class MemberController2 {
     /** 관리자 */
     // Admin
     @GetMapping(value = "/admin")
-    public String Admin(@RequestParam(required = false) String keyword, Model model) {
+    public String admin(@RequestParam(required = false) String keyword, Model model) {
         model.addAttribute("keyword", keyword);
         return "member/admin";
     }
@@ -45,15 +45,18 @@ public class MemberController2 {
     // 전체 리스트 출력 시 Json형식의 text로 List객체 전달
     @GetMapping(value = "/admin_memberList")
     @ResponseBody
-    public List<Member> AdminIdList(@RequestParam(required = false) String keyword) {
+    public List<Member> adminIdList(@RequestParam(required = false) String keyword) {
+        String loginId=(String)session.getAttribute("loginId");
         List<Member> memberList = memberRepository.findAllByMemId(keyword);
+        System.out.println(memberList);
+        //로그인아이디 출력 제외
+        memberList.removeIf(member -> member.getMemId().equals(loginId));
+        System.out.println(loginId);
         return memberList;
     }
 
-
-
     @GetMapping(value = "/admin_modifyMember")
-    public String AdminModify(@RequestParam("selectedValue") Integer memStatus, String memId) {
+    public String adminModify(@RequestParam("selectedValue") Integer memStatus, String memId) {
         Member member = memberRepository.findByMemId(memId);
         member.setMemStatus(memStatus);
         adminService.modifyStatus(member);
@@ -86,7 +89,7 @@ public class MemberController2 {
 
     //MyPage 이동
     @GetMapping(value = "/myPage")
-    public String MyPage(Model model) {
+    public String myPage(Model model) {
         String loginId=(String)session.getAttribute("loginId");
         Member loginMember=memberRepository.findByMemId(loginId);
         model.addAttribute("loginMember",loginMember);
@@ -108,6 +111,8 @@ public class MemberController2 {
                 return cnt;
             }
     }
+
+
     // MyPage
     // 아이디 검색 후 중복 확인(GET)
     // Ajax 처리를 위해 아이디 중복 갯수 반환
@@ -183,7 +188,7 @@ public class MemberController2 {
     @ResponseBody
     public int passwordCheck(String password1, String password2) {
         int cnt = 0;
-        if(password1.matches("(?=.*\\d)(?=.*[a-z])(?=.*[!@#])[\\da-zA-Z!@#]{8,15}")) {
+        if(password1.matches("(?=.*\\d)(?=.*[a-z])(?=.*[!-*])[\\da-zA-Z!@#]{8,15}")) {
             System.out.println("cnt1="+cnt);
             if (password2.equals(password1)) {
                 cnt++; //
@@ -221,7 +226,7 @@ public class MemberController2 {
     // 멤버 비밀번호 정보변경(Put)
     // 로그인세션에서 아이디값을 전달받아 member_pwModify 페이지로 이동처리.
     @PostMapping(value ="/myPage_pwModify")
-    public String MyPagePwModify(String memPw,String password1) throws MemberNotFoundException {
+    public String myPagePwModify(String memPw,String password1) throws MemberNotFoundException {
         String loginId=(String)session.getAttribute("loginId");
         Member loginMember=memberRepository.findByMemId(loginId);
         System.out.println(loginMember.getMemPw()+password1);
@@ -244,7 +249,7 @@ public class MemberController2 {
 
 
     @GetMapping(value ="/myPage_delete")
-    public String MyPageDelete(){
+    public String myPageDelete(){
         return "member/myPageDelete";
     }
 
@@ -252,7 +257,7 @@ public class MemberController2 {
     // 멤버 상태 변경(Put)
     // 로그인세션에서 아이디값을 전달받아 member_delete 페이지로 이동처리.
     @PostMapping(value ="/myPage_delete")
-    public String MyPageDelete(String memId) throws MemberNotFoundException {
+    public String myPageDelete(String memId) throws MemberNotFoundException {
         Integer memStatus=0;
         String loginId=(String)session.getAttribute("loginId");
         Member member=memberRepository.findByMemId(loginId);
