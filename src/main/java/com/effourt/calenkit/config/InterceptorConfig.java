@@ -21,10 +21,11 @@ public class InterceptorConfig implements WebMvcConfigurer {
         registry.addInterceptor(loginInterceptor)
                 .order(1)
                 .addPathPatterns("/**")
-                .excludePathPatterns("/css/**", "/js/**", "/img/**", "/library/**", "/login/**", "/join/**");
+                .excludePathPatterns("/css/**", "/js/**", "/img/**", "/library/**", "/login/**", "/join/**", "/error");
         //유저 권한 체크 인터셉터
-//        registry.addInterceptor(userAuthInterceptor)
-//                .order(2)
-//                .addPathPatterns("");
+        registry.addInterceptor(userAuthInterceptor)
+                .order(2)
+                .addPathPatterns("/**")
+                .excludePathPatterns("/css/**", "/js/**", "/img/**", "/library/**", "/login/**", "/join/**", "/error");
     }
 }

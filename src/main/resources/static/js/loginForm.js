@@ -27,7 +27,7 @@ $("#checkIdBtn").click(function () {
             }
         },
         error: function (error) {
-            alert("아이디 체크 중 에러 발생 : " + error.status);
+            $("#message").text(error);
         }
     });
 });
@@ -48,7 +48,7 @@ function sendCode(loginId) {
             }
         },
         error: function(error) {
-            alert("이메일 전송 API 호출 중 에러 발생 : " + error.status);
+            $("#message").text(error);
         }
     });
     return value;
@@ -112,7 +112,7 @@ $("#passwordBtn").click(function () {
             }
         },
         error: function(error) {
-            alert("비밀번호로 로그인 중 에러 발생 : " + error.status);
+            $("#message").text(error);
         }
     });
 });
@@ -135,7 +135,7 @@ $("#loginCodeBtn").click(function () {
             }
         },
         error: function(error) {
-            alert("비밀번호로 로그인 중 에러 발생 : " + error.status);
+            $("#message").text(error);
         }
     });
 });
@@ -159,7 +159,7 @@ $("#registerCodeBtn").click(function () {
             }
         },
         error: function(error) {
-            alert("비밀번호로 로그인 중 에러 발생 : " + error.status);
+            $("#message").text(error);
         }
     });
 });

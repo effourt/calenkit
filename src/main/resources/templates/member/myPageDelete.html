@@ -27,7 +27,7 @@
     </style>
 </head>
 <body>
-<form method="post" action="/myPage_delete" >
+<form method="post" action="/members/myPageDelete/delete" >
 
     <p>이 작업은 실행 취소할 수 없습니다.전체 계정이</p>
     <p>삭제됩니다. 모든 개인 워크스페이스가 삭제되고 </p>
@@ -51,7 +51,7 @@
         var memId = $('#memId').val(); //memId값이 "memId"인 입력란의 값을 저장
 
         $.ajax({
-            url:'/idCheck', //Controller에서 요청 받을 주소
+            url:'/members/myPageDelete/idCheck', //Controller에서 요청 받을 주소
             type:'get', //GET 방식으로 전달
             data:{memId:memId},
             success:function(cnt){ //컨트롤러에서 넘어온 cnt값을 받는다

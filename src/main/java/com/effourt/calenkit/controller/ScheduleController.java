@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.math.raw.Mod;
 import org.mybatis.spring.SqlSessionTemplate;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -70,6 +71,46 @@ public class ScheduleController {
         //개인 즐겨찾기리스트 조회
         List<Schedule> bookmarkList=myScheduleService.getBookmark(loginId, null);
         model.addAttribute("bookmarkList", bookmarkList);
+
+        return "main";
+    }
+
+    @PostMapping(value={"/","/main"})
+    public String main(Model model, @RequestParam(required = false) String keyword, @RequestParam(required = false) String filter) {
+
+        //세션에서 로그인아이디 반환받아 저장
+        String loginId = (String)session.getAttribute("loginId");
+        Member loginMember  = memberRepository.findByMemId(loginId);
+
+        //개인 조회 (로그인 멤버)
+        model.addAttribute("loginMember", loginMember);
+
+        //개인 알람리스트 조회
+        List<Alarm> alarmList = alarmRepository.findByAlMid(loginId);
+        List<String> titleList = new ArrayList<>();
+        for(int i=0; i<alarmList.size(); i++){
+            titleList.add(scheduleRepository.findByScNo(alarmList.get(i).getAlScno()).getScTitle());
+        }
+        if(alarmList.size()!=0){
+            model.addAttribute("alarmList", alarmList);
+        }
+        model.addAttribute("titleList", titleList);
+
+        //개인 스케줄리스트 조회
+        List<Schedule> scheduleList=myScheduleService.getMySchedule(loginId, null);
+        model.addAttribute("scheduleList", scheduleList);
+
+        //개인 즐겨찾기리스트 조회
+        List<Schedule> bookmarkList=myScheduleService.getBookmark(loginId, null);
+        model.addAttribute("bookmarkList", bookmarkList);
+
+        //검색
+        List<Schedule> searchList=myScheduleService.searchSchedule(loginId, keyword, filter);
+        if(filter==null) {
+            searchList=null;
+        }
+        model.addAttribute("searchList", searchList);
+
         return "main";
     }
 
