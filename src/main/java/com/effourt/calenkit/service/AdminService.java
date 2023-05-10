@@ -62,8 +62,6 @@ public class AdminService {
                 alarmRepository.delete(memId, scNo);
                 //권한 삭제(일정 번호 참조하여 권한 삭제 일반일 경우(String), 호스트일 경우(List)삭제).
                 teamRepository.delete(scNo, memId);
-                //일정 삭제(일정 번호 리스트)
-                scheduleRepository.delete(scNo);
             }
 
             //스케쥴 번호로 검색 일정 팀 권한이 9일 경우 본인+팀정보 삭제
@@ -77,15 +75,14 @@ public class AdminService {
                 }
                 System.out.println("after.teamAlarm="+teamAlarm);
 
-
                 //권한 삭제(일정 번호 참조하여 권한 삭제 일반일 경우(String), 호스트일 경우(List)삭제).
                 //일정 삭제(일정 번호 리스트)
                 List<Team> teamMember=teamRepository.findBySno(scNo);
                 System.out.println("before.teamMember="+teamMember);
                 for (Team team : teamMember) {
                     teamRepository.delete(scNo,team.getTeamMid());
-                    scheduleRepository.delete(scNo);
                 }
+                scheduleRepository.delete(scNo);
                 System.out.println("after.teamMember="+teamMember);
                 System.out.println("after.scNoList="+scNoList);
             }
