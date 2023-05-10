@@ -9,6 +9,7 @@ public interface AlarmRepository {
     Alarm save(Alarm alarm);
     Integer update(Alarm alarm);
     Integer delete(String alMid,Integer alScno);
+    Alarm findByAlNo(Integer alNo);
     List<Alarm> findByAlMid(String alMid);
     List<Alarm> findByAlScno(Integer slScno);
 }
