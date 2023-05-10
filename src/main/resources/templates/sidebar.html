@@ -88,17 +88,22 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="input-group">
-                        <input type="text" class="form-control"style="width:80%;" id="inputBox">
-                        <select style="background-color: gray; color:white; width: 20%;" class="form-select" aria-label="Default select example">
-                            <option selected value="1">제목</option>
-                            <option value="2">내용</option>
-                            <option value="3">날짜</option>
-                        </select>
-                    </div>
-                    <div class="alert alert-success" id="resultBox" style="display: none;">
-                        <span id="typedText">sdfsdfsdf</span>
-                    </div>
+                    <form method="get" action="/">
+                        <div class="input-group">
+                            <input type="text" class="form-control"style="width:80%;" id="inputBox" name="keyword">
+                            <select style="background-color: gray; color:white; width: 20%;" class="form-select" aria-label="Default select example" name="filter">
+                                <option selected value="title">제목</option>
+                                <option value="content">내용</option>
+                            </select>
+                        </div>
+                        <div id="searchButton"><button type="submit">검색</button></div>
+                    </form>
+                    <th:block th:if="${searchList}==null">
+                        검색 결과가 없습니다.
+                    </th:block>
+                    <th:block th:each="search : ${searchList}">
+                        <p>검색결과 : [[${search.getScNo}]] / [[${search.getScSdate}]] ~ [[${search.getScEdate}]]</p>
+                    </th:block>
                 </div>
             </div>
         </div>

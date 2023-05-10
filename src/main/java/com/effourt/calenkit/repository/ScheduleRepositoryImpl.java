@@ -61,7 +61,7 @@ public class ScheduleRepositoryImpl implements ScheduleRepository{
     }
 
     @Override
-    public List<Schedule> findByFilter(List<Integer> scNoList, String filter, String keyword) {
-        return sqlSessionTemplate.getMapper(ScheduleMapper.class).findByFilter(scNoList, filter, keyword);
+    public List<Schedule> findByFilter(Map<String, Object> map) {
+        return sqlSessionTemplate.getMapper(ScheduleMapper.class).findByFilter(map);
     }
 }
