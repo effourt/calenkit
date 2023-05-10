@@ -16,5 +16,8 @@ public interface ScheduleRepository {
     Schedule findByScNo(Integer scNo);
     List<Schedule> findAllByScNo(Map<String, Object> map);
     List<Schedule> findByRecycleBin(Map<String, Object> map);
-    List<Schedule> findByFilter(List<Integer> scNoList, String filter, String keyword);
+    List<Schedule> findByFilter(Map<String, Object> map);
+
+    Integer findByRecycleBinCount(Map<String, Object> map);
+    Integer findByFilterCount(Map<String, Object> map);
 }
