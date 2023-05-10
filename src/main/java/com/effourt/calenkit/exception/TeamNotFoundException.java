@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter
-@Setter
 public class TeamNotFoundException extends Exception{
     private static final long serialVersionUID = 1L;
     private Integer scNo;
