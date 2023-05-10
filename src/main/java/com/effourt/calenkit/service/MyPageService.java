@@ -21,21 +21,8 @@ public class MyPageService {
     // => MemberRepository.find
     // => MemberRepository.update
     @Transactional
-    public void modifyMe(Member member) throws MemberNotFoundException {
-        if(memberRepository.findByMemId(member.getMemId())==null) {
-            throw new MemberNotFoundException("아이디의 회원정보가 존재하지 않습니다.");
-        }
-//        //전달받은 회원정보의 비밀번호가 존재할 경우 암호화된 비밀번호로 필드값 변경
-//        if(member.getMemPw()!=null && !member.getMemPw().equals("")) {
-//            member.setMemPw(BCrypt.hashpw(member.getMemPw(),BCrypt.gensalt()));
-//        }
-        //전달받은 회원정보의 프로필이 존재할 경우 필드값 변경
-        if(member.getMemImage()!=null && !member.getMemImage().equals("")){
-            member.setMemImage(member.getMemImage());
-        }
-//        member.setMemName(member.getMemName());
-//        member.setMemStatus(member.getMemStatus());
-//        member.setMemAuthId(member.getMemAuthId());
+    public void modifyMe(Member member) {
+
         memberRepository.update(member);
     }
 
@@ -46,22 +33,15 @@ public class MyPageService {
     // => MemberRepository.update
 
     @Transactional
-    public void modifyPassword(Member loginmember,String password1) throws MemberNotFoundException{
-        loginmember.setMemPw(passwordEncoder.encode(password1));
-        memberRepository.updatePassword(loginmember);
+    public void modifyPassword(Member loginMember,String password1){
+        loginMember.setMemPw(passwordEncoder.encode(password1));
+        memberRepository.updatePassword(loginMember);
     }
+
     // [회원탈퇴 행위] : removeMe()
     // => MemberRepository.update
-    public void removeMe(Member member) throws MemberNotFoundException{
-//        if(memberRepository.findByMemId(member.getMemId())==null) {
-//            throw new MemberNotFoundException("아이디의 회원정보가 존재하지 않습니다.");
-//        }
+    public void removeMe(Member member) {
         memberRepository.updateStatus(member);
     }
-    // [로그아웃 행위] : logout()
-    // => 세션 값 삭제
-    public void removeMe(HttpSession session){
 
-        session.invalidate();
-    }
 }
