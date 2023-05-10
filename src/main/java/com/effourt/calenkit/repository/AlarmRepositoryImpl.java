@@ -33,6 +33,11 @@ public class AlarmRepositoryImpl implements AlarmRepository {
         return sqlSessionTemplate.getMapper(AlarmMapper.class).delete(alMid,alScno);
     }
 
+    @Override
+    public Alarm findByAlNo(Integer alNo) {
+        return sqlSessionTemplate.getMapper(AlarmMapper.class).findByAlNo(alNo);
+    }
+
 
     @Override
     public List<Alarm> findByAlMid(String alMid) {
