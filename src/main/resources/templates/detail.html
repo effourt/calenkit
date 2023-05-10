@@ -33,7 +33,7 @@
     </div>
     <ul class="list-group list-group-flush">
       <li class="list-group-item">
-        제목 : <input type="text" class="form-control-plaintext d-inline" style="width: 90%" id="staticEmail" value="제목 예시" th:value="${schedule.getScTitle()}">
+        제목 : <input type="text" class="form-control-plaintext d-inline" style="width: 90%" id="staticEmail" value="제목 예시" th:value="${schedule.getScTitle()}" th:readonly="${loginTeam.teamLevel!=9}" th:disabled="${loginTeam.teamLevel!=9}">
       </li>
       <li class="list-group-item">
         <p class="d-inline">동행 :</p>
@@ -44,9 +44,14 @@
         </span>
       </li>
       <li class="row w-100 m-auto">
-        <div class="list-group-item col">시작일 : <p th:text="${schedule.getScSdate()}"></p></div>
-        <div class="list-group-item col">종료일 : <p th:text="${schedule.getScEdate()}"></p></div>
-        <div class="list-group-item col">상태 : <p th:if="${schedule.getScProgress()}==1"></p></div>
+        <div class="list-group-item col">시작일 : <input type="date" th:value="${schedule.getScSdate()}" th:readonly="${loginTeam.teamLevel!=9}" th:disabled="${loginTeam.teamLevel!=9}" /></div>
+        <div class="list-group-item col">종료일 : <input type="date" th:value="${schedule.getScEdate() }" th:readonly="${loginTeam.teamLevel!=9}" th:disabled="${loginTeam.teamLevel!=9}" /></div>
+        <div class="list-group-item col">상태 : <select>
+            <option class="btn-secondary" value="0" th:readonly="${loginTeam.teamLevel!=9}" th:disabled="${loginTeam.teamLevel!=9}" th:selected="${schedule.scProgress==0}">미실행</option>
+            <option class="btn-secondary" value="1" th:readonly="${loginTeam.teamLevel!=9}" th:disabled="${loginTeam.teamLevel!=9}" th:selected="${schedule.scProgress==1}">진행 중</option>
+            <option class="btn-secondary" value="2" th:readonly="${loginTeam.teamLevel!=9}" th:disabled="${loginTeam.teamLevel!=9}" th:selected="${schedule.scProgress==2}">완료</option>
+          </select>
+        </div>
       </li>
     </ul>
   </div>
