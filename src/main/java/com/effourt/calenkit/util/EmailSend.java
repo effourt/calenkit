@@ -33,7 +33,7 @@ public class EmailSend {
             mimeMessageHelper.setText(emailMessage.getMessage());
             javaMailSender.send(mimeMessage);
         } catch (MessagingException e) {
-            log.error("mail send error");
+            log.error("Email send error to.'{}'", emailMessage.getRecipient(), e);
             e.printStackTrace();
             throw new RuntimeException(e);
         }
