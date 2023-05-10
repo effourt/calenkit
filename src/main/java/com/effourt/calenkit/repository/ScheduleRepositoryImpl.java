@@ -64,4 +64,14 @@ public class ScheduleRepositoryImpl implements ScheduleRepository{
     public List<Schedule> findByFilter(Map<String, Object> map) {
         return sqlSessionTemplate.getMapper(ScheduleMapper.class).findByFilter(map);
     }
+
+    @Override
+    public Integer findByRecycleBinCount(Map<String, Object> map) {
+        return sqlSessionTemplate.getMapper(ScheduleMapper.class).findByRecycleBinCount(map);
+    }
+
+    @Override
+    public Integer findByFilterCount(Map<String, Object> map) {
+        return sqlSessionTemplate.getMapper(ScheduleMapper.class).findByFilterCount(map);
+    }
 }
