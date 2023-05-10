@@ -7,9 +7,9 @@ import com.effourt.calenkit.domain.Member;
 import com.effourt.calenkit.dto.AccessTokenRequest;
 import com.effourt.calenkit.dto.AccessTokenResponse;
 import com.effourt.calenkit.dto.AuthUserInfoResponse;
+import com.effourt.calenkit.exception.MemberNotFoundException;
 import com.effourt.calenkit.repository.AuthRepository;
 import com.effourt.calenkit.repository.MemberRepository;
-import com.effourt.calenkit.util.EmailSend;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -47,6 +47,9 @@ public class LoginService {
      */
     @Transactional
     public void updatePassword(String memId, String password) {
+        if (memberRepository.findByMemId(memId) == null) {
+            throw new MemberNotFoundException(memId);
+        }
         Member member = new Member();
         member.setMemId(memId);
         member.setMemPw(password);
@@ -59,6 +62,9 @@ public class LoginService {
      */
     @Transactional
     public void update(Member member) {
+        if (memberRepository.findByMemId(member.getMemId()) == null) {
+            throw new MemberNotFoundException(member.getMemId());
+        }
         memberRepository.update(member);
     }
 
@@ -68,6 +74,9 @@ public class LoginService {
      */
     @Transactional
     public void updateLastLogin(String memId) {
+        if (memberRepository.findByMemId(memId) == null) {
+            throw new MemberNotFoundException(memId);
+        }
         Member member = new Member();
         String lastLogin = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         member.setMemId(memId);
