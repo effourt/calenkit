@@ -36,7 +36,7 @@
                     var calendarEl = document.getElementById('calendar'); //calendar div 태그 설정
 
                     var calendar = new FullCalendar.Calendar(calendarEl, { //calendar 설정
-                        plugins: ['dayGrid'],
+                        plugins: ['dayGrid', 'interaction'], //daygrid = 월별 달력 plugin, interaction = 클릭 이벤트 plugin
                         height: 'parent',
                         header: {
                             left: '',
