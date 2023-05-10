@@ -22,7 +22,7 @@
 </head>
 
 <body>
-<form method="post" action="/myPage_pwModify" >
+<form method="post" action="/members/myPageModify/pwModify" >
 
       <!-- 비밀번호가 존재하지 않을 경우 창이 표시되지 않게 한다 -->
     <div class="password" style="display: none" >
@@ -68,7 +68,7 @@
         var checkMemPw = $('#checkMemPw').val();//memId값이 "memId"인 입력란의 값을 저장
 
         $.ajax({
-            url:'/pwCheck', //Controller에서 요청 받을 주소
+            url:'/members/myPageModify/pwCheck', //Controller에서 요청 받을 주소
             type:'get', //GET 방식으로 전달
             data:{ memPw: memPw,
                 checkMemPw: checkMemPw},
@@ -95,7 +95,7 @@
         var password2 = $('#password2').val(); //memId값이 "memId"인 입력란의 값을 저장
         console.log(password2);
         $.ajax({
-            url:'/passwordCheck', //Controller에서 요청 받을 주소
+            url:'/members/myPageModify/passwordCheck', //Controller에서 요청 받을 주소
             type:'get', //GET 방식으로 전달
             data:{ password1: password1,
                 password2: password2},
@@ -124,7 +124,7 @@
         console.log(password1);
 
         $.ajax({
-            url:'/passwordCheck2', //Controller에서 요청 받을 주소
+            url:'/members/myPageModify/passwordCheck2', //Controller에서 요청 받을 주소
             type:'get', //GET 방식으로 전달
             data:{ password1: password1},
             success:function(cnt){ //컨트롤러에서 넘어온 cnt값을 받는다

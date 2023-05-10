@@ -5,12 +5,18 @@ import com.effourt.calenkit.domain.Schedule;
 import com.effourt.calenkit.domain.Team;
 import com.effourt.calenkit.dto.TeamShare;
 import com.effourt.calenkit.exception.ExistsTeamException;
+import com.effourt.calenkit.exception.MemberNotFoundException;
+import com.effourt.calenkit.exception.ScheduleNotFoundException;
+import com.effourt.calenkit.exception.TeamNotFoundException;
 import com.effourt.calenkit.repository.MemberRepository;
+import com.effourt.calenkit.repository.ScheduleRepository;
 import com.effourt.calenkit.repository.TeamRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,19 +27,24 @@ import java.util.List;
 public class TeamScheduleService {
     private final MemberRepository memberRepository;
     private final TeamRepository teamRepository;
+    private final ScheduleRepository scheduleRepository;
 
     /**
      * 공유하고있는 사람들이 누구인지 List<TeamShare>로 찾아주는 서비스
      * @param scNo
      * @return
      */
-    public List<TeamShare> getTeam(int scNo) /*throws ExistsTeamException*/{
+    public List<TeamShare> getTeam(int scNo) throws TeamNotFoundException, ScheduleNotFoundException{
 
-        //teamList 유효값인지 확인
-        List<Team> teamList = teamRepository.findBySno(scNo); //teamList.get(0)..
+        //scNo 유효성 검사
+        if(scheduleRepository.findByScNo(scNo).getScStatus()!=1 || scheduleRepository.findByScNo(scNo)==null || scheduleRepository.findByScNo(scNo).equals("")){
+            throw new ScheduleNotFoundException("해당 스케줄은 호스트가 삭제하였거나 존재하지 않습니다.", scNo);
+        }
+
+        //teamList 유효성 검사
+        List<Team> teamList = teamRepository.findBySno(scNo);
         if(teamList.size()==0){
-            return null; //team은 반드시 한개는 존재해야하는데..?  존재하지 않는다에 대한 예외 처리 필요 - throw new ~
-            //throw new ExistsTeamException();
+            throw new TeamNotFoundException("존재하지 않는 동행 스케줄 입니다.", scNo);
         }
 
         //imageList에 image 담기
@@ -63,29 +74,32 @@ public class TeamScheduleService {
      * @param scNo   : 일정 번호
      */
     @Transactional
-    public Team addTeam(Integer scNo, String addId) {
+    public void addTeam(Integer scNo, String addId) throws ExistsTeamException, MemberNotFoundException, ScheduleNotFoundException{
 
-        //findId 유효값인지 확인
+        //scNo 유효성 검사
+        if(scheduleRepository.findByScNo(scNo)==null || scheduleRepository.findByScNo(scNo).equals("")){
+            throw new ScheduleNotFoundException("존재하지 않는 스케줄입니다.", scNo);
+        }
+
+        //findId 유효성 검사
         Member findMember = memberRepository.findByMemId(addId);
-        if(!findMember.getMemId().equals(addId)){ //같지 않을 경우
-            return null; //예외 처리 - throw new
+        if(findMember==null || findMember.equals("")){
+            throw new MemberNotFoundException("해당 아이디는 존재하지 않습니다.");
         }
 
-        //scNo 유효값인지 확인
-        List<Integer> teamSnoList = teamRepository.findByid(addId);
-        for(Integer teamSno:teamSnoList){
-            if(teamSno==scNo) { //이미 존재할 경우
-                return null; //예외 처리  - throw new
-            }
+        Team findTeam = teamRepository.findBySnoAndMid(scNo, addId);
+        if(findTeam == null){
+            //Team 추가
+            Team newTeam = new Team();
+            newTeam.setTeamMid(addId);
+            newTeam.setTeamSno(scNo);
+            newTeam.setTeamLevel(0); //처음 insert 시는 권한레벨을 읽기로 준다(후에 수정 가능) - 읽기권한:0, 수정권한:1
+            teamRepository.save(newTeam);
+        } else if(findTeam != null ||!findTeam.equals("")) { //team 유효성 검사
+            throw new ExistsTeamException("이미 동행으로 참여하고 있습니다.",findTeam);
         }
 
-        //Team 추가
-        Team newTeam = new Team();
-        newTeam.setTeamMid(addId);
-        newTeam.setTeamSno(scNo);
-        newTeam.setTeamLevel(0); //처음 insert 시는 권한레벨을 읽기로 준다(후에 수정 가능) - 읽기권한:0, 수정권한:1
-        teamRepository.save(newTeam);
-        return newTeam;
+
     }
 
     /**
@@ -94,13 +108,18 @@ public class TeamScheduleService {
      * @param scNo            : 일정번호
      * @param updateTeamLevel : 변경할권한레밸 (0,1)
      */
-    //=> 컨트롤러에서 API로 요청 사용 [사용자가 드롭다운으로 권한을 변경할 때 페이지 리로드 없이 비동기 처리로 변경되게 만들 것임 - [부분변경:PATCH]
     @Transactional
-    public Team modifyTeamLevel(int scNo, String updateId, int updateTeamLevel) {
-        //team 유효값인지 확인
-        if(teamRepository.findBySnoAndMid(scNo,updateId)==null
-                || teamRepository.findBySnoAndMid(scNo,updateId).equals("")){ //team이 존재하지 않는다면
-            return null;
+    public Team modifyTeamLevel(int scNo, String updateId, int updateTeamLevel) throws TeamNotFoundException, ScheduleNotFoundException {
+
+        //scNo 유효성 검사
+        if(scheduleRepository.findByScNo(scNo)==null || scheduleRepository.findByScNo(scNo).equals("")){
+            throw new ScheduleNotFoundException("존재하지 않는 스케줄입니다.", scNo);
+        }
+
+        //team 유효성 검사
+        Team findTeam = teamRepository.findBySnoAndMid(scNo,updateId);
+        if(findTeam==null || findTeam.equals("")){
+            throw new TeamNotFoundException("존재하지 않는 동행 입니다.", scNo, updateId);
         }
 
         Team updateTeam = new Team();
@@ -118,14 +137,21 @@ public class TeamScheduleService {
      * @return
      */
     @Transactional
-    public int removeTeam(int scNo, String removeId) {
-        //team 유효값인지 확인
-        if(teamRepository.findBySnoAndMid(scNo,removeId)==null
-                || teamRepository.findBySnoAndMid(scNo,removeId).equals("")){ //team이 존재하지 않는다면
-            return -1;
+    public int removeTeam(int scNo, String removeId) throws TeamNotFoundException, ScheduleNotFoundException{
+        //scNo 유효성 검사
+        if(scheduleRepository.findByScNo(scNo)==null || scheduleRepository.findByScNo(scNo).equals("")){
+            throw new ScheduleNotFoundException("존재하지 않는 스케줄입니다.", scNo);
+        }
+
+        //team 유효성 검사
+        Team findTeam = teamRepository.findBySnoAndMid(scNo,removeId);
+        if(findTeam==null || findTeam.equals("")){
+            throw new TeamNotFoundException("존재하지 않는 동행 입니다.", scNo, removeId);
         }
         return teamRepository.delete(scNo,removeId);
     }
+
+
 
 
 }

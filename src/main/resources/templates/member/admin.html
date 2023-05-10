@@ -16,7 +16,7 @@
 <body>
 <div class="container">
     <!-- 검색창 추가 -->
-    <form class="row g-3" th:action="@{/admin}" method="get">
+    <form class="row g-3" th:action="@{/members/admin}" method="get">
         <div class="col-auto">
             <input type="text" class="form-control" name="keyword" placeholder="ID를 입력해 주세요">
         </div>
@@ -25,6 +25,7 @@
         </div>
     </form>
 
+    <div style="overflow-y: scroll; min-height: 300px; max-height: 400px;">
     <table class="table table-bordered">
         <thead>
         <tr>
@@ -39,6 +40,8 @@
         <!-- memberList를 통해 내용이 들어갈 부분 -->
         </tbody>
     </table>
+    </div>
+
     <button id="delete_btn" onclick="remove()">선택 회원 삭제</button>
 </div>
 
@@ -49,13 +52,14 @@
 <script type="text/javascript">
     $(window).on('load', function() {
         // url에서 keyword를 가져오기 위한 코드
-        var urlParams = new URLSearchParams(window.location.search);
-        var keyword = urlParams.get('keyword');
-        // Ajax를 이용해 memberList 데이터를 가져온 후 렌더링하는 코드
-        $.ajax({
-            url: "/admin_memberList",
-            data: {keyword: keyword},
-            success: function (data) {
+            var urlParams = new URLSearchParams(window.location.search);
+            var keyword = urlParams.get('keyword');
+            console.log(keyword);
+            // Ajax를 이용해 memberList 데이터를 가져온 후 렌더링하는 코드
+            $.ajax({
+                url: "/members/admin/List",
+                data:{keyword:keyword},
+                success: function (data) {
                 // 가져온 member 데이터를 통해 tbody 내부에 새로운 tr을 추가하는 코드
                 $.each(data, function (index, member) {
                     var status = "";
@@ -119,8 +123,8 @@
             } else {
                 if (confirm("회원 정보를 삭제 하시겠습니까?")) {
                     $.ajax({
-                        type: "POST",
-                        url: "/admin_delete",
+                        type: "DELETE",
+                        url: "/members/admin/delete",
                         data: {memIdList: JSON.stringify(removeArray)},
                         dataType: "text",
                         success: function (response) {
@@ -142,8 +146,8 @@
         selectedValue = parseInt(selectedValue);
         // AJAX로 데이터 업데이트
         $.ajax({
-            url: "/admin_modifyMember",
-            type: "get",
+            url: "/members/admin/update",
+            type: "patch",
             data: {
                 memId: memId,
                 selectedValue: selectedValue
