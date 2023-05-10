@@ -6,6 +6,7 @@ import com.effourt.calenkit.dto.AccessTokenRequest;
 import com.effourt.calenkit.dto.AccessTokenResponse;
 import com.effourt.calenkit.dto.AuthUserInfoResponse;
 import com.effourt.calenkit.dto.EmailMessage;
+import com.effourt.calenkit.exception.CodeMismatchException;
 import com.effourt.calenkit.repository.AuthRepository;
 import com.effourt.calenkit.repository.MemberRepository;
 import com.effourt.calenkit.service.JoinService;
@@ -21,7 +22,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
@@ -129,14 +129,14 @@ public class MemberController {
     @ResponseBody
     public String loginByCode(@RequestBody Map<String, String> loginCodeMap, HttpSession session) {
         String memId = loginCodeMap.get("id");
-        if (session.getAttribute(loginCodeMap.get("loginCode")) == null) {
-            return "코드가 올바르지 않습니다.";
-        }
         String code = (String) session.getAttribute(loginCodeMap.get("loginCode"));
+        if (code == null) {
+            throw new CodeMismatchException("");
+        }
 
         //코드 일치 여부 검증
         if (!code.equals(memId + "ACCESS")) {
-            return "코드가 올바르지 않습니다.";
+            throw new CodeMismatchException(code);
         } else {
             session.setAttribute("loginId", memId);
             loginService.updateLastLogin(memId);
@@ -277,13 +277,13 @@ public class MemberController {
      */
     @GetMapping("/return-uri")
     public String returnURI(HttpSession session) {
-        String returnURI= (String)session.getAttribute("returnURI");
-        if (returnURI != null || !returnURI.equals("")) {
-            session.removeAttribute("returnURI");
-            log.info("returnURI = {}",returnURI);
-            return "redirect:"+returnURI;
-        } else if (returnURI == null) {
+        String returnURI = (String)session.getAttribute("returnURI");
+        log.info("returnURI = {}",returnURI);
+        if (returnURI == null) {
             return "redirect:/";
+        } else if (returnURI != null || !returnURI.equals("")) {
+            session.removeAttribute("returnURI");
+            return "redirect:"+returnURI;
         }
 
         return "redirect:/";
