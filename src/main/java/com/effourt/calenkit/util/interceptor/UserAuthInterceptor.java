@@ -2,9 +2,7 @@ package com.effourt.calenkit.util.interceptor;
 
 import com.effourt.calenkit.domain.Member;
 import com.effourt.calenkit.repository.MemberRepository;
-import com.effourt.calenkit.service.LoginService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -29,10 +27,14 @@ public class UserAuthInterceptor implements HandlerInterceptor {
         Member findMember = memberRepository.findByMemId(loginId);
 
         log.info("UserAuthInterceptor loginId={}", loginId);
-        log.info("UserAuthInterceptor findMemberId={}, findMemberStatus={}", findMember.getMemId(), findMember.getMemStatus());
+        log.info("UserAuthInterceptor status={}", findMember.getMemStatus());
 
         if (findMember.getMemStatus() == 9) {
-            response.sendRedirect(request.getContextPath() + "/admin");
+            response.sendRedirect(request.getContextPath() + "/members/admin");
+            return false;
+        } else if (findMember.getMemStatus() == 0) {
+            session.invalidate();
+            response.sendRedirect(request.getContextPath() + "/login/form");
             return false;
         }
         return true;
