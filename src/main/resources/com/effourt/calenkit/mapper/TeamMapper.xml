@@ -50,46 +50,6 @@
         WHERE TEAM_MID=#{teamMid} AND TEAM_BOOKMARK=1
     </select>
 
-    <!--
-    SELECT TEAM_LEVEL, MEM_ID, MEM_NAME, MEM_IMAGE
-        FROM TEAM
-        JOIN MEMBER
-        ON TEAM_MID=MEM_ID
-        WHERE TEAM_SNO=#{teamSno} AND MEM_STATUS=1
-
-        //SELECT TEAM_MID, TEAM_LEVEL FROM TEAM WHERE TEAM_SNO=#{teamSno} - findBySno
-        List<Team> result = service.findBySno(scNo);
-
-        for(i=0; result.length; i++) {
-            //SELECT MEM_ID, MEM_NAME, MEM_IMAGE FROM MEMBER WHERE MEM_STATUS=1 AND MEM_ID=#{teamMid}; - findByMid
-            model.addattribute("Level[+"i"+]", result[i].team_level);
-            model.addattribute("id[+"i"+]", service.findByMid(result[i].getTeamMid).getMid);
-            model.addattribute("name[+"i"+]", service.findByMid(result[i].getTeamMid).getMname);
-            model.addattribute("image[+"i"+]", service.findByMid(result[i].getTeamMid).getMimage);
-        }
-    -->
-
-
-
-    <!--
-    <resultMap type="Team" id="teamResultMap" autoMapping="true"/>
-    <resultMap type="Member" id="memberResultMap" autoMapping="true"/>
-    <resultMap type="TeamMember" id="TeamMemberResultMap" autoMapping="true">
-        <association property="team" resultMap="teamResultMap" autoMapping="true"/>
-        <collection property="memberList" resultMap="memberResultMap" autoMapping="true"/>
-    </resultMap>
-    -->
-    <!-- 일정 공유 팝업창-팀 멤버리스트(회원아이디,닉네임) 및 팀 정보(권한정보) 출력 -->
-    <!--
-    <select id="findBySno" resultMap="TeamMemberResultMap">
-        SELECT TEAM_LEVEL, MEM_ID, MEM_NAME, MEM_IMAGE
-        FROM TEAM
-        JOIN MEMBER
-        ON TEAM_MID=MEM_ID
-        WHERE TEAM_SNO=#{teamSno} AND MEM_STATUS=1
-    </select>
-    -->
-
     <!-- SELECT -->
     <!-- Sno를 기준으로 디수의 행 출력 -->
     <select id="findBySno" resultType="Team">
@@ -97,49 +57,4 @@
         FROM TEAM
         WHERE TEAM_SNO=#{teamSno}
     </select>
-
-    <!--
-    List<Team> teamList = TeamRepository.findBySno(teamSno);
-    Map<String ,object> selectTeamMap = new HashMap<>();
-    int size = 0;
-    for(int i=0; i<teamList.size(); i++){
-        Member member = MemberRepository.findByMid(teamList[i].getTeamMid);
-        Integer level= teamList[i].getTeamLevel;
-        if(member.getMemStatus()==1){
-            selectTeamMap.put("member" + i, member);
-            selectTeamMap.put("level" + i, level);
-            size++;
-        }
-    }
-    selectTeamMap.put("size", size);
-    selectTeamMap = {"member0" : member, "level0": level, "member1" : member, "level1": level, "size" :2}
-
-
-
-    List<Team> selectTeamList = new ArrayList<>();
-selectteam : [team,member]
-    }
-    New Member
-    for(Team team:selectTeamList){
-        (team.getTeamMid());
-        team.get();
-        team
-    }
-
-
-
-    List<Team> teamList = TeamRepository.findBySno(teamSno);
-    Map<String, Object> map = new HashMap<>();
-    List<Map<String, Object>> memberList = new ArrayList<>();
-    for (Team team : teamList) {
-        Member member = findByMemId(team.getTeamMid());
-        if (member.getStatus == 1) {
-            map.put("member", member);
-            map.put("team", team);
-            memberList.add(map);
-        }
-    }
-
-    map.put("teamMap", teamList);
-    -->
 </mapper>
