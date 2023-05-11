@@ -7,6 +7,7 @@ import com.effourt.calenkit.dto.AccessTokenResponse;
 import com.effourt.calenkit.dto.AuthUserInfoResponse;
 import com.effourt.calenkit.dto.EmailMessage;
 import com.effourt.calenkit.exception.CodeMismatchException;
+import com.effourt.calenkit.exception.MemberNotFoundException;
 import com.effourt.calenkit.repository.AuthRepository;
 import com.effourt.calenkit.repository.MemberRepository;
 import com.effourt.calenkit.service.JoinService;
@@ -107,14 +108,21 @@ public class MemberController {
     @PostMapping("/login/password")
     @ResponseBody
     public String loginByPassword(@RequestBody Member member, HttpSession session) {
+        log.info("회원 아이디 = {}", member.getMemId());
         //세션에 저장된 아이디 검색
         Member findMember = loginService.getMemberById(member.getMemId());
+
+        //회원 존재 여부 및 탈퇴 회원 여부 검증
+        if (findMember == null || findMember.getMemStatus() == 0) {
+            throw new MemberNotFoundException(member.getMemId());
+        }
+
         //전달된 비밀번호와 검색한 비밀번호(인코딩된 비밀번호)를 비교
-        if (passwordEncoder.matches(member.getMemPw(), findMember.getMemPw())) {
+        if (member.getMemPw() == null || !passwordEncoder.matches(member.getMemPw(), findMember.getMemPw())) {
+            return "비밀번호가 올바르지 않습니다.";
+        } else {
             session.setAttribute("loginId", member.getMemId());
             loginService.updateLastLogin(findMember.getMemId());
-        } else {
-            return "비밀번호가 올바르지 않습니다.";
         }
         return "OK";
     }
@@ -129,13 +137,15 @@ public class MemberController {
     @ResponseBody
     public String loginByCode(@RequestBody Map<String, String> loginCodeMap, HttpSession session) {
         String memId = loginCodeMap.get("id");
-        String code = (String) session.getAttribute(loginCodeMap.get("loginCode"));
-        if (code == null) {
-            throw new CodeMismatchException("");
+        //회원 존재 여부 및 탈퇴 회원 여부 검증
+        Member member = loginService.getMemberById(memId);
+        if (member == null || member.getMemStatus() == 0) {
+            throw new MemberNotFoundException(memId);
         }
 
-        //코드 일치 여부 검증
-        if (!code.equals(memId + "ACCESS")) {
+        String code = (String) session.getAttribute(loginCodeMap.get("loginCode"));
+        //코드 존재 여부 및 일치 여부 검증
+        if (code == null || !code.equals(memId + "ACCESS")) {
             throw new CodeMismatchException(code);
         } else {
             session.setAttribute("loginId", memId);
@@ -154,14 +164,10 @@ public class MemberController {
     @ResponseBody
     public String loginByJoin(@RequestBody Map<String, String> registerMap, HttpSession session) {
         String memId = registerMap.get("id");
-        if (session.getAttribute(registerMap.get("registerCode")) == null) {
-            return "코드가 올바르지 않습니다.";
-        }
         String code = (String) session.getAttribute(registerMap.get("registerCode"));
-
-        //코드 일치 여부 검증
-        if (!code.equals(memId + "ACCESS")) {
-            return "코드가 올바르지 않습니다.";
+        //코드 존재 여부 및 일치 여부 검증
+        if (code == null || !code.equals(memId + "ACCESS")) {
+            throw new CodeMismatchException(code);
         }
         return "OK";
     }
@@ -176,20 +182,21 @@ public class MemberController {
     @ResponseBody
     public String loginByInitialize(@RequestBody Map<String, String> initializeCodeMap, HttpSession session) {
         String memId = initializeCodeMap.get("id");
-        if (session.getAttribute(initializeCodeMap.get("initializeCode")) == null) {
-            return "코드가 올바르지 않습니다.";
+        //회원 존재 여부 및 탈퇴 회원 여부 검증
+        Member member = loginService.getMemberById(memId);
+        if (member == null || member.getMemStatus() == 0) {
+            throw new MemberNotFoundException(memId);
         }
-        //비밀번호 초기화 (null로 지정)
-        loginService.updatePassword(memId, null);
+
         //초기화 코드 검증 후 로그인
         String code = (String) session.getAttribute(initializeCodeMap.get("initializeCode"));
-
-        //코드 일치 여부 검증
-        if (code.equals(memId + "ACCESS")) {
+        if (code == null || !code.equals(memId + "ACCESS")) {
+            throw new CodeMismatchException(code);
+        } else {
+            //비밀번호 초기화 (null로 지정)
+            loginService.updatePassword(memId, null);
             session.setAttribute("loginId", memId);
             loginService.updateLastLogin(memId);
-        } else {
-            return "코드가 올바르지 않습니다.";
         }
         return "OK";
     }
@@ -250,19 +257,30 @@ public class MemberController {
         //사용자 이메일이 DB에 존재하고 Access 토큰, Refresh 토큰이 존재하는 경우 토큰 UPDATE
         Member member = loginService.getMemberById(userInfo.getEmail());
         if (member == null) {
-            //사용자 이메일이 DB에 존재하지 않는 경우
+            //사용자 이메일이 DB에 존재하지 않은 경우 회원가입 후 로그인
             joinService.joinBySns(userInfo, accessToken);
             log.info("카카오 - 회원가입 후 로그인");
-        } else if (member.getMemAuthId() == null) {
-            //사용자 이메일이 DB에 존재하지만 Access 토큰, Refresh 토큰이 설정되어 있지 않는 경우
-            Auth auth = loginService.saveToken(accessToken);
-            member.setMemAuthId(auth.getAuthId());
-            loginService.update(member);
-            log.info("카카오 - 토큰 저장 후 로그인");
-        } else if (member.getMemAuthId() != null) {
-            //사용자 이메일이 DB에 존재하고 Access 토큰, Refresh 토큰이 존재하는 경우
-            loginService.updateToken(member.getMemAuthId(), accessToken);
-            log.info("카카오 - 토큰 갱신 후 로그인");
+        } else {
+            if (member.getMemAuthId() == null) {
+                //사용자 이메일이 DB에 존재하지만 Access 토큰, Refresh 토큰이 설정되어 있지 않는 경우
+                Auth auth = loginService.saveToken(accessToken);
+                member.setMemAuthId(auth.getAuthId());
+                //탈퇴회원인 경우, 일반 회원으로 권한 변경
+                if (member.getMemStatus() == 0) {
+                    member.setMemStatus(1);
+                }
+                loginService.update(member);
+                log.info("카카오 - 토큰 저장 후 로그인");
+            } else if (member.getMemAuthId() != null) {
+                //사용자 이메일이 DB에 존재하고 Access 토큰, Refresh 토큰이 존재하는 경우
+                loginService.updateToken(member.getMemAuthId(), accessToken);
+                //탈퇴회원인 경우, 일반 회원으로 권한 변경
+                if (member.getMemStatus() == 0) {
+                    member.setMemStatus(1);
+                    loginService.update(member);
+                }
+                log.info("카카오 - 토큰 갱신 후 로그인");
+            }
         }
 
         session.setAttribute("loginId", userInfo.getEmail());
