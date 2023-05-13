@@ -18,7 +18,7 @@ public interface KakaoApiClient {
     );
 
     @PostMapping("/v1/user/logout")
-    Long logout(
+    String logout(
             @RequestHeader("Authorization") String accessToken
     );
 }

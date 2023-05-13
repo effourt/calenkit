@@ -169,7 +169,17 @@ public class MemberController {
         if (code == null || !code.equals(memId + "ACCESS")) {
             throw new CodeMismatchException(code);
         }
-        return "OK";
+
+        Member member = loginService.getMemberById(memId);
+        if (member != null && member.getMemStatus() == 0) {
+            member.setMemStatus(1);
+            loginService.update(member);
+            session.setAttribute("loginId", memId);
+            loginService.updateLastLogin(memId);
+            return "RE_JOIN";
+        }
+
+        return "JOIN";
     }
 
     /**
@@ -312,14 +322,16 @@ public class MemberController {
      * @param session
      * @return
      */
-    @GetMapping("/logout")
+    @GetMapping("/member/logout")
     public String logout(HttpSession session) {
+        log.info("로그아웃 시작");
         String id = (String) session.getAttribute("loginId");
-        Integer authId = memberRepository.findByMemId(id).getMemAuthId();
-        if (authId != null && authId != 0) {
+        Integer authId = loginService.getMemberById(id).getMemAuthId();
+        if (authId != null) {
             loginService.expireToken(authRepository.findByAuthId(authId).getAuthAccess());
         }
         session.invalidate();
+        log.info("로그아웃 종료");
         return "redirect:/login/form";
     }
 }
