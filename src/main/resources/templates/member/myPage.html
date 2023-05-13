@@ -61,10 +61,10 @@
                                 <img id="image-preview" th:if="${loginMember?.memImage.startsWith('http')}" th:src="${loginMember?.memImage}"
                                      alt="Image Preview" class="rounded-circle" width="200px" height="200px" onclick="document.getElementById('memImage').click()" />
                                 <!-- 로컬 경로-->
-                                <img id="image-preview2" th:if="${!loginMember?.memImage.startsWith('http')}" th:src="@{/img/} + ${loginMember?.memImage}"
-                                     alt="Image Preview" class="rounded-circle" width="200px" height="200px" onclick="document.getElementById('memImage').click()" />
-                                <input type="file" id="memImage" name="memImage" style="display: none" onchange="document.getElementById('files_send')" accept="image/gif,image/png,image/jpeg">
-                                <div><input type="button" id="files_send" value="이미지 변경" style="display: none"></div>
+                                <img id="image-preview2" th:if="${!loginMember?.memImage.startsWith('http')}" th:src="@{/img/} + ${loginMember?.memImage} "
+                                     alt="Image Preview2" class="rounded-circle" width="200px" height="200px" onclick="document.getElementById('memImage').click()" />
+                                <input type="file" id="memImage" name="memImage" style="display: none" accept="image/gif,image/png,image/jpeg">
+                                <div><input type="button" id="files_send" value="이미지 변경" style="display: none" ></div>
                             </td>
                         </tr>
                         <tr>
@@ -74,7 +74,7 @@
                         <tr>
                             <td class="name">닉네임 : </td>
                             <td>
-                                <input class="name" type="text" id="memName" name="mem  Name" oninput="checkName()" th:value="${loginMember?.memName}" style="background-color: #333333 ">
+                                <input class="name" type="text" id="memName" name="memName" oninput="checkName()" th:value="${loginMember?.memName}" style="background-color: #333333 ">
                             </td>
                         </tr>
                     </table>
@@ -97,6 +97,13 @@
 
 </body>
 <script type="text/javascript">
+
+
+    $(document).ready(function() {
+        $('#memImage').change(function() {
+            $('#files_send').click();
+        });
+    });
 
     //유효성 검사
     $(document).on('change', '#memImage', function () {

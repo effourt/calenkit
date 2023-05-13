@@ -98,17 +98,22 @@ public class MemberController2 {
     // 1.Ajax를 통해 파일의 이미지 유효성 확인
     // 2.파일 업로드 처리 후 파일 미리보기 처리
     @PostMapping(value = "/members/myPage/modify_image")
-    public String saveImage(@RequestParam(required = false ) MultipartFile memImage) throws IOException {
-        String loginId=(String)session.getAttribute("loginId");
-        Member loginMember=memberRepository.findByMemId(loginId);
-        // 이미지 업로드 후 파일명 반환
-        String fileName = imageUploadService.uploadImage(memImage);
-        // Member 객체에 이미지 파일명 저장
-        loginMember.setMemImage(fileName);
-        // Member 객체를 인자로 받는 modifyMe() 메소드 호출
-        myPageService.modifyMe(loginMember);
+    public String saveImage(@RequestParam MultipartFile memImage) throws IOException {
+        if(memImage.equals(null)) {
+            String loginId = (String) session.getAttribute("loginId");
+            Member loginMember = memberRepository.findByMemId(loginId);
+            // 이미지 업로드 후 파일명 반환
+            String fileName = imageUploadService.uploadImage(memImage);
+            // Member 객체에 이미지 파일명 저장
+            loginMember.setMemImage(fileName);
+            // Member 객체를 인자로 받는 modifyMe() 메소드 호출
+            myPageService.modifyMe(loginMember);
 
-        return "redirect:";
+            return "redirect:";
+        }
+        else{
+            return "redirect:";
+        }
     }
 
 
@@ -128,9 +133,6 @@ public class MemberController2 {
                 return cnt;
             }
     }
-
-
-
 
     /** 마이 페이지 (/members/myPage)*/
     // memName Ajax 변경(UPDATE)
@@ -269,6 +271,7 @@ public class MemberController2 {
       if(member.getMemId().equals(memId)) {
             member.setMemStatus(memStatus);
             myPageService.removeMe(member);
+            session.removeAttribute("loginId");
             return "member/endPage";
         }
         else{
