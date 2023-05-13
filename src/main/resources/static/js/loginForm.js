@@ -18,7 +18,7 @@ $("#checkIdBtn").click(function () {
                 sendCode(loginId);
                 $("#loginCodeDiv").show();
                 $("#checkId").hide();
-            } else if (result == "JOIN_LOGIN") {
+            } else if (result == "RE_JOIN" || result == "JOIN_LOGIN") {
                 sendCode(loginId);
                 $("#registerCodeDiv").show();
                 $("#checkId").hide();
@@ -151,9 +151,11 @@ $("#registerCodeBtn").click(function () {
         dataType: "text",
         data: JSON.stringify({"id" : loginId, "registerCode" : registerCode}),
         success: function(result) {
-            if (result == "OK") {
+            if (result == "JOIN") {
                 $("#loginForm").prop("action", domainURL + "/join/form");
                 $("#loginForm").submit();
+            } else if (result == "RE_JOIN") {
+                location.href = domainURL + "/return-uri";
             } else {
                 $("#message").text(result);
             }
