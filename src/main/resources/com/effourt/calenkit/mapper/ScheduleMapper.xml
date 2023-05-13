@@ -52,7 +52,6 @@
         SELECT * FROM SCHEDULE WHERE SC_NO=#{scNo}
     </select>
 
-    <!-- SELECT -->
     <!-- (연월에 따른) 캘린더 일정 출력 -->
     <!-- date : 캘린더 연월 설정 변수 -->
     <select id="findAllByScNo" resultType="Schedule">
@@ -68,6 +67,9 @@
         <if test="date != null">
             AND DATE_FORMAT(SC_SDATE, '%Y-%m') &lt;= DATE_FORMAT(#{date}, '%Y-%m')
             AND DATE_FORMAT(SC_EDATE, '%Y-%m') &gt;= DATE_FORMAT(#{date}, '%Y-%m')
+        </if>
+        <if test="startRowNum != null and rowCount != null">
+            LIMIT #{startRowNum}, #{rowCount}
         </if>
     </select>
 
