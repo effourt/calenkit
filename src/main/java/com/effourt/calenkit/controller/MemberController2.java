@@ -226,11 +226,24 @@ public class MemberController2 {
         int cnt = 0;
         if(password1.matches("(?=.*\\d)(?=.*[a-z])(?=.*[!-*])[\\da-zA-Z!@#]{8,15}")) {
             System.out.println("cnt1="+cnt);
-            if (passwordEncoder.matches(memPw,loginMember.getMemPw()) && password2.equals(password1)) {
+            if(memPw!=null || memPw!="") {
+                System.out.println("memPw1="+memPw);
+                if (passwordEncoder.matches(memPw, loginMember.getMemPw()) && password2.equals(password1))
+                {
                     cnt++; //
                     System.out.println("cnt2=" + cnt);
                     return cnt;
                 }//1 출력 password2와 password1이 일치할 경우
+            }
+            if(memPw==null || memPw==""){
+                System.out.println("memPw2="+memPw);
+                if(password2.equals(password1))
+                {
+                    cnt++; //
+                    System.out.println("cnt2=" + cnt);
+                    return cnt;
+                }
+            }
         }
         return cnt; //0 출력
     }
