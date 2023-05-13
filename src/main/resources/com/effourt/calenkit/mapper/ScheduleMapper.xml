@@ -74,7 +74,8 @@
     <!-- 휴지통 일정 전체 & 일부 검색 (일정 제목 문자열 검색)-->
     <select id="findByRecycleBin" resultType="Schedule">
         SELECT SC_NO, SC_TITLE, SC_CONTENT, SC_SDATE, SC_EDATE, SC_STATUS, SC_PROGRESS
-        FROM SCHEDULE WHERE SC_NO IN (
+        FROM SCHEDULE
+        WHERE SC_NO IN (
         <!-- scNoList를 scNo를 구분자로하여 출력. 정수인 scNo만 출력되게했음. -->
         <foreach collection="scNoList" item="scNo" separator=",">
             <if test="scNo instanceof Integer">
@@ -115,9 +116,10 @@
     </select>
 
     <!-- 검색 일정 총 갯수 -->
-    <select id="findByFilterCount" resultType="Integer">
+    <select id="countFindByFilter" resultType="Integer">
         SELECT COUNT(*)
-        FROM SCHEDULE WHERE SC_NO IN (
+        FROM SCHEDULE
+        WHERE SC_NO IN (
         <!-- scNoList를 scNo를 구분자로하여 출력. 정수인 scNo만 출력되게했음. -->
         <foreach collection="scNoList" item="scNo" separator=",">
             <if test="scNo instanceof Integer">
@@ -136,9 +138,10 @@
     </select>
 
     <!-- 휴지통 일정 총 갯수 -->
-    <select id="findByRecycleBinCount" resultType="Integer">
+    <select id="countFindByRecycleBin" resultType="Integer">
         SELECT COUNT(*)
-        FROM SCHEDULE WHERE SC_NO IN (
+        FROM SCHEDULE
+        WHERE SC_NO IN (
         <!-- scNoList를 scNo를 구분자로하여 출력. 정수인 scNo만 출력되게했음. -->
         <foreach collection="scNoList" item="scNo" separator=",">
             <if test="scNo instanceof Integer">
@@ -150,6 +153,20 @@
             AND SC_TITLE LIKE #{keyword}
         </if>
         AND SC_STATUS=0
+    </select>
+
+    <!-- 일정 총 갯수 -->
+    <select id="countFindAllByScNo" resultType="Integer">
+        SELECT COUNT(*)
+        FROM SCHEDULE
+        WHERE SC_NO IN (
+        <!-- scNoList를 scNo를 구분자로하여 출력. 정수(Integer)인 scNo만 출력되게했음. -->
+        <foreach collection="list" item="scNo" separator=",">
+            <if test="scNo instanceof Integer">
+                #{scNo}
+            </if>
+        </foreach>)
+        AND SC_STATUS=1
     </select>
 
     <!--    <select id="findByFilter" resultType="Schedule">-->
