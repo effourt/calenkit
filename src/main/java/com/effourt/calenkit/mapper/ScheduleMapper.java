@@ -27,6 +27,7 @@ public interface ScheduleMapper {
     //map 요소 : keyword, Filter, List 객체(일정번호)
     List<Schedule> findByFilter(Map<String, Object> map);
 
-    Integer findByRecycleBinCount(Map<String, Object> map);
-    Integer findByFilterCount(Map<String, Object> map);
+    Integer countFindByRecycleBin(Map<String, Object> map);
+    Integer countFindByFilter(Map<String, Object> map);
+    Integer countFindAllByScNo(List<Integer> scNoList);
 }
