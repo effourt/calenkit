@@ -64,30 +64,16 @@ public class ScheduleController {
         List<Schedule> bookmarkList=myScheduleService.getBookmark(loginId, null);
         model.addAttribute("bookmarkList", bookmarkList);
 
-
-
-        //일정 리스트 출력
+        //일정 리스트 출력(스크롤) - 첫 페이지 고정 출력
         List<Integer> scNoList=teamRepository.findByid(loginId);
         Integer pageNum=1;
-        if(request.getAttribute("pageNum")!=null) {
-            pageNum=(Integer)request.getAttribute("pageNum");
-        }
 
-        //startRowNum부터 rowCount만큼 한 페이지에 출력
-        Integer rowCount=10; //한 페이지에 표시할 일정 갯수
-        Integer startRowNum=0+(pageNum-1)*rowCount;
-
-        List<Schedule> scheduleList=myScheduleService.getMySchedule(loginId, null, startRowNum, rowCount);
+        List<Schedule> scheduleList=myScheduleService.getMySchedule(loginId, null, 0, 10);
         model.addAttribute("scheduleList", scheduleList);
 
-        //일정 총 갯수
-        Integer totalRow=scheduleRepository.countFindAllByScNo(scNoList);
-
-        //전체 페이지 갯수
-        Integer totalPageCount=(int) Math.ceil(totalRow/(double)rowCount);
+        Integer totalRow=scheduleRepository.countFindAllByScNo(scNoList); //일정 총 갯수
+        Integer totalPageCount=(int)Math.ceil(totalRow/(double)10); //전체 페이지 갯수
         model.addAttribute("totalPageCount", totalPageCount);
-        model.addAttribute("totalRow", totalRow);
-        model.addAttribute("pageNum", pageNum);
 
         return "main";
     }
@@ -237,7 +223,6 @@ public class ScheduleController {
         //전체 페이지 갯수
         Integer totalPageCount=(int) Math.ceil(totalRow/(double)rowCount);
         map.put("totalPageCount", totalPageCount);
-        map.put("pageNum", pageNum);
 
         return map;
     }
