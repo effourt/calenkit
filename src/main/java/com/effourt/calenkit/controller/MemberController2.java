@@ -99,7 +99,6 @@ public class MemberController2 {
     // 2.파일 업로드 처리 후 파일 미리보기 처리
     @PostMapping(value = "/members/myPage/modify_image")
     public String saveImage(@RequestParam MultipartFile memImage) throws IOException {
-        if(memImage.equals(null)) {
             String loginId = (String) session.getAttribute("loginId");
             Member loginMember = memberRepository.findByMemId(loginId);
             // 이미지 업로드 후 파일명 반환
@@ -110,10 +109,8 @@ public class MemberController2 {
             myPageService.modifyMe(loginMember);
 
             return "redirect:";
-        }
-        else{
-            return "redirect:";
-        }
+
+
     }
 
 
