@@ -1,0 +1,60 @@
+body {
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+form {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+input[type="password"], button {
+    display: block;
+    margin-bottom: 10px;
+    padding: 10px;
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+input[type="hidden"] {
+    display: none;
+}
+
+p {
+    margin: 0;
+    margin-top: 10px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.password_ok, .password_already, .pw_ok, .pw_already, .password_match, .password_nonematch {
+    display: inline-block;
+    font-size: 14px;
+    font-weight: bold;
+    margin-left: 10px;
+    display:none;
+}
+
+.password_ok, .pw_ok, .password_match {
+    color: green;
+}
+
+.password_already, .pw_already, .password_nonematch {
+    color: red;
+}
+
+button.updateButton {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
