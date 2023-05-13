@@ -114,7 +114,7 @@ public class MyScheduleService {
 
     // [권한 있는 일정 지정 연월 기준 출력]
     // => 현재 세션 아이디(loginMember) 기준 team, 출력 기준이 될 연월(date)을 매개변수로 입력받음
-    public List<Schedule> getMySchedule(String id, String date) {
+    public List<Schedule> getMySchedule(String id, String date, Integer startRowNum, Integer rowCount) {
         //map 요소 : date, List 객체(일정번호) - map(date, "2020-12-12") , map(scNoList, List<Integer>)
         Map<String, Object> map=new HashMap<>();
         List<Integer> scNoList=teamRepository.findByid(id);
@@ -124,6 +124,8 @@ public class MyScheduleService {
 
         map.put("scNoList", scNoList); //아이디 기준 권한있는 일정번호목록
         map.put("date", date); //date : 출력 기준이 될 연월(default:현재 연월)
+        map.put("startRowNum", startRowNum);
+        map.put("rowCount", rowCount);
 
         return scheduleRepository.findAllByScNo(map);
     }
