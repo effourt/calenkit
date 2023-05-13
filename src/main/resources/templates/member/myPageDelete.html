@@ -2,98 +2,20 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <style>
-
-        p{
-            color: red;
-        }
-
-        /* Set font family and background color */
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f2f2f2;
-        }
-
-        /* Set styles for the form */
-        form {
-            max-width: 500px;
-            margin: 0 auto;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-        }
-
-        /* Set styles for the headings */
-        h5 {
-            margin-top: 0;
-            font-size: 1.5em;
-            font-weight: bold;
-        }
-
-        /* Set styles for the labels and input fields */
-        label, input {
-            display: block;
-            width: 100%;
-            margin-bottom: 10px;
-        }
-
-        /* Set styles for the input field */
-        #memId {
-            height: 30px;
-            font-size: 16px;
-            padding: 5px;
-            border-radius: 3px;
-            border: 1px solid #ccc;
-        }
-
-        /* Set styles for the OK and ALREADY spans */
-        .id_ok, .id_already {
-            font-size: 14px;
-            font-weight: bold;
-            margin-left: 10px;
-        }
-
-        /* Set styles for the OK span */
-        .id_ok {
-            color: green;
-        }
-
-        /* Set styles for the ALREADY span */
-        .id_already {
-            color: red;
-        }
-
-        /* Set styles for the delete button */
-        .deleteButton {
-            display: block;
-            width: 100%;
-            height: 40px;
-            font-size: 16px;
-            font-weight: bold;
-            background-color: #ff0000;
-            color: #fff;
-            border: none;
-            border-radius: 3px;
-            cursor: pointer;
-            margin-top: 20px;
-        }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/myPageDelete.css}" href="../static/css/myPageDelete.css">
 </head>
 </head>
 <body>
 <form method="post" action="/members/myPageDelete/delete" >
-
-    <p>전체 계정이 삭제됩니다.  <p>
+    <h1>계정 삭제</h1>
     <p>모든 개인 워크스페이스가 삭제되고 </p>
     <p>모든 공유 워크스페이스에서 이 계정이 제거됩니다.</p>
     <hr>
-    <input type="text" id="memId" name="memId" oninput="checkId()" placeholder="이메일을 입력하세요">
+    <input type="text" id="memId" name="memId" oninput="checkId()" placeholder="계정 삭제를 원하시면 이메일을 입력해주세요.">
     <!-- memId ajax 중복체크 -->
-    <span class="id_ok" style="display: none">이메일이 일치합니다.</span>
-    <span class="id_already" style="display: none">이메일이 일치하지 않습니다.</span>
+    <span class="id_ok">이메일이 일치합니다.</span>
+    <span class="id_already">이메일이 일치하지 않습니다.</span>
     <button style="display: none" class="deleteButton" >계정 및 워크스페이스 삭제</button>
 </form>
 
