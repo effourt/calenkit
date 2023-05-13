@@ -98,17 +98,19 @@ public class MemberController2 {
     // 1.Ajax를 통해 파일의 이미지 유효성 확인
     // 2.파일 업로드 처리 후 파일 미리보기 처리
     @PostMapping(value = "/members/myPage/modify_image")
-    public String saveImage(@RequestParam(required = false ) MultipartFile memImage) throws IOException {
-        String loginId=(String)session.getAttribute("loginId");
-        Member loginMember=memberRepository.findByMemId(loginId);
-        // 이미지 업로드 후 파일명 반환
-        String fileName = imageUploadService.uploadImage(memImage);
-        // Member 객체에 이미지 파일명 저장
-        loginMember.setMemImage(fileName);
-        // Member 객체를 인자로 받는 modifyMe() 메소드 호출
-        myPageService.modifyMe(loginMember);
+    public String saveImage(@RequestParam MultipartFile memImage) throws IOException {
+            String loginId = (String) session.getAttribute("loginId");
+            Member loginMember = memberRepository.findByMemId(loginId);
+            // 이미지 업로드 후 파일명 반환
+            String fileName = imageUploadService.uploadImage(memImage);
+            // Member 객체에 이미지 파일명 저장
+            loginMember.setMemImage(fileName);
+            // Member 객체를 인자로 받는 modifyMe() 메소드 호출
+            myPageService.modifyMe(loginMember);
 
-        return "redirect:";
+            return "redirect:";
+
+
     }
 
 
@@ -128,9 +130,6 @@ public class MemberController2 {
                 return cnt;
             }
     }
-
-
-
 
     /** 마이 페이지 (/members/myPage)*/
     // memName Ajax 변경(UPDATE)
@@ -217,14 +216,30 @@ public class MemberController2 {
     // 현재 비밀번호 일치 여부 확인 (일치 cnt=1, 불일치 cnt=0)
     @GetMapping(value = "/members/myPageModify/passwordCheck")
     @ResponseBody
-    public int passwordCheck(String password1, String password2) {
+    public int passwordCheck(String password1, String password2,String memPw) {
+        String loginId=(String)session.getAttribute("loginId");
+        Member loginMember=memberRepository.findByMemId(loginId);
+
         int cnt = 0;
         if(password1.matches("(?=.*\\d)(?=.*[a-z])(?=.*[!-*])[\\da-zA-Z!@#]{8,15}")) {
             System.out.println("cnt1="+cnt);
-            if (password2.equals(password1)) {
-                cnt++; //
-                System.out.println("cnt2="+cnt);
-                return cnt; //1 출력 password2와 password1이 일치할 경우
+            if(memPw!=null || memPw!="") {
+                System.out.println("memPw1="+memPw);
+                if (passwordEncoder.matches(memPw, loginMember.getMemPw()) && password2.equals(password1))
+                {
+                    cnt++; //
+                    System.out.println("cnt2=" + cnt);
+                    return cnt;
+                }//1 출력 password2와 password1이 일치할 경우
+            }
+            if(memPw==null || memPw==""){
+                System.out.println("memPw2="+memPw);
+                if(password2.equals(password1))
+                {
+                    cnt++; //
+                    System.out.println("cnt2=" + cnt);
+                    return cnt;
+                }
             }
         }
         return cnt; //0 출력
@@ -266,6 +281,7 @@ public class MemberController2 {
       if(member.getMemId().equals(memId)) {
             member.setMemStatus(memStatus);
             myPageService.removeMe(member);
+            session.removeAttribute("loginId");
             return "member/endPage";
         }
         else{

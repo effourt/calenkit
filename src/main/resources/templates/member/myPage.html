@@ -1,189 +1,103 @@
-<!DOCTYPE html>
+<!doctype html>
 <html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout (~{::link}, ~{::script}, ~{::style}, ~{::title}, ~{::form})}">
 
 <head>
-    <meta charset="UTF-8">
-    <title>마이 페이지</title>
-    <link th:href="@{/library/packages/list/main.css}" href='../../static/packages/list/main.css' rel='stylesheet' />
-    <script th:src="@{/library/packages/core/main.js}" src='../../static/packages/core/main.js'></script>
+    <meta charset="utf-8">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <!-- Bootstrap -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.19.1/css/mdb.min.css" rel="stylesheet">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+    <title>Discord Profile Card</title>
     <style>
 
-        #memName {
-            width: 50%;
-            height: 30px;
-            margin-bottom: 10px;
-            font-size: 16px;
+        .name{
+            color: white;
+            font-size: 20px;
         }
-        .name_ok, .name_already, .name_not-ready {
-            display: inline-block;
+
+        .second {
+            padding: 9px;
+            padding-right: 0px;
+            text-align: center;
+        }
+
+
+        .name_ok, .name_already, .name_not-ready, #files_send, #memImage {
             font-size: 14px;
             font-weight: bold;
             margin-left: 10px;
+            display: none;
         }
         .name_ok {
             color: green;
+            margin-top:20px;
         }
         .name_already,.name_not-ready {
             color: red;
         }
-
-        #pwModifyButton,
-        #deleteButton {
-            cursor: pointer;
-            user-select: none;
-            width: 120px;
-            height: 30px;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            color: #fff;
-            background-color:darkred;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-bottom: 20px;
+        .btn{
+            width: 200px;
         }
-
-
 
 
     </style>
-
-
 </head>
-<body class="text-center">
+<body style="background-color :#f5f5f5;">
+<br>
+<br>
 <form id="ajaxform" method="post" enctype="multipart/form-data">
-    <h1>계정 정보</h1>
-    <hr>
-    <p>프로필</p>
+<div class="container text-center align-items-stretch" >
+        <div class="card" style="background-color: #333333">
+            <p style="font-size: 1px; margin-left: 1500px" ></p>
+            <h1 class="name" style="font-size: 20px;" >회원 정보</h1>
+                <br>
+                <div class="second">
+                    <table style="margin-left: 350px;">
+                        <tr>
+                            <td/>
+                            <td>
+                                <!-- 이미지 파일 업로드 input -->
+                                <!-- http 경로-->
+                                <img id="image-preview" th:if="${loginMember?.memImage.startsWith('http')}" th:src="${loginMember?.memImage}"
+                                     alt="Image Preview" class="rounded-circle" width="200px" height="200px" onclick="document.getElementById('memImage').click()" />
+                                <!-- 로컬 경로-->
+                                <img id="image-preview2" th:if="${!loginMember?.memImage.startsWith('http')}" th:src="@{/img/} + ${loginMember?.memImage} "
+                                     alt="Image Preview2" class="rounded-circle" width="200px" height="200px" onclick="document.getElementById('memImage').click()" />
+                                <input type="file" id="memImage" name="memImage" accept="image/gif,image/png,image/jpeg">
+                                <div><input type="button" id="files_send" value="이미지 변경"  ></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="name">계정 :</td>
+                            <td class="name">[[${loginMember.memId}]]</td>
+                        </tr>
+                        <tr>
+                            <td class="name">닉네임 : </td>
+                            <td>
+                                <input class="name" type="text" id="memName" name="memName" oninput="checkName()" th:value="${loginMember?.memName}" style="background-color: #333333 ">
+                            </td>
+                        </tr>
+                    </table>
+                    <button class="name_ok" type="submit" formaction="/members/myPage/modify_name">닉네임 사용하기</button>
+                    <span class="name_already" >사용 중 닉네임입니다.</span>
+                    <span class="name_not-ready" >숫자,영문,한글로 작성해주세요(2~10글자)</span>
 
-
-    <!-- 이미지 파일 업로드 input -->
-    <!-- http 경로-->
-    <img id="image-preview" th:if="${loginMember?.memImage.startsWith('http')}" th:src="${loginMember?.memImage}" alt="Image Preview" style="width: 200px; height: 200px;" onclick="document.getElementById('memImage').click()" />
-    <!-- 로컬 경로-->
-    <img id="image-preview2" th:if="${!loginMember?.memImage.startsWith('http')}" th:src="@{/img/} + ${loginMember?.memImage}" alt="Image Preview" style="width: 200px; height: 200px;" onclick="document.getElementById('memImage').click()" />
-
-    <input type="file" id="memImage" name="memImage" style="display: none">
-    <div><input type="button" id="files_send" value="이미지 변경"></div>
-
-
-    <!-- name ajax 중복체크 -->
-    <div for="memName" >닉네임</div>
-    <input type="text" id="memName" name="memName" oninput = "checkName()" th:value="${loginMember?.memName}">
-    <button class="name_ok" type="submit" style="display: none" formaction="/members/myPage/modify_name">닉네임 사용하기</button>
-    <span class="name_already" style="display: none">사용 중 닉네임입니다.</span>
-    <span class="name_not-ready" style="display: none">숫자,영문,한글로 작성해주세요(2~10글자)</span>
-    <!-- 비밀번호 변경 -->
-    <div id="pwModifyButton" onclick="openPwModifyPopup()">비밀번호 변경</div>
-
-    <!-- 계정 삭제 -->
-    <div id="deleteButton" onclick="openDeletePopup()">내 계정 삭제</div>
-    <hr>
-    <a th:href="@{/}">취소</a>
+                    <br>
+                    <button type="button" class="btn btn-outline-primary" onclick="openPwModifyPopup()">비밀번호 변경</button>
+                    <br>
+                    <button type="button" class="btn btn-outline-danger" onclick="openDeletePopup()">계정 삭제</button>
+                    <br>
+                    <a th:href="@{/}"> <button type="button" class="btn btn-light ">메인 페이지 이동</button></a>
+                </div>
+            <p style="font-size: 1px; margin-top: 1200px" ></p>
+        </div>
+</div>
 </form>
+
+
 </body>
-<script type="text/javascript">
-
-    //유효성 검사
-    $(document).on('change', '#memImage', function () {
-        var input = this;
-        var url = $(this).val();
-        var ext = url.substring(url.lastIndexOf('.') + 1).toLowerCase();
-        if (input.files && input.files[0] && (ext == "gif" || ext == "png" || ext == "jpeg" || ext == "jpg")) {
-            var reader = new FileReader();
-
-            reader.onload = function (e) {
-                $('#image-preview').attr('src', e.target.result);
-                $('#image-preview2').attr('src', e.target.result);
-
-                $('#image-preview').show();
-                $('#image-preview2').show();
-            }
-
-            reader.readAsDataURL(input.files[0]);
-        }
-        else {
-            $('#image-preview').attr('src', '#');
-            $('#image-preview').hide();
-            $('#image-preview2').attr('src', '#');
-            $('#image-preview2').hide();
-            alert("올바른 이미지 파일을 선택해주세요. (gif, png, jpg, jpeg 형식만 가능)");
-            $(this).val('');
-        }
-    });
-
-    //파일 미리보기 + 저장
-    $(document).on('click', '#files_send', function () {
-        var formData = new FormData();
-
-        for(var i=0; i<$('#memImage')[0].files.length; i++){
-            formData.append('memImage', $('#memImage')[0].files[i]);
-        }
-
-        $.ajax({
-            url: '/members/myPage/modify_image',
-            data: formData,
-            processData: false,
-            contentType: false,
-            type: 'POST',
-            success: function (data) {
-                alert("이미지 업로드 성공");
-            }
-        });
-    });
 
 
+<script th:src="@{/js/myPage.js}" src="../static/js/myPage.js"></script>
 
-
-
-
-    //삭제 팝업창
-    function openDeletePopup() {
-        var url = "/members/myPageDelete/delete";
-        var name = "mypageDeletePopup";
-        var specs = "width=500,height=500,resizable=yes";
-        window.open(url, name, specs);
-    }
-
-    //비밀번호 변경 팝업창
-    function openPwModifyPopup() {
-        var url = "/members/myPageModify/pwModify";
-        var name = "mypagepwModifyPopup";
-        var specs = "width=500,height=500,resizable=yes";
-        window.open(url, name, specs);
-    }
-
-    //닉네임 비동기
-    function checkName() {
-        var memName = $('#memName').val(); // id 값이 "memName"인 입력란의 값을 저장
-        $.ajax({
-            url: '/members/myPage/nameCheck', // Controller에서 요청 받을 주소
-            type: 'get', // GET 방식으로 전달
-            data: {memName: memName},
-            success: function(cnt) { // Controller에서 넘어온 cnt 값을 받는다
-                if(cnt == 0) { // cnt가 0일 경우 -> 중복된 아이디
-                    $('.name_ok').css("display", "inline-block");
-                    $('.name_already').css("display", "none");
-                    $('.name_not-ready').css("display", "none");
-                } if(cnt == 1) { // cnt가 1일 경우 -> 사용 가능한 아이디
-                    $('.name_already').css("display", "inline-block");
-                    $('.name_ok').css("display", "none");
-                    $('.name_not-ready').css("display", "none");
-                }
-                if(cnt == 2){ //형식에 맞지 않는 아이디
-                    $('.name_already').css("display", "none");
-                    $('.name_ok').css("display", "none");
-                    $('.name_not-ready').css("display", "inline-block");
-
-                }
-            },
-            error: function() {
-
-            }
-        });
-    }
-
-
-</script>
 </html>
