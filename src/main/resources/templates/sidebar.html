@@ -59,11 +59,19 @@
             <div tabindex="0" class="icon-schedule li"data-bs-toggle="collapse" data-bs-target="#schedule"><span>일정</span></div>
             <div id="schedule" class="collapse">
                 <ul style="height: 80px; overflow: scroll;">
+                    <th:block th:if="${scheduleList == null}">
+                        일정이 없습니다.
+                    </th:block>
                     <th:block th:each="schedule : ${scheduleList}">
                         <th:block th:if="${schedule.scStatus}==1">
                             <li><Strong>([[${schedule.getScNo}]])</Strong>[[${schedule.getScSdate}]] ~ [[${schedule.getScEdate}]] / <a th:href="@{/schedules?scNo={scNo}(scNo=${schedule.getScNo})}">[[${schedule.getScTitle}]]</a></li>
                         </th:block>
                     </th:block>
+                    <div class="loading-Bar">
+                        <img src="/img/loading.png" />
+                    </div>
+                    <div id="scrollSchedule">
+                    </div>
                 </ul>
             </div>
 
@@ -144,9 +152,6 @@
                                 </th:block>
                             </th:block>
                         </ul>
-                        <div class="loading-Bar">
-                            <img src="" />
-                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -186,42 +191,50 @@
         let isLoading=false;
 
         $("#schedule ul").on("scroll", function () {
-            var scrollTop = $(this).scrollTop();
-            var innerHeight = $(this).innerHeight();
-            var scrollHeight = $(this).prop('scrollHeight');
+            var scrollTop = $(this).scrollTop(); //스크롤을 아래로 내릴수록 값 증가
+            var innerHeight = $(this).innerHeight(); //해당 태그 높이 계산
+            var scrollHeight = $(this).prop('scrollHeight'); //스크롤 높이 계산
 
             if(scrollTop + innerHeight >= scrollHeight) { //스크롤 바닥에 닿을 때
-                alert("event");
-               /*if(currentPage==[[${totalPageCount}]] || isLoading) { //현재 마지막 페이지일 경우
+               if(currentPage==[[${totalPageCount}]] || isLoading) { //현재 마지막 페이지일 경우
                    return; //함수 끝
                }
-               //로딩 중으로 설정
-               isLoading=true;
-               //로딩바 출력
-               $(".loadingBar").show();
-               //요청할 페이지 번호 증가(다음 페이지 요청)
-               currentPage++;
+
+               isLoading=true; //로딩 중으로 설정
+               $(".loading-Bar").show();//로딩창 출력
+
+               currentPage++; //현재 페이지 증가(다음 페이지 요청)
+
                //ajax로 받아올 페이지 요청
-               GetList(currentPage);
-               */
+               $.ajax({
+                   url:"schedule_scroll",
+                   method:"get",
+                   data:{"currentPage" : currentPage}, //페이지 전달
+                   success:function (result) {
+                       var scheduleList=result.scheduleList; //ajax 문법으로 result 중 scheduleList 선택
+                       isLoading=false; //로딩 중 여부
+                       $(".loading-Bar").hide(); //로딩창 미출력
+
+                       var html="<div>";
+                       scheduleList.forEach(function(schedule) {
+                            html+="<li>";
+                            html+="<strong>("+schedule.scNo+")</strong>";
+                            html+=schedule.scSdate+" ~ ";
+                            html+=schedule.scEdate+" / ";
+                            html+="<a href='schedules?scNo="+schedule.scNo+"'>"+schedule.scTitle+"</a>";
+                            html+="</li>";
+                       });
+                       html+="</div>";
+
+                       $("#scrollSchedule").html(html);
+                   },
+                   error:function (xhr) {
+                       location.href="error/400";
+                   }
+               });
+
            }
         });
-        const GetList = function (currentPage) {
-            console.log("inGetList = "+currentPage);
-
-            //무한 스크롤
-            $.ajax({
-               url:"",
-               method:"",
-               data:"",
-                success: function (data) {
-
-                },
-                error: function (xhr){
-                   console.log("ERROR STATUS = "+xhr.status);
-                }
-            });
-        }
 
 
 
