@@ -1,5 +1,6 @@
 package com.effourt.calenkit.controller;
 
+import com.effourt.calenkit.domain.Alarm;
 import com.effourt.calenkit.domain.Member;
 import com.effourt.calenkit.dto.EmailMessage;
 import com.effourt.calenkit.dto.TeamShare;
@@ -7,6 +8,7 @@ import com.effourt.calenkit.exception.ExistsTeamException;
 import com.effourt.calenkit.exception.MemberNotFoundException;
 import com.effourt.calenkit.exception.ScheduleNotFoundException;
 import com.effourt.calenkit.exception.TeamNotFoundException;
+import com.effourt.calenkit.repository.AlarmRepository;
 import com.effourt.calenkit.repository.MemberRepository;
 import com.effourt.calenkit.service.AlarmService;
 import com.effourt.calenkit.service.TeamScheduleService;
@@ -75,9 +77,9 @@ public class TeamController {
 
         if(loginId.equals(memId)){
             teamScheduleService.addTeam(scNo,memId);
-            alarmService.addAlarmBySaveTeam(scNo,memId); //알람서비스
+            Alarm alarm = alarmService.addAlarmBySaveTeam(scNo,memId); //알람서비스
             log.info("[shareTeam] ok");
-            return "ok";
+            return ""+alarm.getAlNo();
         } else{
             log.info("[shareTeam] login-again");
             return "login-again";
@@ -90,7 +92,6 @@ public class TeamController {
      * @return
      */
     // http://localhost:8080/teams/share/1  : teamMid=member?teamLevel=0
-    // http://localhost:8080/teams/share/1  : teamMid=member?teamLevel=1
     @PatchMapping("/teams/share/{scNo}")
     @ResponseBody
     public String updateTeamLevel(@PathVariable int scNo,@RequestBody Map<String,Object> map) throws TeamNotFoundException, ScheduleNotFoundException {
@@ -165,55 +166,4 @@ public class TeamController {
         model.addAttribute("scNo", scNo);
         return "teamShareConfirm";
     }
-
-    @MessageMapping("/search") // 클라이언트가 '/app/search'로 메시지를 보내면 해당 메서드가 호출됨
-    @SendTo("/topic/searchResults") // 서버가 '/topic/searchResults'를 구독하고 있는 클라이언트들에게 메시지 전송
-    public String processSearch(String message) {
-        // 검색 처리 로직 수행
-        return "검색 결과: " + message;
-    }
-
-    @MessageMapping("/alert") // 클라이언트가 '/app/alert'로 메시지를 보내면 해당 메서드가 호출됨
-    @SendTo("/topic/alerts") // 서버가 '/topic/alerts'를 구독하고 있는 클라이언트들에게 메시지 전송
-    public String sendAlert(String message) {
-        // 알림 전송 로직 수행
-        return "알림: " + message;
-    }
-
-    @ResponseStatus(HttpStatus.NOT_FOUND) //404
-    @ResponseBody
-    @ExceptionHandler
-    public String TeamNotFoundExceptionHandler(TeamNotFoundException e){
-        if(e.getId().equals("") || e.getId()  == null){
-            log.info("[TeamNotFoundException] = {}, {}", e.getMessage(), e.getScNo());
-        } else {
-            log.info("[TeamNotFoundException] = {}, {}, {}", e.getMessage(), e.getScNo(), e.getId());
-        }
-        return e.getMessage();
-    }
-    @ResponseStatus(HttpStatus.NOT_FOUND) //404
-    @ResponseBody
-    @ExceptionHandler
-    public String ScheduleNotFoundExceptionHandler(ScheduleNotFoundException e){
-        log.info("[ScheduleNotFoundException] = {}, {}", e.getMessage(), e.getScNo());
-        return e.getMessage();
-    }
-
-    @ResponseStatus(HttpStatus.CONFLICT) //409
-    @ResponseBody
-    @ExceptionHandler
-    public String ExistsTeamExceptionHandler(ExistsTeamException e){
-        log.info("[ExistsTeamException] = {}, {}", e.getMessage(), e.getTeam().getTeamMid());
-        return e.getMessage();
-    }
-
-    @ResponseStatus(HttpStatus.NOT_FOUND) //404
-    @ResponseBody
-    @ExceptionHandler
-    public String MemberNotFoundExceptionHandler(MemberNotFoundException e){
-        log.info("[MemberNotFoundException] = {}", e.getMessage());
-        return e.getMessage();
-    }
-
-
 }

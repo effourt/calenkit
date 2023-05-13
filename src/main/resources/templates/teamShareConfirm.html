@@ -5,6 +5,9 @@
     <title>calenkit confirm</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="/webjars/jquery/jquery.min.js"></script>
+    <script src="/webjars/sockjs-client/sockjs.min.js"></script>
+    <script src="/webjars/stomp-websocket/stomp.min.js"></script>
     <style>
         a, a:hover, button, button:hover{
             text-decoration: none;
@@ -32,10 +35,19 @@
             data: JSON.stringify({"memId": memId}),
             dataType : "text",
             success: function(result) {
-                if(result == "ok") {
+                if(result == "login-again") {
+                    alert(memId+"의 계정으로 로그인 후 일정 공유에 참여해주세요.");
+                } else {
                     location.href= "/schedules?scNo="+scNo;
-                } else if(result == "login-again"){
-                    alert("초대한 사용자의 계정으로 다시 로그인을 시도해주세요.");
+
+                    //웹소켓 호출 : /app/find-alarm/save-team
+
+                    let socket = new SockJS('/gs-guide-websocket');
+                    let stompClient = Stomp.over(socket);
+                    stompClient.connect({}, function (frame) {
+                        console.log("frame = "+ frame);
+                        stompClient.send("/app/find-alarm/save-team", {}, JSON.stringify({'alNo': result}));
+                    });
                 }
             },
             error: function(error) {

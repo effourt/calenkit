@@ -12,11 +12,11 @@ import javax.servlet.http.HttpSession;
 
 @Slf4j
 @Component
-public class UserAuthInterceptor implements HandlerInterceptor {
+public class AdminAuthInterceptor implements HandlerInterceptor {
 
     private MemberRepository memberRepository;
 
-    public UserAuthInterceptor(MemberRepository memberRepository) {
+    public AdminAuthInterceptor(MemberRepository memberRepository) {
         this.memberRepository = memberRepository;
     }
 
@@ -26,15 +26,16 @@ public class UserAuthInterceptor implements HandlerInterceptor {
         String loginId = (String) session.getAttribute("loginId");
         Member findMember = memberRepository.findByMemId(loginId);
 
-        log.info("UserAuthInterceptor loginId={}", loginId);
-        log.info("UserAuthInterceptor status={}", findMember.getMemStatus());
+        log.info("AdminAuthInterceptor loginId={}", loginId);
+        log.info("AdminAuthInterceptor status={}", findMember.getMemStatus());
 
-        if (findMember.getMemStatus() == 9) {
-            response.sendRedirect(request.getContextPath() + "/members/admin");
-            return false;
-        } else if (findMember.getMemStatus() == 0) {
-            session.invalidate();
-            response.sendRedirect(request.getContextPath() + "/login/form");
+        if (findMember.getMemStatus() != 9) {
+            if (findMember.getMemStatus() == 0) {
+                session.invalidate();
+                response.sendRedirect(request.getContextPath() + "/login/form");
+                return false;
+            }
+            response.sendRedirect(request.getContextPath() + "/");
             return false;
         }
         return true;
