@@ -105,7 +105,11 @@ public class LoginService {
     public String checkMember(String memberId) {
         Member member = memberRepository.findByMemId(memberId);
         String loginType = "";
-        if (member != null) {
+        if (member == null || member.getMemStatus() == 0) {
+            //아이디 존재 X, 비밀번호 존재 X
+            //회원가입 코드 생성 및 메일 전송
+            loginType = "JOIN_LOGIN";
+        } else if (member != null && member.getMemStatus() != 0) {
             if (member.getMemPw() != null) {
                 //아이디 존재 O, 비밀번호 존재 O
                 loginType = "PASSWORD_LOGIN";
@@ -114,10 +118,6 @@ public class LoginService {
                 //로그인 코드 생성 및 메일 전송
                 loginType = "CODE_LOGIN";
             }
-        } else {
-            //아이디 존재 X, 비밀번호 존재 X
-            //회원가입 코드 생성 및 메일 전송
-            loginType = "JOIN_LOGIN";
         }
 
         return loginType;
