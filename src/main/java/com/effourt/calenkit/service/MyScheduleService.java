@@ -132,7 +132,7 @@ public class MyScheduleService {
 
     // [내 스케줄 즐겨찾기 출력]
     // => 현재 세션 아이디(loginMember) 기준 team, 출력 기준이 될 연월(date)을 매개변수로 입력받음
-    public List<Schedule> getBookmark(String id, String date) {
+    public List<Schedule> getBookmark(String id, String date, Integer startRowNum, Integer rowCount) {
         Map<String, Object> map=new HashMap<>();
         List<Integer> scNoList=teamRepository.findByBookmark(id);
         if(scNoList.isEmpty()) { //조건에 만족하는 일정이 없을 경우 미출력(scNo=0)
@@ -141,6 +141,8 @@ public class MyScheduleService {
 
         map.put("scNoList", scNoList);
         map.put("date", date); //date : 출력 기준이 될 연월(default:defaultDate)
+        map.put("startRowNum", startRowNum);
+        map.put("rowCount", rowCount);
 
         return scheduleRepository.findAllByScNo(map);
     }

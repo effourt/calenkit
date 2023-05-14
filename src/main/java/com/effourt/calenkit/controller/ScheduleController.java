@@ -62,7 +62,7 @@ public class ScheduleController {
 
 
         //개인 즐겨찾기리스트 조회
-        List<Schedule> bookmarkList=myScheduleService.getBookmark(loginId, null);
+        List<Schedule> bookmarkList=myScheduleService.getBookmark(loginId, null, 0, 10);
         model.addAttribute("bookmarkList", bookmarkList);
 
 
@@ -198,6 +198,36 @@ public class ScheduleController {
         return "redirect:/schedules?scNo="+scNo;
     }
 
+    @ResponseBody
+    @GetMapping("/bookmark_scroll")
+    public Map<String, Object> bookmarkScroll(Model model, String currentPage) {
+        String loginId = (String)session.getAttribute("loginId"); //session으로 현재 아이디 받아오기
+        Map<String, Object> map=new HashMap<>();
+        List<Integer> scNoList=teamRepository.findByid(loginId);
+        Integer pageNum=null;
+        if(currentPage!=null){
+            pageNum=Integer.parseInt(currentPage);
+        } else if(currentPage==null) {
+            pageNum=1;
+        }
+
+        //startRowNum부터 rowCount만큼 한 페이지에 출력
+        Integer rowCount=10; //한 페이지에 표시할 일정 갯수
+        Integer startRowNum=0+(pageNum-1)*rowCount;
+
+        List<Schedule> bookmarkList=myScheduleService.getBookmark(loginId, null, startRowNum, rowCount);
+        map.put("bookmarkList", bookmarkList);
+
+        //일정 총 갯수
+        Integer totalRow=scheduleRepository.countFindAllByScNo(scNoList);
+
+        //전체 페이지 갯수
+        Integer totalPageCount=(int) Math.ceil(totalRow/(double)rowCount);
+        map.put("totalPageCount", totalPageCount);
+
+        return map;
+    }
+
     /** 일정 스크롤 두번째 페이지부터
      *
      * @param model
@@ -222,7 +252,6 @@ public class ScheduleController {
         Integer startRowNum=0+(pageNum-1)*rowCount;
 
         List<Schedule> scheduleList=myScheduleService.getMySchedule(loginId, null, startRowNum, rowCount);
-        model.addAttribute("scheduleList", scheduleList);
         map.put("scheduleList", scheduleList);
 
         //일정 총 갯수

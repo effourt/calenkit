@@ -46,11 +46,19 @@
             <div tabindex="0" class="icon-bookmark li" data-bs-toggle="collapse" data-bs-target="#bookmark"><span>즐겨찾기</span></div>
             <div id="bookmark" class="collapse">
                 <ul style="height: 80px; overflow: scroll;">
+                    <th:block th:if="${bookmarkList == null}">
+                        일정이 없습니다.
+                    </th:block>
                     <th:block th:each="bookmark : ${bookmarkList}">
                         <th:block th:if="${bookmark.scStatus}==1">
-                            <li>[[${bookmark.getScSdate()}]] ~ [[${bookmark.getScEdate()}]] / <a  th:href="@{/schedules?scNo={scNo}(scNo=${bookmark.getScNo})}">[[${bookmark.getScTitle()}]]</a></li>
+                            <li><Strong>([[${bookmark.getScNo}]])</Strong>[[${bookmark.getScSdate()}]] ~ [[${bookmark.getScEdate()}]] / <a  th:href="@{/schedules?scNo={scNo}(scNo=${bookmark.getScNo})}">[[${bookmark.getScTitle()}]]</a></li>
                         </th:block>
                     </th:block>
+                    <div class="bookmark_loading-Bar" style="display: none;">
+                        <img src="/img/loading.png" />
+                    </div>
+                    <div id="bookmarkSchedule">
+                    </div>
                 </ul>
             </div>
 
@@ -67,7 +75,7 @@
                             <li><Strong>([[${schedule.getScNo}]])</Strong>[[${schedule.getScSdate}]] ~ [[${schedule.getScEdate}]] / <a th:href="@{/schedules?scNo={scNo}(scNo=${schedule.getScNo})}">[[${schedule.getScTitle}]]</a></li>
                         </th:block>
                     </th:block>
-                    <div class="loading-Bar">
+                    <div class="schedule_loading-Bar" style="display: none;">
                         <img src="/img/loading.png" />
                     </div>
                     <div id="scrollSchedule">
@@ -106,6 +114,9 @@
                             <button type="button" onclick="searchSchedule();" style="height: 45px; margin-left: 10px;">검색</button>
                         </div>
                     </form>
+                    <div class="search_loading-Bar" style="display: none;">
+                        <img src="/img/loading.png" />
+                    </div>
                     <div id="searchSchedule">
                     </div>
                 </div>
@@ -180,10 +191,60 @@
         };
 
 
-        //스크롤
+        //ㅡㅡㅡ스크롤 파트ㅡㅡㅡ
+
+
         let currentPage=1;
         let isLoading=false;
 
+        //즐겨찾기 스크롤
+        $("#bookmark ul").on("scroll", function () {
+            var scrollTop = $(this).scrollTop(); //스크롤을 아래로 내릴수록 값 증가
+            var innerHeight = $(this).innerHeight(); //해당 태그 높이 계산
+            var scrollHeight = $(this).prop('scrollHeight'); //스크롤 높이 계산
+
+            if(scrollTop + innerHeight >= scrollHeight) { //스크롤 바닥에 닿을 때
+                if(currentPage==[[${totalPageCount}]] || isLoading) { //현재 마지막 페이지일 경우
+                    return; //함수 끝
+                }
+
+                isLoading=true; //로딩 중으로 설정
+                $(".bookmark_loading-Bar").show();//로딩창 출력
+
+                currentPage++; //현재 페이지 증가(다음 페이지 요청)
+
+                //ajax로 받아올 페이지 요청
+                $.ajax({
+                    url:"bookmark_scroll",
+                    method:"get",
+                    data:{"currentPage" : currentPage}, //페이지 전달
+                    success:function (result) {
+                        var bookmarkList=result.bookmarkList; //ajax 문법으로 result 중 scheduleList 선택
+                        isLoading=false; //로딩 중 여부
+                        $(".bookmark_loading-Bar").hide(); //로딩창 미출력
+
+                        var html="<div>"; //내용 입력
+                        bookmarkList.forEach(function(schedule) {
+                            html+="<li>";
+                            html+="<strong>("+schedule.scNo+")</strong>";
+                            html+=schedule.scSdate+" ~ ";
+                            html+=schedule.scEdate+" / ";
+                            html+="<a href='schedules?scNo="+schedule.scNo+"'>"+schedule.scTitle+"</a>";
+                            html+="</li>";
+                        });
+                        html+="</div>";
+
+                        $("#bookmarkSchedule").html(html);
+                    },
+                    error:function (xhr) {
+                        location.href="error/400";
+                    }
+                });
+
+            }
+        });
+
+        //일정 스크롤
         $("#schedule ul").on("scroll", function () {
             var scrollTop = $(this).scrollTop(); //스크롤을 아래로 내릴수록 값 증가
             var innerHeight = $(this).innerHeight(); //해당 태그 높이 계산
@@ -195,7 +256,7 @@
                 }
 
                 isLoading=true; //로딩 중으로 설정
-                $(".loading-Bar").show();//로딩창 출력
+                $(".schedule_loading-Bar").show();//로딩창 출력
 
                 currentPage++; //현재 페이지 증가(다음 페이지 요청)
 
@@ -207,7 +268,7 @@
                     success:function (result) {
                         var scheduleList=result.scheduleList; //ajax 문법으로 result 중 scheduleList 선택
                         isLoading=false; //로딩 중 여부
-                        $(".loading-Bar").hide(); //로딩창 미출력
+                        $(".schedule_loading-Bar").hide(); //로딩창 미출력
 
                         var html="<div>"; //내용 입력
                         scheduleList.forEach(function(schedule) {
@@ -230,6 +291,7 @@
             }
         });
 
+        //검색+스크롤
         function searchSchedule() {
             //seriallize() = form 데이터를 자동으로 queryString으로 변환 해서 전달
             var queryString=$("#searchForm").serialize();
@@ -237,9 +299,9 @@
             $.ajax({
                 url: "search_schedule",
                 method: "post",
-                data: queryString,
-                success: function (result) {
-                    currentPage=1; //재검색 시 현재 페이지 초기화
+                data: queryString, //form으로 queryString 전달
+                success: function (result) { //queryString 받아 map 반환
+                    currentPage=1; //재검색 시 현재 페이지값 초기화
                     var searchList=result.searchList;
 
                     var html="<div>";
@@ -253,7 +315,7 @@
                     });
                     html+="</div>";
 
-                    $("#searchSchedule").html(html);
+                    $("#searchSchedule").html(html); //태그에 내용 추가
 
 
                     $(".modal-body").on("scroll", function () {
@@ -267,7 +329,7 @@
                             }
 
                             isLoading=true; //로딩 중으로 설정
-                            $(".loading-Bar").show();//로딩창 출력
+                            $(".search_loading-Bar").show();//로딩창 출력
 
                             currentPage++; //현재 페이지 증가(다음 페이지 요청)
 
@@ -279,7 +341,7 @@
                                 success:function (result) {
                                     var searchList=result.searchList; //ajax 문법으로 result 중 scheduleList 선택
                                     isLoading=false; //로딩 중 여부
-                                    $(".loading-Bar").hide(); //로딩창 미출력
+                                    $(".search_loading-Bar").hide(); //로딩창 미출력
 
                                     var html="<div>"; //내용 입력
                                     searchList.forEach(function(schedule) {
