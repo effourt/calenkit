@@ -235,6 +235,14 @@ public class ScheduleController {
         return map;
     }
 
+    /** 일정 검색(+무한 스크롤)
+     *
+     * @param keyword
+     * @param filter
+     * @param model
+     * @param currentPage
+     * @return
+     */
     @ResponseBody
     @PostMapping("/search_schedule")
     public Map<String, Object> searchScroll(@RequestParam(required = false) String keyword,
