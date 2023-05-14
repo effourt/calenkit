@@ -34,28 +34,27 @@
             contentType: "application/json",
             data: JSON.stringify({"memId": memId}),
             dataType : "text",
-            success: function(result) {
+            success: function(result) { //result = alNo
                 if(result == "login-again") {
                     alert(memId+"의 계정으로 로그인 후 일정 공유에 참여해주세요.");
                 } else {
-                    location.href= "/schedules?scNo="+scNo;
-
-                    //웹소켓 호출 : /app/find-alarm/save-team
-
-                    let socket = new SockJS('/gs-guide-websocket');
-                    let stompClient = Stomp.over(socket);
-                    stompClient.connect({}, function (frame) {
-                        console.log("frame = "+ frame);
-                        stompClient.send("/app/find-alarm/save-team", {}, JSON.stringify({'alNo': result}));
+                    //웹소켓 송신
+                    $(function () {
+                        let socket = new SockJS('/alarm');
+                        socket.onopen = function() {
+                            console.log('info: connection opened.');
+                            console.log("result =" +result);
+                             socket.send(result);
+                        };
+                        socket.onclose = function() {
+                            console.log('connect close');
+                        };
+                        socket.onerror = function (err) {console.log('Errors : ' , err);};
                     });
+                    location.href= "/schedules?scNo="+scNo;
                 }
-            },
-            error: function(error) {
-                alert(error.responseText);
-            }
-          });
-
-        });
+        },});
+    });
   </script>
 
 </html>
