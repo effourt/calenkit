@@ -145,7 +145,7 @@ public class MyScheduleService {
         return scheduleRepository.findAllByScNo(map);
     }
 
-    public List<Schedule> searchSchedule(String id, String keyword, String filter) {
+    public List<Schedule> searchSchedule(String id, String keyword, String filter, Integer startRowNum, Integer rowCount) {
         Map<String, Object> map=new HashMap<>();
         List<Integer> scNoList=teamRepository.findByid(id);
         if(scNoList.isEmpty()) { //조건에 만족하는 일정이 없을 경우 미출력(scNo=0)
@@ -155,6 +155,8 @@ public class MyScheduleService {
         map.put("scNoList", scNoList);
         map.put("keyword", keyword);
         map.put("filter", filter);
+        map.put("startRowNum", startRowNum);
+        map.put("rowCount", rowCount);
 
         return scheduleRepository.findByFilter(map);
     }

@@ -39,7 +39,7 @@ public class ScheduleController {
     /**
      * 달력에 일정 출력(메인페이지)
      */
-    @GetMapping(value={"/","/main"})
+    @RequestMapping(value={"/","/main"}, method = {RequestMethod.GET, RequestMethod.POST})
     public String main(Model model, HttpServletRequest request) {
 
         //세션에서 로그인아이디 반환받아 저장
@@ -60,9 +60,11 @@ public class ScheduleController {
         }
         model.addAttribute("titleList", titleList);
 
+
         //개인 즐겨찾기리스트 조회
         List<Schedule> bookmarkList=myScheduleService.getBookmark(loginId, null);
         model.addAttribute("bookmarkList", bookmarkList);
+
 
         //일정 리스트 출력(스크롤) - 첫 페이지 고정 출력
         List<Integer> scNoList=teamRepository.findByid(loginId);
@@ -196,9 +198,15 @@ public class ScheduleController {
         return "redirect:/schedules?scNo="+scNo;
     }
 
+    /** 일정 스크롤 두번째 페이지부터
+     *
+     * @param model
+     * @param currentPage
+     * @return
+     */
     @ResponseBody
     @GetMapping("/schedule_scroll")
-    public Map<String, Object> scroll(Model model, String currentPage) {
+    public Map<String, Object> scheduleScroll(Model model, String currentPage) {
         String loginId = (String)session.getAttribute("loginId"); //session으로 현재 아이디 받아오기
         Map<String, Object> map=new HashMap<>();
         List<Integer> scNoList=teamRepository.findByid(loginId);
@@ -216,6 +224,39 @@ public class ScheduleController {
         List<Schedule> scheduleList=myScheduleService.getMySchedule(loginId, null, startRowNum, rowCount);
         model.addAttribute("scheduleList", scheduleList);
         map.put("scheduleList", scheduleList);
+
+        //일정 총 갯수
+        Integer totalRow=scheduleRepository.countFindAllByScNo(scNoList);
+
+        //전체 페이지 갯수
+        Integer totalPageCount=(int) Math.ceil(totalRow/(double)rowCount);
+        map.put("totalPageCount", totalPageCount);
+
+        return map;
+    }
+
+    @ResponseBody
+    @PostMapping("/search_schedule")
+    public Map<String, Object> searchScroll(@RequestParam(required = false) String keyword,
+                                            @RequestParam(required = false) String filter,
+                                            Model model, String currentPage) {
+        String loginId = (String)session.getAttribute("loginId"); //session으로 현재 아이디 받아오기
+
+        Map<String, Object> map=new HashMap<>();
+        List<Integer> scNoList=teamRepository.findByid(loginId);
+        Integer pageNum=null;
+        if(currentPage!=null){
+            pageNum=Integer.parseInt(currentPage);
+        } else if(currentPage==null) {
+            pageNum=1;
+        }
+
+        //startRowNum부터 rowCount만큼 한 페이지에 출력
+        Integer rowCount=10; //한 페이지에 표시할 일정 갯수
+        Integer startRowNum=0+(pageNum-1)*rowCount;
+
+        List<Schedule>searchList=myScheduleService.searchSchedule(loginId, keyword, filter, startRowNum, rowCount);
+        map.put("searchList", searchList);
 
         //일정 총 갯수
         Integer totalRow=scheduleRepository.countFindAllByScNo(scNoList);
