@@ -103,7 +103,7 @@
                     <h5 class="modal-title">검색어를 입력해주세요</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body" style="height: 150px; overflow: auto";>
+                <div class="modal-body" style="height: 150px; overflow: auto"; id="search-modal-body">
                     <form method="post" id="searchForm">
                         <div class="input-group">
                             <input type="text" class="form-control"style="width: 60%; height: 45px;" id="inputBox" name="keyword">
@@ -127,41 +127,27 @@
     <!-- trashbox -->
     <div class="modal" tabindex="-1" id="trashbox" aria-labelledby="trash" aria-hidden="true">
         <div class="modal-dialog">
-            <div class="modal-content">
+            <div class="modal-content" style="width: 600px;">
                 <div class="modal-header">
                     <h5 class="modal-title">휴지통</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <div class="input-group mb-3">
-                        <input type="text" class="form-control" aria-label="Text input with dropdown button">
-                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Dropdown</button>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="#">Action</a></li>
-                            <li><a class="dropdown-item" href="#">Another action</a></li>
-                            <li><a class="dropdown-item" href="#">Something else here</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="#">Separated link</a></li>
-                        </ul>
+                <div class="modal-body" style="height: 150px; overflow: auto"; id="recyclebin-modal-body">
+                    <form method="post" id="recyclebinForm">
+                        <div class="input-group">
+                            <input type="text" class="form-control"style="width: 60%; height: 45px;" id="recyclebin_inputBox" name="keyword">
+                            <select style="background-color: gray; color:white; width: 10%; height: 45px;" class="form-select" aria-label="Default select example" name="filter">
+                                <option selected value="title">제목</option>
+                                <option value="content">내용</option>
+                            </select>
+                            <button type="button" onclick="searchRecyclebin();" style="height: 45px; margin-left: 10px;">검색</button>
+                        </div>
+                    </form>
+                    <div class="recyclebin_loading-Bar" style="display: none;">
+                        <img src="/img/loading.png" />
                     </div>
-                    <div id="recycleBin">
-                        <ul style="height: 80px; overflow: scroll;">
-                            <th:block th:each="schedule : ${scheduleList}">
-                                <th:block th:if="${schedule.scStatus}==0">
-                                    <li>
-                                        <input type="hidden" id="scNo" th:value="${schedule.scNo}" />
-                                        <Strong>([[${schedule.getScNo}]])</Strong>
-                                        [[${schedule.getScSdate}]] ~ [[${schedule.getScEdate}]] / [[${schedule.getScTitle}]]
-                                        <a class="myBtn" th:href="@{restore?scNo={scNo}(scNo=${schedule.getScNo()})}">복원</a> <a class="myBtn" onclick="deleteSchedule();">삭제</a>
-                                    </li>
-                                </th:block>
-                            </th:block>
-                        </ul>
+                    <div id="searchRecyclebin">
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
                 </div>
             </div>
         </div>
@@ -291,7 +277,7 @@
             }
         });
 
-        //검색+스크롤
+        //일정 검색+스크롤
         function searchSchedule() {
             //seriallize() = form 데이터를 자동으로 queryString으로 변환 해서 전달
             var queryString=$("#searchForm").serialize();
@@ -305,20 +291,24 @@
                     var searchList=result.searchList;
 
                     var html="<div>";
-                    searchList.forEach(function (schedule) {
-                        html+="<li>";
-                        html+="<strong>("+schedule.scNo+")</strong>";
-                        html+=schedule.scSdate+" ~ ";
-                        html+=schedule.scEdate+" / ";
-                        html+="<a href='schedules?scNo="+schedule.scNo+"'>"+schedule.scTitle+"</a>";
-                        html+="</li>";
-                    });
+                    if(searchList==null) {
+                        html+="<li>검색 결과가 없습니다</li>";
+                    } else {
+                        searchList.forEach(function (schedule) {
+                            html+="<li>";
+                            html+="<strong>("+schedule.scNo+")</strong>";
+                            html+=schedule.scSdate+" ~ ";
+                            html+=schedule.scEdate+" / ";
+                            html+="<a href='schedules?scNo="+schedule.scNo+"'>"+schedule.scTitle+"</a>";
+                            html+="</li>";
+                        });
+                    }
                     html+="</div>";
 
                     $("#searchSchedule").html(html); //태그에 내용 추가
 
 
-                    $(".modal-body").on("scroll", function () {
+                    $("#search-modal-body").on("scroll", function () {
                         var scrollTop = $(this).scrollTop(); //스크롤을 아래로 내릴수록 값 증가
                         var innerHeight = $(this).innerHeight(); //해당 태그 높이 계산
                         var scrollHeight = $(this).prop('scrollHeight'); //스크롤 높이 계산
@@ -359,15 +349,100 @@
                                 error:function (xhr) {
                                     console.log("상태코드 = "+xhr.status);
                                 }
-                           });
+                            });
 
-                       }//스크롤 바닥에 닿을 때
+                        }//스크롤 바닥에 닿을 때
 
-                   }); //modal-body
-               },
-               error: function (xhr) {
-                   console.log("상태코드 = "+xhr.status);
-               }
+                    }); //modal-body
+                },
+                error: function (xhr) {
+                    console.log("상태코드 = "+xhr.status);
+                }
+            });
+        }
+
+        //휴지통 검색+스크롤
+        function searchRecyclebin() {
+            //seriallize() = form 데이터를 자동으로 queryString으로 변환 해서 전달
+            var queryString=$("#recyclebinForm").serialize();
+
+            $.ajax({
+                url: "search_recyclebin",
+                method: "post",
+                data: queryString, //form으로 queryString 전달
+                success: function (result) { //queryString 받아 map 반환
+                    currentPage=1; //재검색 시 현재 페이지값 초기화
+                    var recyclebinList=result.recyclebinList;
+
+                    var html="<div>";
+                    if(recyclebinList==null) {
+                        html+="<li>검색 결과가 없습니다</li>";
+                    } else {
+                        recyclebinList.forEach(function (schedule) {
+
+                            html+="<li>";
+                            html+="<strong>("+schedule.scNo+")</strong>";
+                            html+=schedule.scSdate+" ~ ";
+                            html+=schedule.scEdate+" / ";
+                            html+="<a href='schedules?scNo="+schedule.scNo+"'>"+schedule.scTitle+"</a>";
+                            html+="</li>";
+                        });
+                    }
+                    html+="</div>";
+
+                    $("#searchRecyclebin").html(html); //태그에 내용 추가
+
+
+                    $("#recyclebin-modal-body").on("scroll", function () {
+                        var scrollTop = $(this).scrollTop(); //스크롤을 아래로 내릴수록 값 증가
+                        var innerHeight = $(this).innerHeight(); //해당 태그 높이 계산
+                        var scrollHeight = $(this).prop('scrollHeight'); //스크롤 높이 계산
+
+                        if(scrollTop + innerHeight >= scrollHeight) { //스크롤 바닥에 닿을 때
+                            if(currentPage==[[${totalPageCount}]] || isLoading) { //현재 마지막 페이지일 경우
+                                return; //함수 끝
+                            }
+
+                            isLoading=true; //로딩 중으로 설정
+                            $(".recyclebin_loading-Bar").show();//로딩창 출력
+
+                            currentPage++; //현재 페이지 증가(다음 페이지 요청)
+
+                            //ajax로 받아올 페이지 요청
+                            $.ajax({
+                                url:"search_recyclebin",
+                                method:"post",
+                                data:{"currentPage" : currentPage, queryString}, //페이지와 쿼리스트링 전달
+                                success:function (result) {
+                                    var recyclebinList=result.recyclebinList; //ajax 문법으로 result 중 scheduleList 선택
+                                    isLoading=false; //로딩 중 여부
+                                    $(".recyclebin_loading-Bar").hide(); //로딩창 미출력
+
+                                    var html="<div>"; //내용 입력
+                                    recyclebinList.forEach(function(schedule) {
+                                        html+="<li>";
+                                        html+="<strong>("+schedule.scNo+")</strong>";
+                                        html+=schedule.scSdate+" ~ ";
+                                        html+=schedule.scEdate+" / ";
+                                        html+="<a href='schedules?scNo="+schedule.scNo+"'>"+schedule.scTitle+"</a>";
+                                        html+="</li>";
+                                    });
+                                    html+="</div>";
+
+                                    $("#searchRecyclebin").append(html);
+                                },
+                                error:function (xhr) {
+                                    console.log("상태코드 = "+xhr.status);
+                                }
+                            });
+
+                        }//스크롤 바닥에 닿을 때
+
+                    }); //modal-body
+                },
+                error: function (xhr) {
+                    console.log("상태코드 = "+xhr.status);
+                }
             });
         }
 

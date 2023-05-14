@@ -40,7 +40,7 @@ public class ScheduleController {
      * 달력에 일정 출력(메인페이지)
      */
     @RequestMapping(value={"/","/main"}, method = {RequestMethod.GET, RequestMethod.POST})
-    public String main(Model model, HttpServletRequest request) {
+    public String main(Model model) {
 
         //세션에서 로그인아이디 반환받아 저장
         String loginId = (String)session.getAttribute("loginId");
@@ -198,9 +198,15 @@ public class ScheduleController {
         return "redirect:/schedules?scNo="+scNo;
     }
 
+    /** 즐겨찾기 리스트 스크롤 - 두번째 페이지부터
+     *
+     * @param model
+     * @param currentPage
+     * @return
+     */
     @ResponseBody
     @GetMapping("/bookmark_scroll")
-    public Map<String, Object> bookmarkScroll(Model model, String currentPage) {
+    public Map<String, Object> bookmarkScroll(String currentPage) {
         String loginId = (String)session.getAttribute("loginId"); //session으로 현재 아이디 받아오기
         Map<String, Object> map=new HashMap<>();
         List<Integer> scNoList=teamRepository.findByid(loginId);
@@ -228,7 +234,7 @@ public class ScheduleController {
         return map;
     }
 
-    /** 일정 스크롤 두번째 페이지부터
+    /** 일정 스크롤 - 두번째 페이지부터
      *
      * @param model
      * @param currentPage
@@ -236,7 +242,7 @@ public class ScheduleController {
      */
     @ResponseBody
     @GetMapping("/schedule_scroll")
-    public Map<String, Object> scheduleScroll(Model model, String currentPage) {
+    public Map<String, Object> scheduleScroll(String currentPage) {
         String loginId = (String)session.getAttribute("loginId"); //session으로 현재 아이디 받아오기
         Map<String, Object> map=new HashMap<>();
         List<Integer> scNoList=teamRepository.findByid(loginId);
@@ -276,7 +282,7 @@ public class ScheduleController {
     @PostMapping("/search_schedule")
     public Map<String, Object> searchScroll(@RequestParam(required = false) String keyword,
                                             @RequestParam(required = false) String filter,
-                                            Model model, String currentPage) {
+                                            String currentPage) {
         String loginId = (String)session.getAttribute("loginId"); //session으로 현재 아이디 받아오기
 
         Map<String, Object> map=new HashMap<>();
@@ -293,10 +299,57 @@ public class ScheduleController {
         Integer startRowNum=0+(pageNum-1)*rowCount;
 
         List<Schedule>searchList=myScheduleService.searchSchedule(loginId, keyword, filter, startRowNum, rowCount);
+        if(searchList.isEmpty()) {
+            searchList=null;
+        }
+
         map.put("searchList", searchList);
 
         //일정 총 갯수
         Integer totalRow=scheduleRepository.countFindAllByScNo(scNoList);
+
+        //전체 페이지 갯수
+        Integer totalPageCount=(int) Math.ceil(totalRow/(double)rowCount);
+        map.put("totalPageCount", totalPageCount);
+
+        return map;
+    }
+
+    /** 휴지통 검색(+무한 스크롤)
+     *
+     * @param keyword
+     * @param filter
+     * @param model
+     * @param currentPage
+     * @return
+     */
+    @ResponseBody
+    @PostMapping("/search_recyclebin")
+    public Map<String, Object> searchRecyclebin(@RequestParam(required = false) String keyword,
+                                            @RequestParam(required = false) String filter,
+                                            String currentPage) {
+        String loginId = (String)session.getAttribute("loginId"); //session으로 현재 아이디 받아오기
+
+        Map<String, Object> map=new HashMap<>();
+        Integer pageNum=null;
+        if(currentPage!=null){
+            pageNum=Integer.parseInt(currentPage);
+        } else if(currentPage==null) {
+            pageNum=1;
+        }
+
+        //startRowNum부터 rowCount만큼 한 페이지에 출력
+        Integer rowCount=10; //한 페이지에 표시할 일정 갯수
+        Integer startRowNum=0+(pageNum-1)*rowCount;
+
+        List<Schedule>recyclebinList=myScheduleService.getRecycleBin(loginId, keyword, filter, startRowNum, rowCount);
+        if(recyclebinList.isEmpty()) {
+            recyclebinList=null;
+        }
+        map.put("recyclebinList", recyclebinList);
+
+        //일정 총 갯수
+        Integer totalRow= myScheduleService.countRecyclebin(loginId, keyword, filter);
 
         //전체 페이지 갯수
         Integer totalPageCount=(int) Math.ceil(totalRow/(double)rowCount);

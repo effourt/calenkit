@@ -59,7 +59,7 @@ public class MyScheduleService {
     //[휴지통 출력]
     // => 팝업창에서 출력(10개씩 출력, 스크롤 로딩)
     // => 검색어(keyword)가 없을 경우 null로 전달 받아야 함(필수 매개변수)
-    public List<Schedule> getRecycleBin(String id, String keyword) {
+    public List<Schedule> getRecycleBin(String id, String keyword, String filter, Integer startRowNum, Integer rowCount) {
         Map<String, Object> map=new HashMap<>();
         List<Integer> scNoList=teamRepository.findByid(id);
         if(scNoList.isEmpty()) { //조건에 만족하는 일정이 없을 경우 미출력(scNo=0)
@@ -68,6 +68,9 @@ public class MyScheduleService {
 
         map.put("scNoList", scNoList);
         map.put("keyword", keyword);
+        map.put("filter", filter);
+        map.put("startRowNum", startRowNum);
+        map.put("rowCount", rowCount);
 
         return scheduleRepository.findByRecycleBin(map);
     }
@@ -161,5 +164,19 @@ public class MyScheduleService {
         map.put("rowCount", rowCount);
 
         return scheduleRepository.findByFilter(map);
+    }
+
+    public Integer countRecyclebin(String id, String keyword, String filter) {
+        Map<String, Object> map=new HashMap<>();
+        List<Integer> scNoList=teamRepository.findByid(id);
+        if(scNoList.isEmpty()) { //조건에 만족하는 일정이 없을 경우 미출력(scNo=0)
+            scNoList.add(0);
+        }
+
+        map.put("scNoList", scNoList);
+        map.put("keyword", keyword);
+        map.put("filter", filter);
+
+        return scheduleRepository.countFindByRecycleBin(map);
     }
 }

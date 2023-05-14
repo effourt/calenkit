@@ -84,9 +84,13 @@
                 #{scNo}
             </if>
         </foreach>)
-        <if test="keyword != null and keyword != ''">
+        <if test="filter == 'title'">
             <bind name="keyword" value="'%' + keyword + '%'"/>
             AND SC_TITLE LIKE #{keyword}
+        </if>
+        <if test="filter == 'content'">
+            <bind name="keyword" value="'%' + keyword + '%'"/>
+            AND SC_CONTENT LIKE #{keyword}
         </if>
         AND SC_STATUS=0
         LIMIT #{startRowNum}, #{rowCount}
@@ -150,9 +154,13 @@
                 #{scNo}
             </if>
         </foreach>)
-        <if test="keyword != null and keyword != ''">
+        <if test="filter == 'title'">
             <bind name="keyword" value="'%' + keyword + '%'"/>
             AND SC_TITLE LIKE #{keyword}
+        </if>
+        <if test="filter == 'content'">
+            <bind name="keyword" value="'%' + keyword + '%'"/>
+            AND SC_CONTENT LIKE #{keyword}
         </if>
         AND SC_STATUS=0
     </select>
