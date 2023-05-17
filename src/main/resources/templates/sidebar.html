@@ -260,6 +260,10 @@
                 isLoading=true; //로딩 중으로 설정
                 $(".schedule_loading-Bar").show();//로딩창 출력
 
+                if(currentPage>= [[${totalPageCount}]]) { //현재 마지막 페이지일 경우
+                    return; //함수 끝
+                }
+
                 currentPage++; //현재 페이지 증가(다음 페이지 요청)
 
                 //ajax로 받아올 페이지 요청
@@ -271,9 +275,6 @@
                         isLoading=false; //로딩 중 여부
                         $(".schedule_loading-Bar").hide(); //로딩창 미출력
 
-                        if(currentPage>=result.totalPageCount) { //현재 마지막 페이지일 경우
-                            return; //함수 끝
-                        }
                         var scheduleList=result.scheduleList; //ajax 문법으로 result 중 scheduleList 선택
 
                         var html="<div>"; //내용 입력
@@ -291,7 +292,7 @@
                         }
                         html+="</div>";
 
-                        $("#scrollSchedule").html(html);
+                        $("#scrollSchedule").append(html);
                     },
                     error:function (xhr) {
                         location.href="error/400";

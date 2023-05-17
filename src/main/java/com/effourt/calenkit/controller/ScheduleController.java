@@ -60,6 +60,8 @@ public class ScheduleController {
         }
         model.addAttribute("titleList", titleList);
 
+        //권한(아이디 기준)을 가진 일정 목록
+        List<Integer> scNoList=teamRepository.findByid(loginId);
 
         //개인 즐겨찾기리스트 조회 - 첫 페이지 고정 출력
         List<Schedule> bookmarkList=myScheduleService.getBookmark(loginId, null, 0, 10);
@@ -70,11 +72,15 @@ public class ScheduleController {
 
 
         //일정 리스트 출력(스크롤) - 첫 페이지 고정 출력
+        Integer totalRow=scheduleRepository.countFindAllByScNo(scNoList);
+        Integer totalPageCount=(int) Math.ceil(totalRow/10.0);
         List<Schedule> scheduleList=myScheduleService.getMySchedule(loginId, null, 0, 10);
         if(scheduleList.isEmpty()) {
             scheduleList=null;
         }
+
         model.addAttribute("scheduleList", scheduleList);
+        model.addAttribute("totalPageCount", totalPageCount);
 
         //휴지통 리스트 출력(스크롤) - 첫 페이지 고정 출력
         List<Schedule> recyclebinList=myScheduleService.getRecycleBin(loginId, null, null, 0, 10);
@@ -271,7 +277,7 @@ public class ScheduleController {
         return map;
     }
 
-    /** 일정, 휴지통 스크롤 - 두번째 페이지 이후로
+    /** 일정 스크롤 - 두번째 페이지 이후로
      *
      * @param currentPage
      * @return
