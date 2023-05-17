@@ -18,10 +18,10 @@
             <if test="scContent!=null and scContent!=''">
                 SC_CONTENT=#{scContent},
             </if>
-            <if test="scSdate==null or scSdate==''">
+            <if test="scSdate!=null or scSdate!=''">
                 SC_SDATE=#{scSdate},
             </if>
-            <if test="scEdate==null or scEdate==''">
+            <if test="scEdate!=null or scEdate!=''">
                 SC_EDATE=#{scEdate},
             </if>
             <if test="scProgress==0 or scProgress==1 or scProgress==2">
@@ -84,9 +84,13 @@
                 #{scNo}
             </if>
         </foreach>)
-        <if test="keyword != null and keyword != ''">
+        <if test="filter == 'title'">
             <bind name="keyword" value="'%' + keyword + '%'"/>
             AND SC_TITLE LIKE #{keyword}
+        </if>
+        <if test="filter == 'content'">
+            <bind name="keyword" value="'%' + keyword + '%'"/>
+            AND SC_CONTENT LIKE #{keyword}
         </if>
         AND SC_STATUS=0
         LIMIT #{startRowNum}, #{rowCount}
@@ -150,9 +154,13 @@
                 #{scNo}
             </if>
         </foreach>)
-        <if test="keyword != null and keyword != ''">
+        <if test="filter == 'title'">
             <bind name="keyword" value="'%' + keyword + '%'"/>
             AND SC_TITLE LIKE #{keyword}
+        </if>
+        <if test="filter == 'content'">
+            <bind name="keyword" value="'%' + keyword + '%'"/>
+            AND SC_CONTENT LIKE #{keyword}
         </if>
         AND SC_STATUS=0
     </select>
