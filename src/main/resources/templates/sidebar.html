@@ -140,11 +140,11 @@
                                 <option selected value="title">제목</option>
                                 <option value="content">내용</option>
                             </select>
-                            <button type="button" onclick="searchRecyclebin();" style="height: 45px; margin-left: 10px;">검색</button>
+                            <button type="button" onclick="searchRecyclebin()" style="height: 45px; margin-left: 10px;">검색</button>
                         </div>
                     </form>
-                    <th:block th:each="schedule : ${scheduleList}" id="recyclebinList">
-                        <th:block th:if="${schedule.scStatus}==0">
+                    <div id="recyclebinList">
+                        <th:block th:each="schedule : ${scheduleList}">
                             <li>
                                 <input type="hidden" id="scNo" th:value="${schedule.scNo}" />
                                 <Strong>([[${schedule.getScNo}]])</Strong>
@@ -152,11 +152,11 @@
                                 <a class="myBtn" th:href="@{restore?scNo={scNo}(scNo=${schedule.getScNo()})}">복원</a> <a class="myBtn" onclick="deleteSchedule();">삭제</a>
                             </li>
                         </th:block>
-                    </th:block>
+                    </div>
                     <div class="recyclebin_loading-Bar" style="display: none;">
                         <img src="/img/loading.png" />
                     </div>
-                    <div id="searchRecyclebin">
+                    <div id="searchRecyclebinAdd">
                     </div>
                 </div>
             </div>
@@ -186,11 +186,11 @@
         document.getElementById("alarm").onclick= function() {
             document.getElementById('alarmBox').style.display = 'block';
         };
+    </script>
 
-
-        //ㅡㅡㅡ스크롤 파트ㅡㅡㅡ
-
-
+    <!-- 스크롤 파트 -->
+    <script th:inline="javascript">
+        /*<![CDATA[*/
         let currentPage=1;
         let isLoading=false;
 
@@ -201,10 +201,6 @@
             var scrollHeight = $(this).prop('scrollHeight'); //스크롤 높이 계산
 
             if(scrollTop + innerHeight >= scrollHeight) { //스크롤 바닥에 닿을 때
-                if(currentPage==[[${totalPageCount}]] || isLoading) { //현재 마지막 페이지일 경우
-                    return; //함수 끝
-                }
-
                 isLoading=true; //로딩 중으로 설정
                 $(".bookmark_loading-Bar").show();//로딩창 출력
 
@@ -216,9 +212,14 @@
                     method:"get",
                     data:{"currentPage" : currentPage}, //페이지 전달
                     success:function (result) {
-                        var bookmarkList=result.bookmarkList; //ajax 문법으로 result 중 bookmarkList 선택
                         isLoading=false; //로딩 중 여부
                         $(".bookmark_loading-Bar").hide(); //로딩창 미출력
+
+                        if(currentPage>=[[${bookmarkTotalPageCount}]]) { //현재 마지막 페이지일 경우
+                            return; //함수 끝
+                        }
+
+                        var bookmarkList=result.bookmarkList; //ajax 문법으로 result 중 bookmarkList 선택
 
                         var html="<div>"; //내용 입력
                         if(bookmarkList==null) {
@@ -252,10 +253,6 @@
             var scrollHeight = $(this).prop('scrollHeight'); //스크롤 높이 계산
 
             if(scrollTop + innerHeight >= scrollHeight) { //스크롤 바닥에 닿을 때
-                if(currentPage==[[${totalPageCount}]] || isLoading) { //현재 마지막 페이지일 경우
-                    return; //함수 끝
-                }
-
                 isLoading=true; //로딩 중으로 설정
                 $(".schedule_loading-Bar").show();//로딩창 출력
 
@@ -267,9 +264,13 @@
                     method:"get",
                     data:{"currentPage" : currentPage}, //페이지 전달
                     success:function (result) {
-                        var scheduleList=result.scheduleList; //ajax 문법으로 result 중 scheduleList 선택
                         isLoading=false; //로딩 중 여부
                         $(".schedule_loading-Bar").hide(); //로딩창 미출력
+
+                        if(currentPage>=[[${totalPageCount}]]) { //현재 마지막 페이지일 경우
+                            return; //함수 끝
+                        }
+                        var scheduleList=result.scheduleList; //ajax 문법으로 result 중 scheduleList 선택
 
                         var html="<div>"; //내용 입력
                         if(scheduleList==null) {
@@ -333,10 +334,6 @@
                         var scrollHeight = $(this).prop('scrollHeight'); //스크롤 높이 계산
 
                         if(scrollTop + innerHeight >= scrollHeight) { //스크롤 바닥에 닿을 때
-                            if(currentPage==[[${totalPageCount}]] || isLoading) { //현재 마지막 페이지일 경우
-                                return; //함수 끝
-                            }
-
                             isLoading=true; //로딩 중으로 설정
                             $(".search_loading-Bar").show();//로딩창 출력
 
@@ -348,9 +345,14 @@
                                 method:"post",
                                 data:{"currentPage" : currentPage, queryString}, //페이지와 쿼리스트링 전달
                                 success:function (result) {
-                                    var searchList=result.searchList; //ajax 문법으로 result 중 searchList 선택
                                     isLoading=false; //로딩 중 여부
                                     $(".search_loading-Bar").hide(); //로딩창 미출력
+
+                                    if(currentPage==[[${searchTotalPageCount}]] || isLoading) { //현재 마지막 페이지일 경우
+                                        return; //함수 끝
+                                    }
+
+                                    var searchList=result.searchList; //ajax 문법으로 result 중 searchList 선택
 
                                     var html="<div>"; //내용 입력
                                     if(searchList==null) {
@@ -385,16 +387,13 @@
         }
 
         //휴지통 스크롤
+
         $("#recyclebin-modal-body").on("scroll", function () {
             var scrollTop = $(this).scrollTop(); //스크롤을 아래로 내릴수록 값 증가
             var innerHeight = $(this).innerHeight(); //해당 태그 높이 계산
             var scrollHeight = $(this).prop('scrollHeight'); //스크롤 높이 계산
 
             if(scrollTop + innerHeight >= scrollHeight) { //스크롤 바닥에 닿을 때
-                if(currentPage==[[${totalPageCount}]] || isLoading) { //현재 마지막 페이지일 경우
-                    return; //함수 끝
-                }
-
                 isLoading=true; //로딩 중으로 설정
                 $(".recyclebin_loading-Bar").show();//로딩창 출력
 
@@ -406,9 +405,14 @@
                     method:"post",
                     data:{"currentPage" : currentPage}, //페이지 전달
                     success:function (result) {
-                        var recyclebinList=result.recyclebinList; //ajax 문법으로 result 중 recyclebinList 선택
                         isLoading=false; //로딩 중 여부
                         $(".recyclebin_loading-Bar").hide(); //로딩창 미출력
+
+                        if(currentPage==[[${recyclebinTotalPageCount}]] || isLoading) { //현재 마지막 페이지일 경우
+                            return; //함수 끝
+                        }
+
+                        var recyclebinList=result.recyclebinList; //ajax 문법으로 result 중 recyclebinList 선택
 
                         var html="<div>"; //내용 입력
                         if(recyclebinList==null) {
@@ -426,7 +430,7 @@
                         }
                         html+="</div>";
 
-                        $("#searchRecyclebin").append(html);
+                        $("#recyclebinList").append(html);
                     },
                     error:function (xhr) {
                         console.log("상태코드 = "+xhr.status);
@@ -468,7 +472,7 @@
                     }
                     html+="</div>";
 
-                    $("#searchRecyclebin").html(html); //태그에 내용 추가
+                    $("#searchRecyclebinAdd").html(html); //태그에 내용 추가
 
 
                     $("#recyclebin-modal-body").on("scroll", function () {
@@ -477,10 +481,6 @@
                         var scrollHeight = $(this).prop('scrollHeight'); //스크롤 높이 계산
 
                         if(scrollTop + innerHeight >= scrollHeight) { //스크롤 바닥에 닿을 때
-                            if(currentPage==[[${totalPageCount}]] || isLoading) { //현재 마지막 페이지일 경우
-                                return; //함수 끝
-                            }
-
                             isLoading=true; //로딩 중으로 설정
                             $(".recyclebin_loading-Bar").show();//로딩창 출력
 
@@ -492,9 +492,14 @@
                                 method:"post",
                                 data:{"currentPage" : currentPage, queryString}, //페이지와 쿼리스트링 전달
                                 success:function (result) {
-                                    var recyclebinList=result.recyclebinList; //ajax 문법으로 result 중 recyclebinList 선택
                                     isLoading=false; //로딩 중 여부
                                     $(".recyclebin_loading-Bar").hide(); //로딩창 미출력
+
+                                    if(currentPage==[[${recyclebinTotalPageCount}]] || isLoading) { //현재 마지막 페이지일 경우
+                                        return; //함수 끝
+                                    }
+
+                                    var recyclebinList=result.recyclebinList; //ajax 문법으로 result 중 recyclebinList 선택
 
                                     var html="<div>"; //내용 입력
                                     if(recyclebinList==null) {
@@ -512,7 +517,7 @@
                                     }
                                     html+="</div>";
 
-                                    $("#searchRecyclebin").append(html);
+                                    $("#searchRecyclebinAdd").append(html);
                                 },
                                 error:function (xhr) {
                                     console.log("상태코드 = "+xhr.status);
@@ -530,7 +535,7 @@
         }
 
 
-
+        /*]]>*/
     </script>
 </div>
 

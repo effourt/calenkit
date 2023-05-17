@@ -61,21 +61,27 @@ public class ScheduleController {
         model.addAttribute("titleList", titleList);
 
 
-        //개인 즐겨찾기리스트 조회
+        //개인 즐겨찾기리스트 조회 - 첫 페이지 고정 출력
         List<Schedule> bookmarkList=myScheduleService.getBookmark(loginId, null, 0, 10);
+        if(bookmarkList.isEmpty()) {
+            bookmarkList=null;
+        }
         model.addAttribute("bookmarkList", bookmarkList);
 
 
         //일정 리스트 출력(스크롤) - 첫 페이지 고정 출력
-        List<Integer> scNoList=teamRepository.findByid(loginId);
-        Integer pageNum=1;
-
         List<Schedule> scheduleList=myScheduleService.getMySchedule(loginId, null, 0, 10);
+        if(scheduleList.isEmpty()) {
+            scheduleList=null;
+        }
         model.addAttribute("scheduleList", scheduleList);
 
-        Integer totalRow=scheduleRepository.countFindAllByScNo(scNoList); //일정 총 갯수
-        Integer totalPageCount=(int)Math.ceil(totalRow/(double)10); //전체 페이지 갯수
-        model.addAttribute("totalPageCount", totalPageCount);
+        //휴지통 리스트 출력(스크롤) - 첫 페이지 고정 출력
+        List<Schedule> recyclebinList=myScheduleService.getRecycleBin(loginId, null, null, 0, 10);
+        if(recyclebinList.isEmpty()) {
+            recyclebinList=null;
+        }
+        model.addAttribute("recyclebinList", recyclebinList);
 
         return "main";
     }
@@ -232,7 +238,6 @@ public class ScheduleController {
 
     /** 즐겨찾기 리스트 스크롤 - 두번째 페이지부터
      *
-     * @param model
      * @param currentPage
      * @return
      */
@@ -260,15 +265,14 @@ public class ScheduleController {
         Integer totalRow=scheduleRepository.countFindAllByScNo(scNoList);
 
         //전체 페이지 갯수
-        Integer totalPageCount=(int) Math.ceil(totalRow/(double)rowCount);
-        map.put("totalPageCount", totalPageCount);
+        Integer bookmarkTotalPageCount=(int) Math.ceil(totalRow/(double)rowCount);
+        map.put("bookmarkTotalPageCount", bookmarkTotalPageCount);
 
         return map;
     }
 
     /** 일정, 휴지통 스크롤 - 두번째 페이지부터
      *
-     * @param model
      * @param currentPage
      * @return
      */
@@ -306,7 +310,6 @@ public class ScheduleController {
      *
      * @param keyword
      * @param filter
-     * @param model
      * @param currentPage
      * @return
      */
@@ -341,8 +344,8 @@ public class ScheduleController {
         Integer totalRow=scheduleRepository.countFindAllByScNo(scNoList);
 
         //전체 페이지 갯수
-        Integer totalPageCount=(int) Math.ceil(totalRow/(double)rowCount);
-        map.put("totalPageCount", totalPageCount);
+        Integer searchTotalPageCount=(int) Math.ceil(totalRow/(double)rowCount);
+        map.put("searchTotalPageCount", searchTotalPageCount);
 
         return map;
     }
@@ -351,7 +354,6 @@ public class ScheduleController {
      *
      * @param keyword
      * @param filter
-     * @param model
      * @param currentPage
      * @return
      */
@@ -361,8 +363,8 @@ public class ScheduleController {
                                             @RequestParam(required = false) String filter,
                                             String currentPage) {
         String loginId = (String)session.getAttribute("loginId"); //session으로 현재 아이디 받아오기
-
         Map<String, Object> map=new HashMap<>();
+
         Integer pageNum=null;
         if(currentPage!=null){
             pageNum=Integer.parseInt(currentPage);
@@ -374,7 +376,7 @@ public class ScheduleController {
         Integer rowCount=10; //한 페이지에 표시할 일정 갯수
         Integer startRowNum=0+(pageNum-1)*rowCount;
 
-        List<Schedule>recyclebinList=myScheduleService.getRecycleBin(loginId, keyword, filter, startRowNum, rowCount);
+        List<Schedule> recyclebinList=myScheduleService.getRecycleBin(loginId, keyword, filter, startRowNum, rowCount);
         if(recyclebinList.isEmpty()) {
             recyclebinList=null;
         }
@@ -384,8 +386,8 @@ public class ScheduleController {
         Integer totalRow= myScheduleService.countRecyclebin(loginId, keyword, filter);
 
         //전체 페이지 갯수
-        Integer totalPageCount=(int) Math.ceil(totalRow/(double)rowCount);
-        map.put("totalPageCount", totalPageCount);
+        Integer recyclebinTotalPageCount=(int)Math.ceil(totalRow/(double)rowCount);
+        map.put("recyclebinTotalPageCount", recyclebinTotalPageCount);
 
         return map;
     }
