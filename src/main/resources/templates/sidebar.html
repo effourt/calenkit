@@ -144,7 +144,7 @@
                         </div>
                     </form>
                     <div id="recyclebinList">
-                        <th:block th:each="schedule : ${scheduleList}">
+                        <th:block th:each="schedule : ${recyclebinList}">
                             <li>
                                 <input type="hidden" id="scNo" th:value="${schedule.scNo}" />
                                 <Strong>([[${schedule.getScNo}]])</Strong>
