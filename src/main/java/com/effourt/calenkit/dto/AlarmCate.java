@@ -8,11 +8,7 @@ import lombok.Getter;
 // => 권한 읽기로 변경(4), 권한 쓰기로 변경(5)
 @Getter
 public enum AlarmCate {
-    DELETE_SCHDULE("delete-schedule"), MODIFY_SCHEDULE("modify-schedule"), SAVE_TEAM("save-team"), REMOVE_TEAM("remove-team"),UPDATE_TEAMLEVEL_READ("update-teamlevel-read"),UPDATE_TEAMLEVEL_WRITE("update-teamlevel-write");
-    private String keyword;
-    private AlarmCate(String keyword){
-        this.keyword = keyword;
-    }
+    DELETE_SCHDULE, MODIFY_SCHEDULE, SAVE_TEAM, REMOVE_TEAM,UPDATE_TEAMLEVEL_READ,UPDATE_TEAMLEVEL_WRITE;
 
     /*
     public static void main(String[] args) {
@@ -23,9 +19,8 @@ public enum AlarmCate {
         System.out.println(AlarmCate.REMOVE_TEAM.ordinal()); //3
         System.out.println(AlarmCate.UPDATE_TEAMLEVEL_READ.ordinal()); //4
         System.out.println(AlarmCate.UPDATE_TEAMLEVEL_WRITE.ordinal()); //5
-        System.out.println(AlarmCate.UPDATE_TEAMLEVEL_WRITE.keyword); //update_teamlevel_write
-        System.out.println(AlarmCate.SAVE_TEAM.getKeyword()); //save_team
-    }
-    */
+        System.out.println(AlarmCate.UPDATE_TEAMLEVEL_WRITE); //UPDATE_TEAMLEVEL_WRITE
 
+    }
+     */
 }
