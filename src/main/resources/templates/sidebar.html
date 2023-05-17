@@ -145,7 +145,12 @@
                     </form>
                     <th:block th:each="schedule : ${scheduleList}" id="recyclebinList">
                         <th:block th:if="${schedule.scStatus}==0">
-                            <li><Strong>([[${schedule.getScNo}]])</Strong>[[${schedule.getScSdate}]] ~ [[${schedule.getScEdate}]] / <a th:href="@{/schedules?scNo={scNo}(scNo=${schedule.getScNo})}">[[${schedule.getScTitle}]]</a></li>
+                            <li>
+                                <input type="hidden" id="scNo" th:value="${schedule.scNo}" />
+                                <Strong>([[${schedule.getScNo}]])</Strong>
+                                [[${schedule.getScSdate}]] ~ [[${schedule.getScEdate}]] / [[${schedule.getScTitle}]]
+                                <a class="myBtn" th:href="@{restore?scNo={scNo}(scNo=${schedule.getScNo()})}">복원</a> <a class="myBtn" onclick="deleteSchedule();">삭제</a>
+                            </li>
                         </th:block>
                     </th:block>
                     <div class="recyclebin_loading-Bar" style="display: none;">
@@ -158,6 +163,15 @@
         </div>
     </div>
     <script>
+        //휴지통 삭제 클릭 시
+        function deleteSchedule() {
+            var scNo=$('#scNo').val();
+            var con_test=confirm("정말 삭제하시겠습니까?");
+            if(con_test==true) {
+                location.href="delete?scNo="+scNo;
+            }
+        }
+
         document.getElementById("inputBox").onkeyup= function() {
             let typedText = this.value;
             if (typedText == "") {
@@ -403,9 +417,10 @@
                             recyclebinList.forEach(function(schedule) {
                                 html+="<li>";
                                 html+="<strong>("+schedule.scNo+")</strong>";
-                                html+=schedule.scSdate+" ~ ";
-                                html+=schedule.scEdate+" / ";
+                                html+=schedule.scSdate+" ~ "+schedule.scEdate+" / ";
                                 html+="<a href='schedules?scNo="+schedule.scNo+"'>"+schedule.scTitle+"</a>";
+                                html+="<a class='myBtn' onclick=location.href='restore?scNo="+schedule.scNo+"'>복원</a>";
+                                html+="<a className='myBtn' onClick='deleteSchedule();'>삭제</a>";
                                 html+="</li>";
                             });
                         }
@@ -442,12 +457,12 @@
                         html+="<li>검색 결과가 없습니다</li>";
                     } else {
                         recyclebinList.forEach(function (schedule) {
-
                             html+="<li>";
                             html+="<strong>("+schedule.scNo+")</strong>";
-                            html+=schedule.scSdate+" ~ ";
-                            html+=schedule.scEdate+" / ";
+                            html+=schedule.scSdate+" ~ "+schedule.scEdate+" / ";
                             html+="<a href='schedules?scNo="+schedule.scNo+"'>"+schedule.scTitle+"</a>";
+                            html+="<a class='myBtn' onclick=location.href='restore?scNo="+schedule.scNo+"'>복원</a>";
+                            html+="<a className='myBtn' onClick='deleteSchedule();'>삭제</a>";
                             html+="</li>";
                         });
                     }
@@ -488,9 +503,10 @@
                                         recyclebinList.forEach(function(schedule) {
                                             html+="<li>";
                                             html+="<strong>("+schedule.scNo+")</strong>";
-                                            html+=schedule.scSdate+" ~ ";
-                                            html+=schedule.scEdate+" / ";
+                                            html+=schedule.scSdate+" ~ "+schedule.scEdate+" / ";
                                             html+="<a href='schedules?scNo="+schedule.scNo+"'>"+schedule.scTitle+"</a>";
+                                            html+="<a class='myBtn' onclick=location.href='restore?scNo="+schedule.scNo+"'>복원</a>";
+                                            html+="<a className='myBtn' onClick='deleteSchedule();'>삭제</a>";
                                             html+="</li>";
                                         });
                                     }
