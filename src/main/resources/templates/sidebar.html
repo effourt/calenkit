@@ -188,7 +188,7 @@
         };
     </script>
 
-    <!-- 스크롤 파트 -->
+    <!-- 스크롤 파트(모두 2페이지 이후부터 출력) -->
     <script th:inline="javascript">
         /*<![CDATA[*/
         let currentPage=1;
@@ -215,7 +215,7 @@
                         isLoading=false; //로딩 중 여부
                         $(".bookmark_loading-Bar").hide(); //로딩창 미출력
 
-                        if(currentPage>=[[${bookmarkTotalPageCount}]]) { //현재 마지막 페이지일 경우
+                        if(currentPage>=result.bookmarkTotalPageCount) { //현재 마지막 페이지일 경우
                             return; //함수 끝
                         }
 
@@ -236,13 +236,14 @@
                         }
                         html+="</div>";
 
-                        $("#bookmarkSchedule").html(html);
+                        $("#bookmarkSchedule").append(html);
+
                     },
                     error:function (xhr) {
                         location.href="error/400";
                     }
                 });
-
+                $("#bookmark ul").scrollTop(0); //일정 추가 후 스크롤 맨 위로 -- 어디에?
             }
         });
 
@@ -267,7 +268,7 @@
                         isLoading=false; //로딩 중 여부
                         $(".schedule_loading-Bar").hide(); //로딩창 미출력
 
-                        if(currentPage>=[[${totalPageCount}]]) { //현재 마지막 페이지일 경우
+                        if(currentPage>=result.totalPageCount) { //현재 마지막 페이지일 경우
                             return; //함수 끝
                         }
                         var scheduleList=result.scheduleList; //ajax 문법으로 result 중 scheduleList 선택
@@ -348,7 +349,7 @@
                                     isLoading=false; //로딩 중 여부
                                     $(".search_loading-Bar").hide(); //로딩창 미출력
 
-                                    if(currentPage==[[${searchTotalPageCount}]] || isLoading) { //현재 마지막 페이지일 경우
+                                    if(currentPage==result.searchTotalPageCount || isLoading) { //현재 마지막 페이지일 경우
                                         return; //함수 끝
                                     }
 
@@ -408,7 +409,7 @@
                         isLoading=false; //로딩 중 여부
                         $(".recyclebin_loading-Bar").hide(); //로딩창 미출력
 
-                        if(currentPage==[[${recyclebinTotalPageCount}]] || isLoading) { //현재 마지막 페이지일 경우
+                        if(currentPage==result.recyclebinTotalPageCount || isLoading) { //현재 마지막 페이지일 경우
                             return; //함수 끝
                         }
 
@@ -495,7 +496,7 @@
                                     isLoading=false; //로딩 중 여부
                                     $(".recyclebin_loading-Bar").hide(); //로딩창 미출력
 
-                                    if(currentPage==[[${recyclebinTotalPageCount}]] || isLoading) { //현재 마지막 페이지일 경우
+                                    if(currentPage==result.recyclebinTotalPageCount || isLoading) { //현재 마지막 페이지일 경우
                                         return; //함수 끝
                                     }
 
