@@ -34,12 +34,6 @@ public class AlarmRepositoryImpl implements AlarmRepository {
     }
 
     @Override
-    public Alarm findByAlNo(Integer alNo) {
-        return sqlSessionTemplate.getMapper(AlarmMapper.class).findByAlNo(alNo);
-    }
-
-
-    @Override
     public List<Alarm> findByAlMid(String alMid) {
         return sqlSessionTemplate.getMapper(AlarmMapper.class).findByAlMid(alMid);
     }
