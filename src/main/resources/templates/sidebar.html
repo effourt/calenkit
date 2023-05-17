@@ -243,7 +243,10 @@
                         location.href="error/400";
                     }
                 });
-                $("#bookmark ul").scrollTop(0); //일정 추가 후 스크롤 맨 위로 -- 어디에?
+                var isEnd=false;
+                if(isEnd==true) {
+                    $("#bookmark ul").scrollTop(0);
+                } //일정 추가 후 스크롤 맨 위로 -- 어디에?
             }
         });
 
