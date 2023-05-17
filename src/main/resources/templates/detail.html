@@ -124,12 +124,14 @@
 
   <script src="https://cdn.ckeditor.com/ckeditor5/34.0.0/classic/ckeditor.js"></script>
   <script src="https://cdn.ckeditor.com/ckeditor5/34.0.0/classic/translations/ko.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
+  <script th:src="@{/js/websocket.js}" src="../static/js/websocket.js"></script>
   <script th:inline="javascript">
+    receive();
     const queryString = window.location.search; //?scNo=1
     const scNo = new URLSearchParams(queryString).get('scNo'); //1
-
-      ClassicEditor.create(document.querySelector('#editor'), {
-      });
+    ClassicEditor.create(document.querySelector('#editor'), {
+    });
 
     //#inputBox의 키이벤트 발생 시 호출
     $("#inputBox").on("keyup", function() {
@@ -195,32 +197,14 @@
           type: "PATCH",
           contentType: "application/json",
           dataType: "text",
-          data: JSON.stringify({"teamMid": teamMId, "teamLevel": teamLevel} ),
+          data: JSON.stringify({"teamMid": teamMId, "teamLevel":teamLevel} ),
           success: function(result) {
-            console.log(result);
             //웹소켓 송신
-            $(function () {
-              let socket = new SockJS('/alarm');
-              socket.onopen = function() {
-                console.log('info: connection opened.');
-                const message = {
-                  "scNo":scNo,
-                  "teamMId":teamMId,
-                  "teamLevel":teamLevel
-                };
-                console.log("scNo =" +scNo);
-                console.log("teamMId =" +teamMId);
-                console.log("teamLevel =" +teamLevel);
-                console.log("message =" +message);
-                socket.send(JSON.stringify(message));
-              };
-              socket.onclose = function() {
-                console.log('connect close');
-              };
-              socket.onerror = function (err) {console.log('Errors : ' , err);};
-            });
-
-
+            //send(scNo, teamMId, teamLevel);
+            let alCate = null;
+            if(teamLevel == 0) alCate = "UPDATE_TEAMLEVEL_READ";
+            if(teamLevel == 1) alCate = "UPDATE_TEAMLEVEL_WRITE";
+            sendAlarm(scNo, teamMId, alCate);
           },
           error: function(xhr, status, error) {
             console.error("error: ", status, ", ", error);
@@ -239,38 +223,17 @@
             dataType: "text",
             data: JSON.stringify({"teamMid": teamMId}),
             success: function(result) {
-              console.log(result);
               //웹소켓 송신
-              $(function () {
-                let socket = new SockJS('/alarm');
-                socket.onopen = function() {
-                  console.log('info: connection opened.');
-                  const message = {
-                    "scNo":scNo,
-                    "teamMId":teamMId,
-                    "Alcate":"동행삭제"
-                  };
-                  console.log("scNo =" +scNo);
-                  console.log("teamMId =" +teamMId);
-                  socket.send("message");
-                };
-                socket.onclose = function() {
-                  console.log('connect close');
-                };
-                socket.onerror = function (err) {console.log('Errors : ' , err);};
-              });
-              //$("#"+[[${teamShare.teamNo}]]).hide();
-              //location.href="/schedules?scNo="+scNo;
+              //send(scNo, teamMId, null);
+              sendAlarm(scNo, teamMId, "REMOVE_TEAM");
             },
             error: function(xhr, status, error) {
               console.error("error: ", status, ", ", error);
             }
-          });
-        }
-      });
-    [/]
+      });}
+    });
+[/]
 
   </script>
-  <script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
 </body>
 </html>
