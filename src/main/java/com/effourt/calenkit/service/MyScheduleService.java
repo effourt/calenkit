@@ -19,16 +19,6 @@ import java.util.Map;
 public class MyScheduleService {
     private final ScheduleRepository scheduleRepository;
     private final TeamRepository teamRepository;
-    private final AlarmRepository alarmRepository;
-
-    //[사이드바에서 내 스케줄 검색 행위]
-    public List<Schedule> findMySchedule(String id, String keyword) {
-        Map<String, Object> map=new HashMap<>();
-        map.put("ScNo", teamRepository.findByMid(id));
-        map.put("keyword", keyword);
-
-        return scheduleRepository.findAllByScNo(map);
-    }
 
     //[메인에서 내 스케줄 추가 행위]
     @Transactional
