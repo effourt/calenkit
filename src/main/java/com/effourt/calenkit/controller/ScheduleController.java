@@ -125,13 +125,45 @@ public class ScheduleController {
                 model.addAttribute("loginTeam",teamShrare);//현재 로그인한 team + image
             }
         }
-        Schedule schedule = scheduleRepository.findByScNo(scNo); //일정 데이터
+        Schedule schedules = scheduleRepository.findByScNo(scNo); //일정 데이터
 
-        model.addAttribute("schedule",schedule);
+        model.addAttribute("schedules",schedules);
         model.addAttribute("teamShareList",teamShareList); //team + image
         log.debug("teamShareList = {}", teamShareList.get(0).getTeamLevel());
 
         return "detail";
+    }
+
+    /** UPDATE
+     *
+     * @param scNo
+     * @param title
+     * @param sDate
+     * @param eDate
+     * @param progress
+     * @param content
+     * @return
+     */
+    @PatchMapping("/write")
+    public String writeSchedule(@RequestParam Integer scNo,
+                                String title, String sDate, String eDate, Integer progress, String content) {
+        Schedule schedule=scheduleRepository.findByScNo(scNo);
+
+        if(title!=null && !title.isEmpty()) { schedule.setScTitle(title.toString()); }
+        if(sDate!=null && !sDate.isEmpty()) { schedule.setScSdate(sDate.toString()); }
+        if(eDate!=null && !eDate.isEmpty()) { schedule.setScEdate(eDate.toString()); }
+        if(progress!=null) { schedule.setScProgress(progress); }
+        if(content!=null && !content.isEmpty()) { schedule.setScContent(content.toString()); }
+
+        /*System.out.println("scNo="+scNo);
+        System.out.println("title="+title.toString());
+        System.out.println("sdate="+sDate);
+        System.out.println("edate="+eDate);
+        System.out.println("progress="+progress);
+        System.out.println("content="+content.toString());*/
+
+        myScheduleService.writeMySchdule(schedule);
+        return "redirect:/schedule?scNo="+scNo;
     }
 
     /** 일정 추가
@@ -234,7 +266,7 @@ public class ScheduleController {
         return map;
     }
 
-    /** 일정 스크롤 - 두번째 페이지부터
+    /** 일정, 휴지통 스크롤 - 두번째 페이지부터
      *
      * @param model
      * @param currentPage
