@@ -158,14 +158,6 @@
         </div>
     </div>
     <script>
-        function deleteSchedule() {
-            var scNo=$('#scNo').val();
-            var con_test=confirm("정말 삭제하시겠습니까?");
-            if(con_test==true) {
-                location.href="delete?scNo="+scNo;
-            }
-        }
-
         document.getElementById("inputBox").onkeyup= function() {
             let typedText = this.value;
             if (typedText == "") {
