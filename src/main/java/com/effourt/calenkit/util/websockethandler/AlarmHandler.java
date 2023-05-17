@@ -1,25 +1,26 @@
 package com.effourt.calenkit.util.websockethandler;
-
-import com.effourt.calenkit.domain.Alarm;
-import com.effourt.calenkit.repository.AlarmRepository;
+import com.effourt.calenkit.domain.Team;
+import com.effourt.calenkit.dto.AlarmCate;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
+import net.minidev.json.parser.JSONParser;
+import net.minidev.json.parser.ParseException;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
+import org.w3c.dom.Text;
+
+import javax.security.auth.login.LoginException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 //구현 목록
 // => 동행에 참여하는 로그인 회원 중 누군가 알람 db에 저장하는 행위가 발생될 때 실시간으로 알림 전송
-// => 만약 로그인 회원이 아니라면 알람 내용이 저장이 되어있다가 다음에 로그인시 알람 내용을 볼수있도록 기능 구현
-// => sidebar에서 알람이 보이도록 websocket 연결
 // => 서버에서는 로그인 회원의 이메일별로 SocketSession 관리
-
-//alarm db - alNo alScno alMid alStatus alTime alCate
-//alarm cate - DELETE_SCHDULE, MODIFY_SCHEDULE, SAVE_TEAM, REMOVE_TEAM, UPDATE_TEAMLEVEL_READ,UPDATE_TEAMLEVEL_WRITE
 @Slf4j
 public class AlarmHandler extends TextWebSocketHandler {
 
@@ -27,9 +28,6 @@ public class AlarmHandler extends TextWebSocketHandler {
      * 로그인한 전체 WebSocketSession을 저장하는 리스트
      */
     List<WebSocketSession> sessionList = new ArrayList<>();
-    @Autowired
-    private AlarmRepository alarmRepository;
-
 
     /**
      * 1:1 매핑
@@ -58,11 +56,11 @@ public class AlarmHandler extends TextWebSocketHandler {
      */
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        sessionList.add(session); //로그인한 전체 WebSocket 세션을 sessionList에 추가
-        String email = getEmail(session); //세션에 연결된 사용자의 이메일
-        userSessionsMap.put(email , session); //세션에 연결된 사용자의 이메일과 세션을 userSessionsMap에 저장
-        log.info("email = {}",email);
-        log.info("session = {}",session);
+        sessionList.add(session); // 로그인한 전체 WebSocket 세션을 sessionList에 추가
+        String email = getEmail(session); // 세션에 연결된 사용자의 이메일
+        userSessionsMap.put(email, session); // 세션에 연결된 사용자의 이메일과 세션을 userSessionsMap에 저장
+        log.info("email = {}", email);
+        log.info("session = {}", session);
     }
 
     /**
@@ -73,14 +71,52 @@ public class AlarmHandler extends TextWebSocketHandler {
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         String msg = message.getPayload();
         log.info("msg = {}", msg);
-        int alNo = Integer.valueOf(msg);
-        Alarm findAlarm = alarmRepository.findByAlNo(alNo);
 
-        //알람받는 이가 로그인해서 있다면
-        WebSocketSession loginSession = userSessionsMap.get(findAlarm.getAlMid());
-        if(loginSession != null || !loginSession.equals("")) {
-            TextMessage tmpMsg = new TextMessage(findAlarm.getAlTime()+"시간"+findAlarm.getAlCate());
-            loginSession.sendMessage(tmpMsg);
+        JSONParser parser = new JSONParser();
+
+        JSONObject jsonObject = (JSONObject) parser.parse(msg);
+        String scNo = (String) jsonObject.get("scNo");
+        JSONArray idList = (JSONArray) jsonObject.get("idList");
+        String alCate = (String) jsonObject.get("alCate");
+
+        log.info("scNo = {}", scNo);
+        log.info("idList = {}", idList);
+        log.info("alCate = {}", alCate);
+        for(Object id : idList){
+            String stringId = (String) id;
+            log.info("stringId = {}",stringId);
+        }
+
+        for(Object id : idList){
+            String stringId = (String) id;
+            WebSocketSession loginSession = userSessionsMap.get(stringId);
+
+            //알람받는 이가 로그인해서 있다면 실시간 알림
+            if(loginSession != null && loginSession.isOpen()) {
+                TextMessage tmpMsg = null;
+                switch(alCate) {
+                    case "UPDATE_TEAMLEVEL_WRITE":
+                        tmpMsg = new TextMessage(scNo+"번호의 스케줄의 권한이 쓰기로 변경되었습니다.");
+                        break;
+                    case "UPDATE_TEAMLEVEL_READ":
+                        tmpMsg = new TextMessage(scNo+"번호의 스케줄의 권한이 읽기로 변경되었습니다.");
+                        break;
+                    case "REMOVE_TEAM":
+                        tmpMsg = new TextMessage(scNo+"번호의 스케줄의 동행에서 삭제되었습니다.");
+                        break;
+                    case "SAVE_TEAM":
+                        tmpMsg = new TextMessage(scNo+"번호의 스케줄에 동행으로 초대되었습니다.");
+                        break;
+                    case "MODIFY_SCHEDULE":
+                        tmpMsg = new TextMessage(scNo+"번호의 스케줄이 수정되었습니다.");
+                        break;
+                    case "DELETE_SCHDULE":
+                        tmpMsg  = new TextMessage(scNo+"번호의 스케줄이 삭제되었습니다.");
+                        break;
+                }
+                log.info("tmpMsg = {}",tmpMsg);
+                loginSession.sendMessage(tmpMsg);
+            }
         }
     }
 
@@ -92,7 +128,7 @@ public class AlarmHandler extends TextWebSocketHandler {
      */
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-        //System.out.println("afterConnectionClosed " + session + ", " + status);
+        log.info("afterConnectionClosed = {}, {}",session.getId(),status);
         userSessionsMap.remove(session.getId());
         sessionList.remove(session); //세션과 관련된 정보 제거
     }
