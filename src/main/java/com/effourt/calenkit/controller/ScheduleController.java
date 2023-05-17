@@ -236,7 +236,7 @@ public class ScheduleController {
         return "redirect:/schedules?scNo="+scNo;
     }
 
-    /** 즐겨찾기 리스트 스크롤 - 두번째 페이지부터
+    /** 즐겨찾기 리스트 스크롤 - 두번째 페이지 이후로
      *
      * @param currentPage
      * @return
@@ -271,7 +271,7 @@ public class ScheduleController {
         return map;
     }
 
-    /** 일정, 휴지통 스크롤 - 두번째 페이지부터
+    /** 일정, 휴지통 스크롤 - 두번째 페이지 이후로
      *
      * @param currentPage
      * @return
@@ -306,7 +306,7 @@ public class ScheduleController {
         return map;
     }
 
-    /** 일정 검색(+무한 스크롤)
+    /** 일정 검색(+무한 스크롤) - 스크롤은 두번째 페이지 이후로
      *
      * @param keyword
      * @param filter
@@ -350,7 +350,7 @@ public class ScheduleController {
         return map;
     }
 
-    /** 휴지통 검색(+무한 스크롤)
+    /** 휴지통 검색(+무한 스크롤) - 스크롤은 두번째 페이지 이후로
      *
      * @param keyword
      * @param filter
