@@ -71,7 +71,7 @@
                         일정이 없습니다.
                     </th:block>
                     <th:block th:each="schedule : ${scheduleList}">
-                        <th:block th:if="${schedule.scStatus}==1">
+                        <th:block th:if="${schedule.getScStatus}==1">
                             <li><Strong>([[${schedule.getScNo}]])</Strong>[[${schedule.getScSdate}]] ~ [[${schedule.getScEdate}]] / <a th:href="@{/schedules?scNo={scNo}(scNo=${schedule.getScNo})}">[[${schedule.getScTitle}]]</a></li>
                         </th:block>
                     </th:block>
@@ -216,7 +216,7 @@
                     method:"get",
                     data:{"currentPage" : currentPage}, //페이지 전달
                     success:function (result) {
-                        var bookmarkList=result.bookmarkList; //ajax 문법으로 result 중 scheduleList 선택
+                        var bookmarkList=result.bookmarkList; //ajax 문법으로 result 중 bookmarkList 선택
                         isLoading=false; //로딩 중 여부
                         $(".bookmark_loading-Bar").hide(); //로딩창 미출력
 
@@ -348,7 +348,7 @@
                                 method:"post",
                                 data:{"currentPage" : currentPage, queryString}, //페이지와 쿼리스트링 전달
                                 success:function (result) {
-                                    var searchList=result.searchList; //ajax 문법으로 result 중 scheduleList 선택
+                                    var searchList=result.searchList; //ajax 문법으로 result 중 searchList 선택
                                     isLoading=false; //로딩 중 여부
                                     $(".search_loading-Bar").hide(); //로딩창 미출력
 
@@ -406,7 +406,7 @@
                     method:"post",
                     data:{"currentPage" : currentPage}, //페이지 전달
                     success:function (result) {
-                        var recyclebinList=result.recyclebinList; //ajax 문법으로 result 중 scheduleList 선택
+                        var recyclebinList=result.recyclebinList; //ajax 문법으로 result 중 recyclebinList 선택
                         isLoading=false; //로딩 중 여부
                         $(".recyclebin_loading-Bar").hide(); //로딩창 미출력
 
@@ -492,7 +492,7 @@
                                 method:"post",
                                 data:{"currentPage" : currentPage, queryString}, //페이지와 쿼리스트링 전달
                                 success:function (result) {
-                                    var recyclebinList=result.recyclebinList; //ajax 문법으로 result 중 scheduleList 선택
+                                    var recyclebinList=result.recyclebinList; //ajax 문법으로 result 중 recyclebinList 선택
                                     isLoading=false; //로딩 중 여부
                                     $(".recyclebin_loading-Bar").hide(); //로딩창 미출력
 
