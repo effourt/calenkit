@@ -45,6 +45,7 @@ public class AlarmService {
     @Transactional
     public void addAlarmByModifySchedule(Integer scNo) {
         String[] idList = findIdList(scNo); //idList[0] , idList[1], idList[2] ...
+        log.info("idList.length = {}",idList.length);
         for(int i=0; i<idList.length; i++){
             Alarm alarm = new Alarm();
             alarm.setAlMid(idList[i]);
@@ -146,11 +147,11 @@ public class AlarmService {
 
     /**
      * 일정의 권한을 읽기로 변경할 시 울릴 알람 서비스
-     * @param updateId : 일정 권한을 변경할 아이디
      * @param scNo : 일정 번호
+     * @param updateId : 일정 권한을 변경할 아이디
      */
     @Transactional
-    public void addAlarmByUpdateTeamLevelRead(String updateId, Integer scNo) {
+    public void addAlarmByUpdateTeamLevelRead(Integer scNo, String updateId) {
         Alarm alarm = new Alarm();
         alarm.setAlMid(updateId);
         alarm.setAlScno(scNo);
@@ -160,11 +161,11 @@ public class AlarmService {
 
     /**
      * 일정의 권한을 쓰기로 변경할 시 울릴 알람 서비스
-     * @param updateId : 일정 권한을 변경할 아이디
      * @param scNo : 일정 번호
+     * @param updateId : 일정 권한을 변경할 아이디
      */
     @Transactional
-    public void addAlarmByUpdateTeamLevelWrite(String updateId, Integer scNo) {
+    public void addAlarmByUpdateTeamLevelWrite(Integer scNo, String updateId) {
         Alarm alarm = new Alarm();
         alarm.setAlMid(updateId);
         alarm.setAlScno(scNo);

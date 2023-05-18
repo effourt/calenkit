@@ -28,23 +28,8 @@
 </div>
 <th:block th:replace="${scripts}"></th:block>
 </body>
-<script th:inline="javascript">
-    $(function () { //웹소켓 수신
-        let socket = new SockJS('/alarm');
-        socket.onopen = function() {
-            console.log('info: connection opened.');
-        };
-        socket.onmessage = function(event) {
-            let data = event.data;
-            console.log("ReceiveMessage : " + data + "\n");
-            // 모달 알림
-            alert(data);
-            console.log(data);
-        };
-        socket.onclose = function() {
-            console.log('connect close');
-        };
-        socket.onerror = function (err) {console.log('Errors : ' , err);};
-    });
+<script th:src="@{/js/websocket.js}" src="../static/js/websocket.js"></script>
+<script>
+    receiveAlarm();
 </script>
 </html>
