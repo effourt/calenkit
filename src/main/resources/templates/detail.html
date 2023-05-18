@@ -133,41 +133,84 @@
     const queryString = window.location.search; //?scNo=1
     const scNo = new URLSearchParams(queryString).get('scNo'); //1
 
-    window.onload = function() { //db값 출력
-      let editor;
+    // ~~~ CKEditor DB연동 파트 ~~~
+    $.ajax({
+      url: "load?scNo="+scNo,
+      method: "GET",
+      success: function(result) { //load API에서 DB값(scContent) 받아오기
+        ClassicEditor
+                .create(document.querySelector("#editor")) //CKEditor 입력창 생성
+                .then(editor => { //CKEditor 이벤트 감지 메소드
+                  editor.setData(result);//DB값(scContent) 출력
 
-      ClassicEditor
-              .create(document.querySelector('#editor'), {
-                plugins: ['Image'];
-              })
-              .then(editor => {
-                editor.model.document.on('change:data', () => {
-                  const data = editor.getData();
-                  console.log('Editor data:', data);
+                  editor.model.document.on('change:data', () => { //입력 감지
+                    var data = editor.getData(); //데이터 받아오기
+                    console.log('Editor data:', data);
 
-
-                  $.ajax({
-                    url: "load?scNo="+scNo,
-                    method: "GET",
-                    success: function (result) {
-                      /*const editorData = editor.getData();
-                      console.log(typeof(editorData));
-                      $(".ck-blurred ck ck-content ck-editor__editable ck-rounded-corners ck-editor__editable_inline p").append(editorData);*/
-                    },
-                    error: function () {
-                      alert("ERROR");
-                    }
-                  });
-
-
+                    var timeout = null;
+                    clearTimeout(timeout);
+                    timeout = setTimeout(function () {
+                      $.ajax({
+                        url: "write?scNo="+scNo,
+                        method: "patch",
+                        data: {"scContent": data}, //데이터 scContent로 전송
+                        success: function (result) {
+                          if(result="success"){
+                            console.log("content write SUCCESS status = " + result.status);
+                          }
+                        },
+                        error: function (xhr) {
+                          console.log("content write ERROR status = " + xhr.status);
+                        }
+                      });
+                    }, 1000);
+                  }) //data change
+                })
+                .catch(error => {
+                  console.error(error.stack);
                 });
-              })
-              .catch(error => {
-                console.error(error.stack);
-              });
+      },
+      error: function () {
+        alert("ERROR");
+      }
+    }); //ajax
+
+    //scContent를 제외한 나머지 부분
+    $('#writeDiv').change(function() {
+      var scTitle=$("#inputTitle").val();
+      var scSdate=$("#sDate").val();
+      var scEdate=$("#eDate").val();
+      var scProgress=$("#progress").val();
+
+      var queryString=window.location.href; //쿼리스트링 받기
+      var scNo=new URL(queryString).searchParams.get('scNo'); //쿼리스트링에서 값 추출
+
+      console.log("scno="+scNo);
+      console.log("title="+scTitle);
+      console.log("sDate="+scSdate);
+      console.log("eDate="+scEdate);
+      console.log("progress="+scProgress);
+
+      $.ajax({
+        url:"write/?scNo="+scNo,
+        method: "patch",
+        data:{
+          "scNo":scNo,
+          "scTitle":scTitle,
+          "scSdate":scSdate,
+          "scEdate":scEdate,
+          "scProgress":scProgress,
+        },
+        success: function (result) {
+          console.log("success status = "+result.status);
+        },
+        error: function (xhr) {
+          console.log("fail status = "+xhr.status);
+        }
+      });
+    });
 
 
-    }
 
     //#inputBox의 키이벤트 발생 시 호출
     $("#inputBox").on("keyup", function() {
@@ -271,47 +314,7 @@
     });
 [/]
 
-    var timeout = null;
-    $('#writeDiv').change(function() {
-      clearTimeout(timeout);
 
-      timeout = setTimeout(function() {
-        var scTitle=$("#inputTitle").val();
-        var scSdate=$("#sDate").val();
-        var scEdate=$("#eDate").val();
-        var scProgress=$("#progress").val();
-        var scContent=$("#writeDiv > div.ck.ck-reset.ck-editor.ck-rounded-corners > div.ck.ck-editor__main > div").html();
-
-        var queryString=window.location.href; //쿼리스트링 받기
-        var scNo=new URL(queryString).searchParams.get('scNo'); //쿼리스트링에서 값 추출
-
-        console.log("scno="+scNo);
-        console.log("title="+scTitle);
-        console.log("sDate="+scSdate);
-        console.log("eDate="+scEdate);
-        console.log("progress="+scProgress);
-        console.log("content="+scContent);
-
-        $.ajax({
-          url:"write/?scNo="+scNo,
-          method: "patch",
-          data:{
-            "scNo":scNo,
-            "scTitle":scTitle,
-            "scSdate":scSdate,
-            "scEdate":scEdate,
-            "scProgress":scProgress,
-            "scContent":scContent
-          },
-          success: function (result) {
-            console.log("success status = "+result.status);
-          },
-          error: function (xhr) {
-            console.log("fail status = "+xhr.status);
-          }
-        });
-      }, 1000) //keyup event delay ms 설정
-    });
   </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js" integrity="sha512-VEd+nq25CkR676O+pLBnDW09R7VQX9Mdiij052gVCp5yVH3jGtH70Ho/UUv4mJDsEdTvqRCFZg0NKGiojGnUCw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </body>
