@@ -326,10 +326,6 @@ public class MemberController {
     public String logout(HttpSession session) {
         log.info("로그아웃 시작");
         String id = (String) session.getAttribute("loginId");
-        Integer authId = loginService.getMemberById(id).getMemAuthId();
-        if (authId != null) {
-            loginService.expireToken(authRepository.findByAuthId(authId).getAuthAccess());
-        }
         session.invalidate();
         log.info("로그아웃 종료");
         return "redirect:/login/form";
