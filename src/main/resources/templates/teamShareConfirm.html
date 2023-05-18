@@ -19,9 +19,7 @@
     <button class="btn btn-dark" id="teamShare">참여하기</button>
     <button class="btn btn-dark" onclick="location.href='/'">메인페이지로 이동하기</a></button>
 </body>
-<script th:src="@{/js/websocket.js}" src="../static/js/websocket.js"></script>
 <script th:inline="javascript">
-  receive();
   const domainURL = "http://localhost:8080";
   const memId = [[${memId}]];
   const scNo = [[${scNo}]];
@@ -34,7 +32,7 @@
           contentType: "application/json",
           data: JSON.stringify({"memId": memId}),
           dataType : "text",
-          success: function(result) { //result = alNo
+          success: function(result) {
               if(result == "login-again") {
                   alert(memId+"의 계정으로 로그인 후 일정 공유에 참여해주세요.");
               } else {

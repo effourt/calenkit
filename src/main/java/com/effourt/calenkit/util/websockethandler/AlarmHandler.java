@@ -99,7 +99,7 @@ public class AlarmHandler extends TextWebSocketHandler {
                         tmpMsg = new TextMessage(scNo+"번호의 스케줄의 동행에서 삭제되었습니다.");
                         break;
                     case "SAVE_TEAM":
-                        tmpMsg = new TextMessage(scNo+"번호의 스케줄에 동행으로 초대되었습니다.");
+                        tmpMsg = new TextMessage(scNo+"번호의 스케줄에 동행으로 초대되었습니다. 이메일을 확인해주세요.");
                         break;
                     case "MODIFY_SCHEDULE":
                         tmpMsg = new TextMessage(scNo+"번호의 스케줄이 수정되었습니다.");
