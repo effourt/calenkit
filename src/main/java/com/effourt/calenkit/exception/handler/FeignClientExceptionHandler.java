@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Slf4j
-@ControllerAdvice("com.effourt.calenkit.client")
+@ControllerAdvice(basePackages = {"com.effourt.calenkit.controller", "com.effourt.calenkit.client"})
 public class FeignClientExceptionHandler {
 
     @ExceptionHandler(FeignException.class)
