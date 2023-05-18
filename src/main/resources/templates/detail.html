@@ -132,8 +132,42 @@
     receiveAlarm();
     const queryString = window.location.search; //?scNo=1
     const scNo = new URLSearchParams(queryString).get('scNo'); //1
-    ClassicEditor.create(document.querySelector('#editor'), {
-    });
+
+    window.onload = function() { //db값 출력
+      let editor;
+
+      ClassicEditor
+              .create(document.querySelector('#editor'), {
+                plugins: ['Image'];
+              })
+              .then(editor => {
+                editor.model.document.on('change:data', () => {
+                  const data = editor.getData();
+                  console.log('Editor data:', data);
+
+
+                  $.ajax({
+                    url: "load?scNo="+scNo,
+                    method: "GET",
+                    success: function (result) {
+                      /*const editorData = editor.getData();
+                      console.log(typeof(editorData));
+                      $(".ck-blurred ck ck-content ck-editor__editable ck-rounded-corners ck-editor__editable_inline p").append(editorData);*/
+                    },
+                    error: function () {
+                      alert("ERROR");
+                    }
+                  });
+
+
+                });
+              })
+              .catch(error => {
+                console.error(error.stack);
+              });
+
+
+    }
 
     //#inputBox의 키이벤트 발생 시 호출
     $("#inputBox").on("keyup", function() {
@@ -242,32 +276,32 @@
       clearTimeout(timeout);
 
       timeout = setTimeout(function() {
-        var title=$("#inputTitle").val();
-        var sDate=$("#sDate").val();
-        var eDate=$("#eDate").val();
-        var progress=$("#progress").val();
-        var content=$("#editor").text();
+        var scTitle=$("#inputTitle").val();
+        var scSdate=$("#sDate").val();
+        var scEdate=$("#eDate").val();
+        var scProgress=$("#progress").val();
+        var scContent=$("#writeDiv > div.ck.ck-reset.ck-editor.ck-rounded-corners > div.ck.ck-editor__main > div").html();
 
         var queryString=window.location.href; //쿼리스트링 받기
         var scNo=new URL(queryString).searchParams.get('scNo'); //쿼리스트링에서 값 추출
 
-        /*console.log("scno="+scNo);
-        console.log("title="+title);
-        console.log("sDate="+sDate);
-        console.log("eDate="+eDate);
-        console.log("progress="+progress);
-        console.log("content="+content);*/
+        console.log("scno="+scNo);
+        console.log("title="+scTitle);
+        console.log("sDate="+scSdate);
+        console.log("eDate="+scEdate);
+        console.log("progress="+scProgress);
+        console.log("content="+scContent);
 
         $.ajax({
           url:"write/?scNo="+scNo,
           method: "patch",
           data:{
             "scNo":scNo,
-            "title":title,
-            "sDate":sDate,
-            "eDate":eDate,
-            "progress":progress,
-            "content":content
+            "scTitle":scTitle,
+            "scSdate":scSdate,
+            "scEdate":scEdate,
+            "scProgress":scProgress,
+            "scContent":scContent
           },
           success: function (result) {
             console.log("success status = "+result.status);
