@@ -120,6 +120,8 @@ public class AlarmHandler extends TextWebSocketHandler {
         }
     }
 
+
+
     /**
      * WebSocket 세션이 닫힐 때(연결 해제될때) 호출되는 메서드
      * @param session
