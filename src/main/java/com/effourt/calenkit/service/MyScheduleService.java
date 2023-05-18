@@ -169,4 +169,13 @@ public class MyScheduleService {
 
         return scheduleRepository.countFindByRecycleBin(map);
     }
+
+    public Integer countBookmark(String id) {
+        List<Integer> scNoList=teamRepository.findByBookmark(id);
+        if(scNoList.isEmpty()) { //조건에 만족하는 일정이 없을 경우 미출력(scNo=0)
+            scNoList.add(0);
+        }
+
+        return scheduleRepository.countFindAllByScNo(scNoList);
+    }
 }
