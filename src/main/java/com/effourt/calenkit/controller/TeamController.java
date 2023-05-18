@@ -79,10 +79,10 @@ public class TeamController {
             teamScheduleService.addTeam(scNo,memId);
             Alarm alarm = alarmService.addAlarmBySaveTeam(scNo,memId); //알람서비스
             log.info("[shareTeam] ok");
-            return ""+alarm.getAlNo();
+            return "ok-add-team";
         } else{
             log.info("[shareTeam] login-again");
-            return "login-again";
+            return "fail-login-again";
         }
     }
 
@@ -99,11 +99,11 @@ public class TeamController {
         int level = Integer.parseInt(String.valueOf(map.get("teamLevel"))); //String으로 변환한 후 Integer.parseInt
         teamScheduleService.modifyTeamLevel(scNo,id,level);
         if(level==0){ //읽기
-            alarmService.addAlarmByUpdateTeamLevelRead(id,scNo);//알람서비스
+            alarmService.addAlarmByUpdateTeamLevelRead(scNo,id);//알람서비스
         } else if(level==1){ //수정
-            alarmService.addAlarmByUpdateTeamLevelWrite(id,scNo);//알람서비스
+            alarmService.addAlarmByUpdateTeamLevelWrite(scNo,id);//알람서비스
         }
-        return "updateTeamLevel ok";
+        return "ok-updateTeamLevel";
     }
 
     /**

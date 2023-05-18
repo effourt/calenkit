@@ -15,46 +15,34 @@
     </style>
 </head>
 <body style="background-color: #6c757d; text-align: center; color: white; margin-top: 10%">
-<!--    <div><img src="/static/img/calenkit.png"></div>-->
     <h3>[[${memId}]] 님, 일정공유에 참여하시겠습니까?</h3>
     <button class="btn btn-dark" id="teamShare">참여하기</button>
     <button class="btn btn-dark" onclick="location.href='/'">메인페이지로 이동하기</a></button>
 </body>
-  <script th:inline="javascript">
-      const domainURL = "http://localhost:8080";
-      const memId = [[${memId}]];
-      const scNo = [[${scNo}]];
-      console.log(memId);
-      console.log(scNo);
-
-      $("#teamShare").click(function () {
-          $.ajax({ //동행 추가
-            url: domainURL+"/teams/share/"+scNo,
-            type: "POST",
-            contentType: "application/json",
-            data: JSON.stringify({"memId": memId}),
-            dataType : "text",
-            success: function(result) { //result = alNo
-                if(result == "login-again") {
-                    alert(memId+"의 계정으로 로그인 후 일정 공유에 참여해주세요.");
-                } else {
-                    //웹소켓 송신
-                    $(function () {
-                        let socket = new SockJS('/alarm');
-                        socket.onopen = function() {
-                            console.log('info: connection opened.');
-                            console.log("result =" +result);
-                             socket.send(result);
-                        };
-                        socket.onclose = function() {
-                            console.log('connect close');
-                        };
-                        socket.onerror = function (err) {console.log('Errors : ' , err);};
-                    });
-                    location.href= "/schedules?scNo="+scNo;
-                }
-        },});
-    });
-  </script>
-
+<script th:inline="javascript">
+  const domainURL = "http://localhost:8080";
+  const memId = [[${memId}]];
+  const scNo = [[${scNo}]];
+  console.log(memId);
+  console.log(scNo);
+  $("#teamShare").click(function () {
+      $.ajax({ //동행 추가
+          url: domainURL+"/teams/share/"+scNo,
+          type: "POST",
+          contentType: "application/json",
+          data: JSON.stringify({"memId": memId}),
+          dataType : "text",
+          success: function(result) {
+              if(result == "login-again") {
+                  alert(memId+"의 계정으로 로그인 후 일정 공유에 참여해주세요.");
+              } else {
+                  location.href= "/schedules?scNo="+scNo;
+              }
+          },
+          error: function(error) {
+              alert(error.responseText);
+          }
+      });
+  });
+</script>
 </html>
