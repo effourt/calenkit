@@ -40,12 +40,6 @@ public class MyScheduleService {
         return scNo;
     }
 
-    //[메인이나 사이드바에서 내 스케줄 작성 행위] : modifyMySchedule()
-    // => ScheduleRepository.update
-    public void writeMySchdule(Schedule schedule) {
-        scheduleRepository.update(schedule);
-    }
-
     //[휴지통 출력]
     // => 팝업창에서 출력(10개씩 출력, 스크롤 로딩)
     // => 검색어(keyword)가 없을 경우 null로 전달 받아야 함(필수 매개변수)

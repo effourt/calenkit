@@ -126,6 +126,49 @@
   <script src="https://cdn.ckeditor.com/ckeditor5/34.0.0/classic/ckeditor.js"></script>
   <script src="https://cdn.ckeditor.com/ckeditor5/34.0.0/classic/translations/ko.js"></script>
   <script th:inline="javascript">
+
+    window.onload = function() { //db값 출력
+      let editor;
+
+      ClassicEditor
+              .create( document.querySelector( '#writeEditor' ) , {
+                ckfinder: {
+                  uploadUrl: 'http://localhost:8123/admin/test/imageUpload'
+                }
+              } )
+              .then( newEditor => {
+                editor = newEditor;
+              } )
+
+              .then( editor => {
+                window.editor = editor;
+
+              } )
+              .catch( error => {
+                console.error( 'Oops, something went wrong!' );
+                console.error( 'Please, report the following error on https://github.com/ckeditor/ckeditor5/issues with the build id and the error stack trace:' );
+                console.warn( 'Build id: g64ljk55ssvc-goqlohse75uw' );
+                console.error( error );
+              } );
+
+      $.ajax({
+        url: "load?scNo="+scNo,
+        method: "GET",
+        success: function (result) {
+          const editorData = editor.getData();
+          console.log(typeof(editorData));
+          $(".ck-blurred ck ck-content ck-editor__editable ck-rounded-corners ck-editor__editable_inline p").append(editorData);
+        },
+        error: function () {
+          alert("ERROR");
+        }
+      });
+    }
+
+
+
+
+    
     const queryString = window.location.search; //?scNo=1
     const scNo = new URLSearchParams(queryString).get('scNo'); //1
 
@@ -276,35 +319,36 @@
       clearTimeout(timeout);
 
       timeout = setTimeout(function() {
-        var title=$("#inputTitle").val();
-        var sDate=$("#sDate").val();
-        var eDate=$("#eDate").val();
-        var progress=$("#progress").val();
-        var content=$("#editor").text();
+        var scTitle=$("#inputTitle").val();
+        var scSdate=$("#sDate").val();
+        var scEdate=$("#eDate").val();
+        var scProgress=$("#progress").val();
+        var scContent=$("#writeDiv > div.ck.ck-reset.ck-editor.ck-rounded-corners > div.ck.ck-editor__main > div").html();
 
         var queryString=window.location.href; //쿼리스트링 받기
         var scNo=new URL(queryString).searchParams.get('scNo'); //쿼리스트링에서 값 추출
 
-        /*console.log("scno="+scNo);
-        console.log("title="+title);
-        console.log("sDate="+sDate);
-        console.log("eDate="+eDate);
-        console.log("progress="+progress);
-        console.log("content="+content);*/
+        console.log("scno="+scNo);
+        console.log("title="+scTitle);
+        console.log("sDate="+scSdate);
+        console.log("eDate="+scEdate);
+        console.log("progress="+scProgress);
+        console.log("content="+scContent);
 
         $.ajax({
           url:"write/?scNo="+scNo,
           method: "patch",
           data:{
             "scNo":scNo,
-            "title":title,
-            "sDate":sDate,
-            "eDate":eDate,
-            "progress":progress,
-            "content":content
+            "scTitle":scTitle,
+            "scSdate":scSdate,
+            "scEdate":scEdate,
+            "scProgress":scProgress,
+            "scContent":scContent
           },
           success: function (result) {
-            console.log("success status = "+result.status);
+            var html = result.scContent;
+            $("#writeDiv > div.ck.ck-reset.ck-editor.ck-rounded-corners > div.ck.ck-editor__main > div p").append(html);
           },
           error: function (xhr) {
             console.log("fail status = "+xhr.status);

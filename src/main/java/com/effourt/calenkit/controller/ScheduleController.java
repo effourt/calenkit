@@ -3,6 +3,7 @@ package com.effourt.calenkit.controller;
 import com.effourt.calenkit.domain.Alarm;
 import com.effourt.calenkit.domain.Member;
 import com.effourt.calenkit.domain.Schedule;
+import com.effourt.calenkit.domain.Team;
 import com.effourt.calenkit.dto.TeamShare;
 import com.effourt.calenkit.exception.ScheduleNotFoundException;
 import com.effourt.calenkit.exception.TeamNotFoundException;
@@ -63,31 +64,21 @@ public class ScheduleController {
         //권한(아이디 기준)을 가진 일정 목록
         List<Integer> scNoList=teamRepository.findByid(loginId);
 
-        //개인 즐겨찾기리스트 조회 - 첫 페이지 고정 출력
-        List<Schedule> bookmarkList=myScheduleService.getBookmark(loginId, null, 0, 10);
-        if(bookmarkList.isEmpty()) {
-            bookmarkList=null;
-        }
-        model.addAttribute("bookmarkList", bookmarkList);
+        //개인 즐겨찾기리스트 출력(스크롤) - 초기 페이지
+        Map<String, Object>bookmarkMap= bookmarkScroll(null);
+        model.addAttribute("bookmarkList", bookmarkMap.get("bookmarkList"));
+        model.addAttribute("bookmarkTotalPageCount", bookmarkMap.get("bookmarkTotalPageCount"));
 
+        //일정 리스트 출력(스크롤) - 초기 페이지
+        Map<String, Object>scheduleMap= scheduleScroll(null);
+        model.addAttribute("scheduleList", scheduleMap.get("scheduleList"));
+        model.addAttribute("totalPageCount", scheduleMap.get("totalPageCount"));
 
-        //일정 리스트 출력(스크롤) - 첫 페이지 고정 출력
-        Integer totalRow=scheduleRepository.countFindAllByScNo(scNoList);
-        Integer totalPageCount=(int) Math.ceil(totalRow/10.0);
-        List<Schedule> scheduleList=myScheduleService.getMySchedule(loginId, null, 0, 10);
-        if(scheduleList.isEmpty()) {
-            scheduleList=null;
-        }
-
-        model.addAttribute("scheduleList", scheduleList);
-        model.addAttribute("totalPageCount", totalPageCount);
-
-        //휴지통 리스트 출력(스크롤) - 첫 페이지 고정 출력
-        List<Schedule> recyclebinList=myScheduleService.getRecycleBin(loginId, null, null, 0, 10);
-        if(recyclebinList.isEmpty()) {
-            recyclebinList=null;
-        }
-        model.addAttribute("recyclebinList", recyclebinList);
+        //휴지통 리스트 출력(스크롤) - 초기 페이지
+        Map<String, Object>recyclebinMap= searchRecyclebinScroll(null, null, null);
+        model.addAttribute("recyclebinList", recyclebinMap.get("recyclebinList"));
+        System.out.println("recyclebinList = "+recyclebinMap.get("recyclebinList"));
+        model.addAttribute("recyclebinTotalPageCount", recyclebinMap.get("recyclebinTotalPageCount"));
 
         return "main";
     }
@@ -146,26 +137,20 @@ public class ScheduleController {
         return "detail";
     }
 
-    /** UPDATE
+    /**
      *
-     * @param scNo
-     * @param title
-     * @param sDate
-     * @param eDate
-     * @param progress
-     * @param content
+     * @param schedule
      * @return
      */
+    @ResponseBody
     @PatchMapping("/write")
-    public String writeSchedule(@RequestParam Integer scNo,
-                                String title, String sDate, String eDate, Integer progress, String content) {
-        Schedule schedule=scheduleRepository.findByScNo(scNo);
+    public Schedule writeSchedule(@ModelAttribute Schedule schedule) {
 
-        if(title!=null && !title.isEmpty()) { schedule.setScTitle(title.toString()); }
+        /*if(title!=null && !title.isEmpty()) { schedule.setScTitle(title.toString()); }
         if(sDate!=null && !sDate.isEmpty()) { schedule.setScSdate(sDate.toString()); }
         if(eDate!=null && !eDate.isEmpty()) { schedule.setScEdate(eDate.toString()); }
         if(progress!=null) { schedule.setScProgress(progress); }
-        if(content!=null && !content.isEmpty()) { schedule.setScContent(content.toString()); }
+        if(content!=null && !content.isEmpty()) { schedule.setScContent(content.toString()); }*/
 
         /*System.out.println("scNo="+scNo);
         System.out.println("title="+title.toString());
@@ -174,8 +159,17 @@ public class ScheduleController {
         System.out.println("progress="+progress);
         System.out.println("content="+content.toString());*/
 
-        myScheduleService.writeMySchdule(schedule);
-        return "redirect:/schedule?scNo="+scNo;
+        scheduleRepository.update(schedule);
+
+        return schedule;
+        /*return "redirect:/schedule?scNo="+schedule.getScNo();*/
+    }
+
+    @ResponseBody
+    @GetMapping("load")
+    public Schedule load(@RequestParam Integer scNo) {
+        Schedule schedule=scheduleRepository.findByScNo(scNo);
+        return schedule;
     }
 
     /** 일정 추가
@@ -242,21 +236,21 @@ public class ScheduleController {
         return "redirect:/schedules?scNo="+scNo;
     }
 
-    /** 즐겨찾기 리스트 스크롤 - 두번째 페이지 이후로
+    /** 즐겨찾기 리스트 스크롤
      *
-     * @param currentPage
+     * @param bookmarkCurrentPage
      * @return
      */
     @ResponseBody
     @GetMapping("/bookmark_scroll")
-    public Map<String, Object> bookmarkScroll(String currentPage) {
+    public Map<String, Object> bookmarkScroll(String bookmarkCurrentPage) {
         String loginId = (String)session.getAttribute("loginId"); //session으로 현재 아이디 받아오기
         Map<String, Object> map=new HashMap<>();
         List<Integer> scNoList=teamRepository.findByid(loginId);
         Integer pageNum=null;
-        if(currentPage!=null){
-            pageNum=Integer.parseInt(currentPage);
-        } else if(currentPage==null) {
+        if(bookmarkCurrentPage!=null){
+            pageNum=Integer.parseInt(bookmarkCurrentPage);
+        } else if(bookmarkCurrentPage==null) {
             pageNum=1;
         }
 
@@ -279,19 +273,19 @@ public class ScheduleController {
 
     /** 일정 스크롤 - 두번째 페이지 이후로
      *
-     * @param currentPage
+     * @param ScheduleCurrentPage
      * @return
      */
     @ResponseBody
     @GetMapping("/schedule_scroll")
-    public Map<String, Object> scheduleScroll(String currentPage) {
+    public Map<String, Object> scheduleScroll(String ScheduleCurrentPage) {
         String loginId = (String)session.getAttribute("loginId"); //session으로 현재 아이디 받아오기
         Map<String, Object> map=new HashMap<>();
         List<Integer> scNoList=teamRepository.findByid(loginId);
         Integer pageNum=null;
-        if(currentPage!=null){
-            pageNum=Integer.parseInt(currentPage);
-        } else if(currentPage==null) {
+        if(ScheduleCurrentPage!=null){
+            pageNum=Integer.parseInt(ScheduleCurrentPage);
+        } else if(ScheduleCurrentPage==null) {
             pageNum=1;
         }
 
@@ -316,22 +310,22 @@ public class ScheduleController {
      *
      * @param keyword
      * @param filter
-     * @param currentPage
+     * @param searchCurrentPage
      * @return
      */
     @ResponseBody
     @PostMapping("/search_schedule")
     public Map<String, Object> searchScroll(@RequestParam(required = false) String keyword,
                                             @RequestParam(required = false) String filter,
-                                            String currentPage) {
+                                            String searchCurrentPage) {
         String loginId = (String)session.getAttribute("loginId"); //session으로 현재 아이디 받아오기
 
         Map<String, Object> map=new HashMap<>();
         List<Integer> scNoList=teamRepository.findByid(loginId);
         Integer pageNum=null;
-        if(currentPage!=null){
-            pageNum=Integer.parseInt(currentPage);
-        } else if(currentPage==null) {
+        if(searchCurrentPage!=null){
+            pageNum=Integer.parseInt(searchCurrentPage);
+        } else if(searchCurrentPage==null) {
             pageNum=1;
         }
 
@@ -360,21 +354,21 @@ public class ScheduleController {
      *
      * @param keyword
      * @param filter
-     * @param currentPage
+     * @param recyclebinCurrentPage
      * @return
      */
     @ResponseBody
     @PostMapping("/search_recyclebin")
-    public Map<String, Object> searchRecyclebin(@RequestParam(required = false) String keyword,
+    public Map<String, Object> searchRecyclebinScroll(@RequestParam(required = false) String keyword,
                                             @RequestParam(required = false) String filter,
-                                            String currentPage) {
+                                            String recyclebinCurrentPage) {
         String loginId = (String)session.getAttribute("loginId"); //session으로 현재 아이디 받아오기
         Map<String, Object> map=new HashMap<>();
 
         Integer pageNum=null;
-        if(currentPage!=null){
-            pageNum=Integer.parseInt(currentPage);
-        } else if(currentPage==null) {
+        if(recyclebinCurrentPage!=null){
+            pageNum=Integer.parseInt(recyclebinCurrentPage);
+        } else if(recyclebinCurrentPage==null) {
             pageNum=1;
         }
 

@@ -51,7 +51,7 @@
                     </th:block>
                     <th:block th:each="bookmark : ${bookmarkList}">
                         <th:block th:if="${bookmark.scStatus}==1">
-                            <li><Strong>([[${bookmark.getScNo}]])</Strong>[[${bookmark.getScSdate()}]] ~ [[${bookmark.getScEdate()}]] / <a  th:href="@{/schedules?scNo={scNo}(scNo=${bookmark.getScNo})}">[[${bookmark.getScTitle()}]]</a></li>
+                            <li><Strong>([[${bookmark.getScNo}]])</Strong>[[${bookmark.getScSdate()}]] ~ [[${bookmark.getScEdate()}]] / <a th:href="@{/schedules?scNo={scNo}(scNo=${bookmark.getScNo})}">[[${bookmark.getScTitle()}]]</a></li>
                         </th:block>
                     </th:block>
                     <div class="bookmark_loading-Bar" style="display: none;">
@@ -78,7 +78,7 @@
                     <div class="schedule_loading-Bar" style="display: none;">
                         <img src="/img/loading.png" />
                     </div>
-                    <div id="scrollSchedule">
+                    <div id="addScheduleScroll">
                     </div>
                 </ul>
             </div>
@@ -188,10 +188,10 @@
         };
     </script>
 
-    <!-- 스크롤 파트(모두 2페이지 이후부터 출력) -->
+    <!-- 스크롤 파트 -->
     <script th:inline="javascript">
         /*<![CDATA[*/
-        let currentPage=1;
+        let bookmarkCurrentPage=1;
         let isLoading=false;
 
         //즐겨찾기 스크롤
@@ -204,20 +204,20 @@
                 isLoading=true; //로딩 중으로 설정
                 $(".bookmark_loading-Bar").show();//로딩창 출력
 
-                currentPage++; //현재 페이지 증가(다음 페이지 요청)
+                if(bookmarkCurrentPage==[[${bookmarkTotalPageCount}]]) { //현재 마지막 페이지일 경우
+                    return; //함수 끝
+                }
+
+                bookmarkCurrentPage++; //현재 페이지 증가(다음 페이지 요청)
 
                 //ajax로 받아올 페이지 요청
                 $.ajax({
                     url:"bookmark_scroll",
                     method:"get",
-                    data:{"currentPage" : currentPage}, //페이지 전달
+                    data:{"bookmarkCurrentPage" : bookmarkCurrentPage}, //페이지 전달
                     success:function (result) {
                         isLoading=false; //로딩 중 여부
                         $(".bookmark_loading-Bar").hide(); //로딩창 미출력
-
-                        if(currentPage>=result.bookmarkTotalPageCount) { //현재 마지막 페이지일 경우
-                            return; //함수 끝
-                        }
 
                         var bookmarkList=result.bookmarkList; //ajax 문법으로 result 중 bookmarkList 선택
 
@@ -243,12 +243,10 @@
                         location.href="error/400";
                     }
                 });
-                var isEnd=false;
-                if(isEnd==true) {
-                    $("#bookmark ul").scrollTop(0);
-                } //일정 추가 후 스크롤 맨 위로 -- 어디에?
             }
         });
+
+        let ScheduleCurrentPage=1; //즐겨찾기와 현재 페이지 공유하지 않게 초기화
 
         //일정 스크롤
         $("#schedule ul").on("scroll", function () {
@@ -260,17 +258,17 @@
                 isLoading=true; //로딩 중으로 설정
                 $(".schedule_loading-Bar").show();//로딩창 출력
 
-                if(currentPage>= [[${totalPageCount}]]) { //현재 마지막 페이지일 경우
+                if(ScheduleCurrentPage==[[${totalPageCount}]]) { //현재 마지막 페이지일 경우
                     return; //함수 끝
                 }
 
-                currentPage++; //현재 페이지 증가(다음 페이지 요청)
+                ScheduleCurrentPage++; //현재 페이지 증가(다음 페이지 요청)
 
                 //ajax로 받아올 페이지 요청
                 $.ajax({
                     url:"schedule_scroll",
                     method:"get",
-                    data:{"currentPage" : currentPage}, //페이지 전달
+                    data:{"ScheduleCurrentPage" : ScheduleCurrentPage}, //페이지 전달
                     success:function (result) {
                         isLoading=false; //로딩 중 여부
                         $(".schedule_loading-Bar").hide(); //로딩창 미출력
@@ -292,7 +290,7 @@
                         }
                         html+="</div>";
 
-                        $("#scrollSchedule").append(html);
+                        $("#addScheduleScroll").append(html);
                     },
                     error:function (xhr) {
                         location.href="error/400";
@@ -302,6 +300,8 @@
             }
         });
 
+
+        let searchCurrentPage=1;
         //일정 검색+스크롤
         function searchSchedule() {
             //seriallize() = form 데이터를 자동으로 queryString으로 변환 해서 전달
@@ -312,7 +312,7 @@
                 method: "post",
                 data: queryString, //form으로 queryString 전달
                 success: function (result) { //queryString 받아 map 반환
-                    currentPage=1; //재검색 시 현재 페이지값 초기화
+                    searchCurrentPage=1; //재검색 시 현재 페이지값 초기화
                     var searchList=result.searchList;
 
                     var html="<div>";
@@ -342,20 +342,20 @@
                             isLoading=true; //로딩 중으로 설정
                             $(".search_loading-Bar").show();//로딩창 출력
 
-                            currentPage++; //현재 페이지 증가(다음 페이지 요청)
+                            if(searchCurrentPage==[[${searchTotalPageCount}]]) { //현재 마지막 페이지일 경우
+                                return; //함수 끝
+                            }
+
+                            searchCurrentPage++; //현재 페이지 증가(다음 페이지 요청)
 
                             //ajax로 받아올 페이지 요청
                             $.ajax({
                                 url:"search_schedule",
                                 method:"post",
-                                data:{"currentPage" : currentPage, queryString}, //페이지와 쿼리스트링 전달
+                                data:{"searchCurrentPage" : searchCurrentPage, queryString}, //페이지와 쿼리스트링 전달
                                 success:function (result) {
                                     isLoading=false; //로딩 중 여부
                                     $(".search_loading-Bar").hide(); //로딩창 미출력
-
-                                    if(currentPage==result.searchTotalPageCount || isLoading) { //현재 마지막 페이지일 경우
-                                        return; //함수 끝
-                                    }
 
                                     var searchList=result.searchList; //ajax 문법으로 result 중 searchList 선택
 
@@ -391,8 +391,9 @@
             });
         }
 
-        //휴지통 스크롤
+        let recyclebinCurrentPage=1;
 
+        //휴지통 스크롤
         $("#recyclebin-modal-body").on("scroll", function () {
             var scrollTop = $(this).scrollTop(); //스크롤을 아래로 내릴수록 값 증가
             var innerHeight = $(this).innerHeight(); //해당 태그 높이 계산
@@ -402,20 +403,20 @@
                 isLoading=true; //로딩 중으로 설정
                 $(".recyclebin_loading-Bar").show();//로딩창 출력
 
-                currentPage++; //현재 페이지 증가(다음 페이지 요청)
+                if(recyclebinCurrentPage==[[${recyclebinTotalPageCount}]]) { //현재 마지막 페이지일 경우
+                    return; //함수 끝
+                }
+
+                recyclebinCurrentPage++; //현재 페이지 증가(다음 페이지 요청)
 
                 //ajax로 받아올 페이지 요청
                 $.ajax({
                     url:"search_recyclebin",
                     method:"post",
-                    data:{"currentPage" : currentPage}, //페이지 전달
+                    data:{"recyclebinCurrentPage" : recyclebinCurrentPage}, //페이지 전달
                     success:function (result) {
                         isLoading=false; //로딩 중 여부
                         $(".recyclebin_loading-Bar").hide(); //로딩창 미출력
-
-                        if(currentPage==result.recyclebinTotalPageCount || isLoading) { //현재 마지막 페이지일 경우
-                            return; //함수 끝
-                        }
 
                         var recyclebinList=result.recyclebinList; //ajax 문법으로 result 중 recyclebinList 선택
 
@@ -456,7 +457,7 @@
                 method: "post",
                 data: queryString, //form으로 queryString 전달
                 success: function (result) { //queryString 받아 map 반환
-                    currentPage=1; //재검색 시 현재 페이지값 초기화
+                    recyclebinCurrentPage=1; //재검색 시 현재 페이지값 초기화
                     var recyclebinList=result.recyclebinList;
                     var recyclebinListTag=$("#recyclebinList");
                     recyclebinListTag.hide(); //기존 휴지통 미출력 후 검색결과 출력
@@ -489,20 +490,20 @@
                             isLoading=true; //로딩 중으로 설정
                             $(".recyclebin_loading-Bar").show();//로딩창 출력
 
-                            currentPage++; //현재 페이지 증가(다음 페이지 요청)
+                            if(recyclebinCurrentPage==[[${recyclebinTotalPageCount}]]) { //현재 마지막 페이지일 경우
+                                return; //함수 끝
+                            }
+
+                            recyclebinCurrentPage++; //현재 페이지 증가(다음 페이지 요청)
 
                             //ajax로 받아올 페이지 요청
                             $.ajax({
                                 url:"search_recyclebin",
                                 method:"post",
-                                data:{"currentPage" : currentPage, queryString}, //페이지와 쿼리스트링 전달
+                                data:{"recyclebinCurrentPage" : recyclebinCurrentPage, queryString}, //페이지와 쿼리스트링 전달
                                 success:function (result) {
                                     isLoading=false; //로딩 중 여부
                                     $(".recyclebin_loading-Bar").hide(); //로딩창 미출력
-
-                                    if(currentPage==result.recyclebinTotalPageCount || isLoading) { //현재 마지막 페이지일 경우
-                                        return; //함수 끝
-                                    }
 
                                     var recyclebinList=result.recyclebinList; //ajax 문법으로 result 중 recyclebinList 선택
 
