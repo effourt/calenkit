@@ -127,7 +127,7 @@
   <script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
   <script th:src="@{/js/websocket.js}" src="../static/js/websocket.js"></script>
   <script th:inline="javascript">
-    receive();
+    receiveAlarm();
     const queryString = window.location.search; //?scNo=1
     const scNo = new URLSearchParams(queryString).get('scNo'); //1
     ClassicEditor.create(document.querySelector('#editor'), {
