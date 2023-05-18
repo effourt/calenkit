@@ -7,8 +7,9 @@ function receiveAlarm() { //웹소켓 수신
         let data = event.data;
         console.log("ReceiveMessage : " + data + "\n");
         // 모달 알림
-        alert(data);
-        console.log(data);
+        toastr.success(data);
+        //alert(data);
+        //console.log(data);
     };
     socket.onclose = function() {
         console.log('connect close');
