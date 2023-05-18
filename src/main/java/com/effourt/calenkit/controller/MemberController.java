@@ -325,7 +325,6 @@ public class MemberController {
     @GetMapping("/member/logout")
     public String logout(HttpSession session) {
         log.info("로그아웃 시작");
-        String id = (String) session.getAttribute("loginId");
         session.invalidate();
         log.info("로그아웃 종료");
         return "redirect:/login/form";
