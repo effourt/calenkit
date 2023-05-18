@@ -104,7 +104,7 @@
                 <div class="btn-group">
                   <select id="team" th:id="'team'+${teamShare.teamNo}">
                     <option class="btn-secondary" value="0" th:readonly="${loginTeam.teamLevel!=9}" th:selected="${teamShare.teamLevel==0}" th:disabled="${teamShare.teamLevel==9 || loginTeam.teamLevel!=9}">읽기권한</option>
-                    <option class="btn-secondary" value="1" th:readonly="${loginTeam.teamLevel!=9}" th:selected="${teamShare.teamLevel==1}" th:disabled="${teamShare.teamLevel==9 || loginTeam.teamLevel!=9}">수정권한</option>
+                    <option class="btn-secondary" value="1" th:readonly="${loginTeam.teamLevel!=9}" th:selected="${teamShare.teamLevel==1}" th:disabled="${teamShare.teamLevel==9 || loginTeam.teamLevel!=9}">쓰기권한</option>
                     <hr>
                     <option class="btn-secondary" value="9" th:readonly="${loginTeam.teamLevel!=9}" th:selected="${teamShare.teamLevel==9}" th:disabled="${teamShare.teamLevel!=9 || loginTeam.teamLevel!=9}">호스트</option>
                   </select>
@@ -181,6 +181,8 @@
             dataType: "text",
             data: JSON.stringify({"teamMid": memId}),
             success: function(result) {
+              //웹소켓 송신
+              sendAlarm(scNo, memId, "SAVE_TEAM");
             },
             error: function(error) {
               alert("이메일 전송 API 호출 중 에러 발생 : " + error.status);
@@ -202,7 +204,6 @@
           data: JSON.stringify({"teamMid": teamMId, "teamLevel":teamLevel} ),
           success: function(result) {
             //웹소켓 송신
-            //send(scNo, teamMId, teamLevel);
             let alCate = null;
             if(teamLevel == 0) alCate = "UPDATE_TEAMLEVEL_READ";
             if(teamLevel == 1) alCate = "UPDATE_TEAMLEVEL_WRITE";
@@ -226,8 +227,8 @@
             data: JSON.stringify({"teamMid": teamMId}),
             success: function(result) {
               //웹소켓 송신
-              //send(scNo, teamMId, null);
               sendAlarm(scNo, teamMId, "REMOVE_TEAM");
+              location.href= "/schedules?scNo="+scNo;
             },
             error: function(xhr, status, error) {
               console.error("error: ", status, ", ", error);
