@@ -9,6 +9,7 @@
   <script src="/webjars/jquery/jquery.min.js"></script>
   <script src="/webjars/sockjs-client/sockjs.min.js"></script>
   <script src="/webjars/stomp-websocket/stomp.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css" integrity="sha512-3pIirOrwegjM6erE5gPSwkUzO+3cTjpnV9lexlNZqvupR64iZBnOOTiiLPb9M36zpMScbmUNIcHUqKD47M719g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <style>
     .ck-editor__editable {
       height: 800px;
@@ -51,10 +52,10 @@
         <div class="list-group-item col">시작일 : <input type="date" id="sDate" th:value="${schedules.getScSdate()}" th:readonly="${loginTeam.teamLevel!=9}" th:disabled="${loginTeam.teamLevel!=9}" /></div>
         <div class="list-group-item col">종료일 : <input type="date" id="eDate" th:value="${schedules.getScEdate() }" th:readonly="${loginTeam.teamLevel!=9}" th:disabled="${loginTeam.teamLevel!=9}" /></div>
         <div class="list-group-item col">상태 : <select id="progress">
-            <option class="btn-secondary" value="0" th:readonly="${loginTeam.teamLevel!=9}" th:disabled="${loginTeam.teamLevel!=9}" th:selected="${schedules.scProgress==0}">미실행</option>
-            <option class="btn-secondary" value="1" th:readonly="${loginTeam.teamLevel!=9}" th:disabled="${loginTeam.teamLevel!=9}" th:selected="${schedules.scProgress==1}">진행 중</option>
-            <option class="btn-secondary" value="2" th:readonly="${loginTeam.teamLevel!=9}" th:disabled="${loginTeam.teamLevel!=9}" th:selected="${schedules.scProgress==2}">완료</option>
-          </select>
+          <option class="btn-secondary" value="0" th:readonly="${loginTeam.teamLevel!=9}" th:disabled="${loginTeam.teamLevel!=9}" th:selected="${schedules.scProgress==0}">미실행</option>
+          <option class="btn-secondary" value="1" th:readonly="${loginTeam.teamLevel!=9}" th:disabled="${loginTeam.teamLevel!=9}" th:selected="${schedules.scProgress==1}">진행 중</option>
+          <option class="btn-secondary" value="2" th:readonly="${loginTeam.teamLevel!=9}" th:disabled="${loginTeam.teamLevel!=9}" th:selected="${schedules.scProgress==2}">완료</option>
+        </select>
         </div>
       </li>
     </ul>
@@ -103,7 +104,7 @@
                 <div class="btn-group">
                   <select id="team" th:id="'team'+${teamShare.teamNo}">
                     <option class="btn-secondary" value="0" th:readonly="${loginTeam.teamLevel!=9}" th:selected="${teamShare.teamLevel==0}" th:disabled="${teamShare.teamLevel==9 || loginTeam.teamLevel!=9}">읽기권한</option>
-                    <option class="btn-secondary" value="1" th:readonly="${loginTeam.teamLevel!=9}" th:selected="${teamShare.teamLevel==1}" th:disabled="${teamShare.teamLevel==9 || loginTeam.teamLevel!=9}">수정권한</option>
+                    <option class="btn-secondary" value="1" th:readonly="${loginTeam.teamLevel!=9}" th:selected="${teamShare.teamLevel==1}" th:disabled="${teamShare.teamLevel==9 || loginTeam.teamLevel!=9}">쓰기권한</option>
                     <hr>
                     <option class="btn-secondary" value="9" th:readonly="${loginTeam.teamLevel!=9}" th:selected="${teamShare.teamLevel==9}" th:disabled="${teamShare.teamLevel!=9 || loginTeam.teamLevel!=9}">호스트</option>
                   </select>
@@ -123,241 +124,161 @@
   </div>
 </div>
 
-  <script src="https://cdn.ckeditor.com/ckeditor5/34.0.0/classic/ckeditor.js"></script>
-  <script src="https://cdn.ckeditor.com/ckeditor5/34.0.0/classic/translations/ko.js"></script>
-  <script th:inline="javascript">
+<script src="https://cdn.ckeditor.com/ckeditor5/34.0.0/classic/ckeditor.js"></script>
+<script src="https://cdn.ckeditor.com/ckeditor5/34.0.0/classic/translations/ko.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
+<script th:src="@{/js/websocket.js}" src="../static/js/websocket.js"></script>
+<script th:inline="javascript">
+  receiveAlarm();
+  const queryString = window.location.search; //?scNo=1
+  const scNo = new URLSearchParams(queryString).get('scNo'); //1
+  ClassicEditor.create(document.querySelector('#editor'), {
+  });
 
-    window.onload = function() { //db값 출력
-      let editor;
+  //#inputBox의 키이벤트 발생 시 호출
+  $("#inputBox").on("keyup", function() {
+    let typedText = this.value;
+    if (typedText == "") {
+      $("#resultBox").hide();
+      return;
+    }
+    $("#resultBox").show();
+    $("#typedText").show();
+    $("#typedText").text(typedText);
 
-      ClassicEditor
-              .create( document.querySelector( '#writeEditor' ) , {
-                ckfinder: {
-                  uploadUrl: 'http://localhost:8123/admin/test/imageUpload'
-                }
-              } )
-              .then( newEditor => {
-                editor = newEditor;
-              } )
+    $.ajax({
+      url: "/members?memId="+typedText,
+      type: "GET",
+      success: function(result) {
+        let button = "<button class='btn btn-sm btn-outline-dark' ";
+        if(result.memId==typedText){
+          button += "onclick='addTeam(\""+result.memId+"\")'>"+result.memId+"</button>";
+        } else{
+          button += "onclick='addTeam()'></button>";
+        }
+        if(result.memId==typedText){
+          $('#typedText').text("");
+          $("#typedText").append(button);
+        }
+      },
+    });
+  });
 
-              .then( editor => {
-                window.editor = editor;
-
-              } )
-              .catch( error => {
-                console.error( 'Oops, something went wrong!' );
-                console.error( 'Please, report the following error on https://github.com/ckeditor/ckeditor5/issues with the build id and the error stack trace:' );
-                console.warn( 'Build id: g64ljk55ssvc-goqlohse75uw' );
-                console.error( error );
-              } );
-
+  //일정 초대 이벤트 함수
+  // => 이메일 전송 >> 동행의 링크 확인 >> 동행 추가
+  function addTeam(memId){
+    const loginId = [[${loginTeam.teamMid}]];
+    if(memId == loginId) {
+      alert("귀하의 아이디 "+memId+"를 입력하셔서 초대가 불가능 합니다.");
+      return;
+    }
+    if(confirm(memId+"님을 일정에 초대하시겠습니까? 확인을 누를 시 동행에게 일정 초대 메일이 발송됩니다.")){
+      //이메일 전송
       $.ajax({
-        url: "load?scNo="+scNo,
-        method: "GET",
-        success: function (result) {
-          const editorData = editor.getData();
-          console.log(typeof(editorData));
-          $(".ck-blurred ck ck-content ck-editor__editable ck-rounded-corners ck-editor__editable_inline p").append(editorData);
+        url: "/teams/share/send-link/"+scNo,
+        method: "POST",
+        contentType: "application/json",
+        dataType: "text",
+        data: JSON.stringify({"teamMid": memId}),
+        success: function(result) {
+          //웹소켓 송신
+          sendAlarm(scNo, memId, "SAVE_TEAM");
         },
-        error: function () {
-          alert("ERROR");
+        error: function(error) {
+          alert("이메일 전송 API 호출 중 에러 발생 : " + error.status);
         }
       });
     }
+  }
 
-
-
-
-    
-    const queryString = window.location.search; //?scNo=1
-    const scNo = new URLSearchParams(queryString).get('scNo'); //1
-
-      ClassicEditor.create(document.querySelector('#editor'), {
-      });
-
-    //#inputBox의 키이벤트 발생 시 호출
-    $("#inputBox").on("keyup", function() {
-      let typedText = this.value;
-      if (typedText == "") {
-        $("#resultBox").hide();
-        return;
+  [# th:each="teamShare : ${teamShareList}"]
+  //권한변경 이벤트 처리 함수
+  $("#team"+[[${teamShare.teamNo}]]).on("change", function() {
+    const teamLevel = $("#team"+[[${teamShare.teamNo}]]).val(); //선택된 권한레벨 값
+    const teamMId = [[${teamShare.teamMid}]];
+    $.ajax({ //동행 권한 변경
+      url: "/teams/share/"+scNo,
+      type: "PATCH",
+      contentType: "application/json",
+      dataType: "text",
+      data: JSON.stringify({"teamMid": teamMId, "teamLevel":teamLevel} ),
+      success: function(result) {
+        //웹소켓 송신
+        let alCate = null;
+        if(teamLevel == 0) alCate = "UPDATE_TEAMLEVEL_READ";
+        if(teamLevel == 1) alCate = "UPDATE_TEAMLEVEL_WRITE";
+        sendAlarm(scNo, teamMId, alCate);
+      },
+      error: function(xhr, status, error) {
+        console.error("error: ", status, ", ", error);
       }
-      $("#resultBox").show();
-      $("#typedText").show();
-      $("#typedText").text(typedText);
+    });
+  });
+
+  //권한 삭제 이벤트 처리 함수
+  $("#remove"+[[${teamShare.teamNo}]]).on("click", function() {
+    const teamMId = [[${teamShare.teamMid}]];
+    if(confirm(teamMId+"님을 일정에서 삭제하시겠습니까?")){
+      $.ajax({//동행 권한 삭제
+        url: "/teams/share/"+scNo,
+        type: "DELETE",
+        contentType: "application/json",
+        dataType: "text",
+        data: JSON.stringify({"teamMid": teamMId}),
+        success: function(result) {
+          //웹소켓 송신
+          sendAlarm(scNo, teamMId, "REMOVE_TEAM");
+          location.href= "/schedules?scNo="+scNo;
+        },
+        error: function(xhr, status, error) {
+          console.error("error: ", status, ", ", error);
+        }
+      });}
+  });
+  [/]
+
+  var timeout = null;
+  $('#writeDiv').change(function() {
+    clearTimeout(timeout);
+
+    timeout = setTimeout(function() {
+      var title=$("#inputTitle").val();
+      var sDate=$("#sDate").val();
+      var eDate=$("#eDate").val();
+      var progress=$("#progress").val();
+      var content=$("#editor").text();
+
+      var queryString=window.location.href; //쿼리스트링 받기
+      var scNo=new URL(queryString).searchParams.get('scNo'); //쿼리스트링에서 값 추출
+
+      /*console.log("scno="+scNo);
+      console.log("title="+title);
+      console.log("sDate="+sDate);
+      console.log("eDate="+eDate);
+      console.log("progress="+progress);
+      console.log("content="+content);*/
 
       $.ajax({
-        url: "/members?memId="+typedText,
-        type: "GET",
-        success: function(result) {
-          let button = "<button class='btn btn-sm btn-outline-dark' ";
-          if(result.memId==typedText){
-            button += "onclick='addTeam(\""+result.memId+"\")'>"+result.memId+"</button>";
-          } else{
-            button += "onclick='addTeam()'></button>";
-          }
-          if(result.memId==typedText){
-            $('#typedText').text("");
-            $("#typedText").append(button);
-          }
+        url:"write/?scNo="+scNo,
+        method: "patch",
+        data:{
+          "scNo":scNo,
+          "title":title,
+          "sDate":sDate,
+          "eDate":eDate,
+          "progress":progress,
+          "content":content
         },
-      });
-    });
-
-    //일정 초대 이벤트 함수
-    // => 이메일 전송 >> 동행의 링크 확인 >> 동행 추가
-    function addTeam(memId){
-      const loginId = [[${loginTeam.teamMid}]];
-      if(memId == loginId) {
-        alert("귀하의 아이디 "+memId+"를 입력하셔서 초대가 불가능 합니다.");
-        return;
-      }
-      if(confirm(memId+"님을 일정에 초대하시겠습니까? 확인을 누를 시 동행에게 일정 초대 메일이 발송됩니다.")){
-          //이메일 전송
-          $.ajax({
-            url: "/teams/share/send-link/"+scNo,
-            method: "POST",
-            contentType: "application/json",
-            dataType: "text",
-            data: JSON.stringify({"teamMid": memId}),
-            success: function(result) {
-            },
-            error: function(error) {
-              alert("이메일 전송 API 호출 중 에러 발생 : " + error.status);
-            }
-          });
-        }
-      }
-
-    [# th:each="teamShare : ${teamShareList}"]
-      //권한변경 이벤트 처리 함수
-      $("#team"+[[${teamShare.teamNo}]]).on("change", function() {
-        const teamLevel = $("#team"+[[${teamShare.teamNo}]]).val(); //선택된 권한레벨 값
-        const teamMId = [[${teamShare.teamMid}]];
-        $.ajax({ //동행 권한 변경
-          url: "/teams/share/"+scNo,
-          type: "PATCH",
-          contentType: "application/json",
-          dataType: "text",
-          data: JSON.stringify({"teamMid": teamMId, "teamLevel": teamLevel} ),
-          success: function(result) {
-            console.log(result);
-            //웹소켓 송신
-            $(function () {
-              let socket = new SockJS('/alarm');
-              socket.onopen = function() {
-                console.log('info: connection opened.');
-                const message = {
-                  "scNo":scNo,
-                  "teamMId":teamMId,
-                  "teamLevel":teamLevel
-                };
-                console.log("scNo =" +scNo);
-                console.log("teamMId =" +teamMId);
-                console.log("teamLevel =" +teamLevel);
-                console.log("message =" +message);
-                socket.send(JSON.stringify(message));
-              };
-              socket.onclose = function() {
-                console.log('connect close');
-              };
-              socket.onerror = function (err) {console.log('Errors : ' , err);};
-            });
-
-
-          },
-          error: function(xhr, status, error) {
-            console.error("error: ", status, ", ", error);
-          }
-        });
-      });
-
-      //권한 삭제 이벤트 처리 함수
-      $("#remove"+[[${teamShare.teamNo}]]).on("click", function() {
-        const teamMId = [[${teamShare.teamMid}]];
-        if(confirm(teamMId+"님을 일정에서 삭제하시겠습니까?")){
-          $.ajax({//동행 권한 삭제
-            url: "/teams/share/"+scNo,
-            type: "DELETE",
-            contentType: "application/json",
-            dataType: "text",
-            data: JSON.stringify({"teamMid": teamMId}),
-            success: function(result) {
-              console.log(result);
-              //웹소켓 송신
-              $(function () {
-                let socket = new SockJS('/alarm');
-                socket.onopen = function() {
-                  console.log('info: connection opened.');
-                  const message = {
-                    "scNo":scNo,
-                    "teamMId":teamMId,
-                    "Alcate":"동행삭제"
-                  };
-                  console.log("scNo =" +scNo);
-                  console.log("teamMId =" +teamMId);
-                  socket.send("message");
-                };
-                socket.onclose = function() {
-                  console.log('connect close');
-                };
-                socket.onerror = function (err) {console.log('Errors : ' , err);};
-              });
-              //$("#"+[[${teamShare.teamNo}]]).hide();
-              //location.href="/schedules?scNo="+scNo;
-            },
-            error: function(xhr, status, error) {
-              console.error("error: ", status, ", ", error);
-            }
-          });
+        success: function (result) {
+          console.log("success status = "+result.status);
+        },
+        error: function (xhr) {
+          console.log("fail status = "+xhr.status);
         }
       });
-    [/]
-
-    var timeout = null;
-    $('#writeDiv').change(function() {
-      clearTimeout(timeout);
-
-      timeout = setTimeout(function() {
-        var scTitle=$("#inputTitle").val();
-        var scSdate=$("#sDate").val();
-        var scEdate=$("#eDate").val();
-        var scProgress=$("#progress").val();
-        var scContent=$("#writeDiv > div.ck.ck-reset.ck-editor.ck-rounded-corners > div.ck.ck-editor__main > div").html();
-
-        var queryString=window.location.href; //쿼리스트링 받기
-        var scNo=new URL(queryString).searchParams.get('scNo'); //쿼리스트링에서 값 추출
-
-        console.log("scno="+scNo);
-        console.log("title="+scTitle);
-        console.log("sDate="+scSdate);
-        console.log("eDate="+scEdate);
-        console.log("progress="+scProgress);
-        console.log("content="+scContent);
-
-        $.ajax({
-          url:"write/?scNo="+scNo,
-          method: "patch",
-          data:{
-            "scNo":scNo,
-            "scTitle":scTitle,
-            "scSdate":scSdate,
-            "scEdate":scEdate,
-            "scProgress":scProgress,
-            "scContent":scContent
-          },
-          success: function (result) {
-            var html = result.scContent;
-            $("#writeDiv > div.ck.ck-reset.ck-editor.ck-rounded-corners > div.ck.ck-editor__main > div p").append(html);
-          },
-          error: function (xhr) {
-            console.log("fail status = "+xhr.status);
-          }
-        });
-      }, 1000) //keyup event delay ms 설정
-    });
-
-  </script>
-  <script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
+    }, 1000) //keyup event delay ms 설정
+  });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js" integrity="sha512-VEd+nq25CkR676O+pLBnDW09R7VQX9Mdiij052gVCp5yVH3jGtH70Ho/UUv4mJDsEdTvqRCFZg0NKGiojGnUCw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </body>
 </html>
