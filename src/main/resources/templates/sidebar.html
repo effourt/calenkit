@@ -80,7 +80,7 @@
                 <!-- trash -->
                 <div tabindex="0" class="icon-trash li" id="trash" data-bs-toggle="modal" data-bs-target="#trashbox"><span class="m-auto">휴지통</span></div>
                 <!-- login -->
-                <span tabindex="0" class="icon-logout li"><span><a th:href="@{/logout}">로그아웃</a></span></span>
+                <span tabindex="0" class="icon-logout li"><span><a th:href="@{/member/logout}">로그아웃</a></span></span>
             </div>
         </div>
     </div>
@@ -141,7 +141,7 @@
                                         <input type="hidden" id="scNo" th:value="${schedule.scNo}" />
                                         <Strong>([[${schedule.getScNo}]])</Strong>
                                         [[${schedule.getScSdate}]] ~ [[${schedule.getScEdate}]] / [[${schedule.getScTitle}]]
-                                        <a class="myBtn" th:href="@{restore?scNo={scNo}(scNo=${schedule.getScNo()})}">복원</a> <a class="myBtn" onclick="deleteSchedule();">삭제</a>
+                                        <a class="myBtn" th:href="@{restore?scNo={scNo}(scNo=${schedule.getScNo()})}">복원</a> <a class="myBtn" onclick="@{/member/logout};">삭제</a>
                                     </li>
                                 </th:block>
                             </th:block>
@@ -155,7 +155,7 @@
             </div>
         </div>
     </div>
-    <script>
+    <script th:inline="javascript">
         function deleteSchedule() {
             var scNo=$('#scNo').val();
             var con_test=confirm("정말 삭제하시겠습니까?");
@@ -308,9 +308,6 @@
                }
             });
         }
-
-
-
     </script>
 </div>
 
