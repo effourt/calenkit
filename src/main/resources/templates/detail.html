@@ -141,8 +141,14 @@
         ClassicEditor
                 .create(document.querySelector("#editor")) //CKEditor 입력창 생성
                 .then(editor => { //CKEditor 이벤트 감지 메소드
-                  editor.setData(result);//DB값(scContent) 출력
+                  //if(웹소켓 객체 받아온 게 있으면
+                  //editor.setData(받아온 웹소켓 객체);
 
+                  //else ↓
+                  editor.setData(result/*받아온 웹소켓 객체*/);//DB값(scContent) 출력
+
+
+                  //작성
                   editor.model.document.on('change:data', () => { //입력 감지
                     var data = editor.getData(); //데이터 받아오기
                     console.log('Editor data:', data);
@@ -156,7 +162,10 @@
                         data: {"scContent": data}, //데이터 scContent로 전송
                         success: function (result) {
                           if(result="success"){
+                            /* console.log("data = "+data); //data 사용 가능 */
                             console.log("content write SUCCESS status = " + result.status);
+                            //보내는 웹소켓 로직
+
                           }
                         },
                         error: function (xhr) {
