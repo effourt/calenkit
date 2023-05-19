@@ -18,10 +18,10 @@
             <if test="scContent!=null and scContent!=''">
                 SC_CONTENT=#{scContent},
             </if>
-            <if test="scSdate!=null or scSdate!=''">
+            <if test="scSdate!=null and scSdate!=''">
                 SC_SDATE=#{scSdate},
             </if>
-            <if test="scEdate!=null or scEdate!=''">
+            <if test="scEdate!=null and scEdate!=''">
                 SC_EDATE=#{scEdate},
             </if>
             <if test="scProgress==0 or scProgress==1 or scProgress==2">

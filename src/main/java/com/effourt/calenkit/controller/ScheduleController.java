@@ -144,32 +144,17 @@ public class ScheduleController {
      */
     @ResponseBody
     @PatchMapping("/write")
-    public Schedule writeSchedule(@ModelAttribute Schedule schedule) {
-
-        /*if(title!=null && !title.isEmpty()) { schedule.setScTitle(title.toString()); }
-        if(sDate!=null && !sDate.isEmpty()) { schedule.setScSdate(sDate.toString()); }
-        if(eDate!=null && !eDate.isEmpty()) { schedule.setScEdate(eDate.toString()); }
-        if(progress!=null) { schedule.setScProgress(progress); }
-        if(content!=null && !content.isEmpty()) { schedule.setScContent(content.toString()); }*/
-
-        /*System.out.println("scNo="+scNo);
-        System.out.println("title="+title.toString());
-        System.out.println("sdate="+sDate);
-        System.out.println("edate="+eDate);
-        System.out.println("progress="+progress);
-        System.out.println("content="+content.toString());*/
-
+    public String writeSchedule(@ModelAttribute Schedule schedule) {
         scheduleRepository.update(schedule);
-
-        return schedule;
-        /*return "redirect:/schedule?scNo="+schedule.getScNo();*/
+        return "success";
     }
 
     @ResponseBody
     @GetMapping("load")
-    public Schedule load(@RequestParam Integer scNo) {
+    public String load(@RequestParam Integer scNo) {
         Schedule schedule=scheduleRepository.findByScNo(scNo);
-        return schedule;
+        System.out.println("(load)scContent = "+schedule.getScContent());
+        return schedule.getScContent();
     }
 
     /** 일정 추가
