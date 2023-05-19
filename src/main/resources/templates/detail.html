@@ -133,6 +133,14 @@
     const queryString = window.location.search; //?scNo=1
     const scNo = new URLSearchParams(queryString).get('scNo'); //1
 
+    const socket = new SockJS("/schedule");
+    socket.onopen = function() {
+      console.log('WebSocket connection opened');
+    };
+    socket.onclose = function() {
+      console.log('WebSocket connection closed');
+    }
+
     // ~~~ CKEditor DB연동 파트 ~~~
     $.ajax({
       url: "load?scNo="+scNo,
@@ -141,39 +149,50 @@
         ClassicEditor
                 .create(document.querySelector("#editor")) //CKEditor 입력창 생성
                 .then(editor => { //CKEditor 이벤트 감지 메소드
-                  //if(웹소켓 객체 받아온 게 있으면
-                  //editor.setData(받아온 웹소켓 객체);
+                  let text = null;
+                  let data = null;
 
-                  //else ↓
-                  editor.setData(result/*받아온 웹소켓 객체*/);//DB값(scContent) 출력
+                  socket.onmessage = function(text) {
+                    console.log("웹소켓 메시지 받기");
+                    editor.setData(text.data);
+                    console.log("editor 사본");
+                  }
+
+                  //else(default - DB값)
+                  editor.setData(result);
+                  console.log("editor 원본");
 
 
-                  //작성
+                  //write - UPDATE
                   editor.model.document.on('change:data', () => { //입력 감지
-                    var data = editor.getData(); //데이터 받아오기
-                    console.log('Editor data:', data);
+                    data = editor.getData(); //입력데이터 받아오기
+                    text = {
+                      "content":data,
+                      "scNo":scNo
+                    }
+                  }) //data change
 
-                    var timeout = null;
-                    clearTimeout(timeout);
-                    timeout = setTimeout(function () {
+                  editor.editing.view.document.on('keydown', (event, k) => { //enter event
+                    if(k.keyCode==13) {
+                      socket.send(JSON.stringify(text));
+                      console.log("웹소켓 전송")
+                      console.log('Editor data:', data);
+
                       $.ajax({
                         url: "write?scNo="+scNo,
                         method: "patch",
                         data: {"scContent": data}, //데이터 scContent로 전송
                         success: function (result) {
                           if(result="success"){
-                            /* console.log("data = "+data); //data 사용 가능 */
                             console.log("content write SUCCESS status = " + result.status);
-                            //보내는 웹소켓 로직
-
                           }
                         },
                         error: function (xhr) {
                           console.log("content write ERROR status = " + xhr.status);
                         }
-                      });
-                    }, 1000);
-                  }) //data change
+                      });//ajax
+                    }
+                  }); //enter event
                 })
                 .catch(error => {
                   console.error(error.stack);
