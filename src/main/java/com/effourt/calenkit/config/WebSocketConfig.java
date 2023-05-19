@@ -1,7 +1,9 @@
 package com.effourt.calenkit.config;
 
+import com.effourt.calenkit.repository.TeamRepository;
 import com.effourt.calenkit.util.websockethandler.AlarmHandler;
 import com.effourt.calenkit.util.websockethandler.ScheduleHandler;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -13,7 +15,10 @@ import org.springframework.web.socket.server.support.HttpSessionHandshakeInterce
 
 @EnableWebSocket
 @Configuration
+@RequiredArgsConstructor
 public class WebSocketConfig implements WebSocketConfigurer {
+
+    private final TeamRepository teamRepository;
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
@@ -32,7 +37,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     @Bean
     public WebSocketHandler scheduleHandler() {
-        return new ScheduleHandler();
+        return new ScheduleHandler(teamRepository);
     }
 
 }
