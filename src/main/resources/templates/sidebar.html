@@ -12,7 +12,8 @@
 <div th:fragment="sidebar">
     <div class="menu text-white" tabindex="0">
         <header id="mypageBtn" class="avatar" style="cursor:pointer;">
-            <img class="img-fluid" th:src="${loginMember?.memImage}" src="https://images.unsplash.com/photo-1533738363-b7f9aef128ce?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80" />
+            <img class="img-fluid" th:if="${loginMember?.memImage.startsWith('http')}" th:src="${loginMember?.memImage}" src="https://images.unsplash.com/photo-1533738363-b7f9aef128ce?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80" />
+            <img class="img-fluid" th:if="${!loginMember?.memImage.startsWith('http')}" th:src="@{/img/} + ${loginMember?.memImage}" src="https://images.unsplash.com/photo-1533738363-b7f9aef128ce?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80" />
             <p class="mt-3">[[${loginMember.memId}]]</p>
         </header>
         <div class="ul">
