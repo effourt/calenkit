@@ -91,6 +91,9 @@
 ![image](https://github.com/effourt/calenkit/assets/107570140/94cfd757-6b68-4451-b84a-9f4fd6a5d6e4)
 ![image](https://github.com/effourt/calenkit/assets/107570140/02756530-b4b3-490f-b71f-219352cfa42f)
 - 검색 기능 - 휴지통 검색
+![image](https://github.com/effourt/calenkit/assets/107570140/3a5ce77d-49d5-49bb-8206-be8b83e2ee71)
+
+
 ### ✅ 마이페이지 (🚨로그인 회원만 접속 가능)
 ![image](https://github.com/effourt/calenkit/assets/107570140/69d3e6e1-4551-477c-bd2d-f20107029498)
 - 비밀번호 변경
