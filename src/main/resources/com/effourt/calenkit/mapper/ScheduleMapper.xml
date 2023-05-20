@@ -169,14 +169,16 @@
     <select id="countFindAllByScNo" resultType="Integer">
         SELECT COUNT(*)
         FROM SCHEDULE
-        WHERE SC_NO IN (
-        <!-- scNoList를 scNo를 구분자로하여 출력. 정수(Integer)인 scNo만 출력되게했음. -->
-        <foreach collection="list" item="scNo" separator=",">
-            <if test="scNo instanceof Integer">
-                #{scNo}
-            </if>
-        </foreach>)
-        AND SC_STATUS=1
+        WHERE SC_STATUS=1
+        <if test="list != null and list.size != 0">
+            AND SC_NO IN (
+            <!-- scNoList를 scNo를 구분자로하여 출력. 정수(Integer)인 scNo만 출력되게했음. -->
+            <foreach collection="list" item="scNo" separator=",">
+                <if test="scNo instanceof Integer">
+                    #{scNo}
+                </if>
+            </foreach>)
+        </if>
     </select>
 
     <!--    <select id="findByFilter" resultType="Schedule">-->
