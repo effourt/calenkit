@@ -44,7 +44,7 @@
 - Discord
 - Code with Me (IntelliJ)
 
-## 💻Git Branch Policy
+## ✔Git Branch Policy
 - **Github-Flow** 전략과 유사함
 - 작업은 user-branch에서만 이루어지며 develop, main 브랜치로 직접 접근 불가능
 - 새로운 브랜치는 develop을 기준으로 생성하여 작업 진행
@@ -63,6 +63,9 @@
 - [**TEST]** 테스트 코드 추가 삭제 변경 - 테스트 코드 관련 모든 변경사항들
 - [**ETC]** 기타 애매한 경우
 
+
+## ✔ERD Diagram
+![calenkit](https://github.com/effourt/calenkit/assets/107570140/d1ac1e72-9562-407a-aaf3-cfd441b4ff00)
 ## 🗓️구현
 
 ### ✅ 로그인
