@@ -33,7 +33,7 @@
           data: JSON.stringify({"memId": memId}),
           dataType : "text",
           success: function(result) {
-              if(result == "login-again") {
+              if(result == "fail-login-again") {
                   alert(memId+"의 계정으로 로그인 후 일정 공유에 참여해주세요.");
               } else {
                   location.href= "/schedules?scNo="+scNo;
