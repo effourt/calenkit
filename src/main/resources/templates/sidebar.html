@@ -199,12 +199,12 @@
             var scrollHeight = $(this).prop('scrollHeight'); //스크롤 높이 계산
 
             if(scrollTop + innerHeight >= scrollHeight) { //스크롤 바닥에 닿을 때
-                isLoading=true; //로딩 중으로 설정
-                $(".bookmark_loading-Bar").show();//로딩창 출력
-
                 if(bookmarkCurrentPage==[[${bookmarkTotalPageCount}]]) { //현재 마지막 페이지일 경우
                     return; //함수 끝
                 }
+
+                isLoading=true; //로딩 중으로 설정
+                $(".bookmark_loading-Bar").show();//로딩창 출력
 
                 bookmarkCurrentPage++; //현재 페이지 증가(다음 페이지 요청)
 
@@ -253,12 +253,12 @@
             var scrollHeight = $(this).prop('scrollHeight'); //스크롤 높이 계산
 
             if(scrollTop + innerHeight >= scrollHeight) { //스크롤 바닥에 닿을 때
-                isLoading=true; //로딩 중으로 설정
-                $(".schedule_loading-Bar").show();//로딩창 출력
-
                 if(ScheduleCurrentPage==[[${totalPageCount}]]) { //현재 마지막 페이지일 경우
                     return; //함수 끝
                 }
+
+                isLoading=true; //로딩 중으로 설정
+                $(".schedule_loading-Bar").show();//로딩창 출력
 
                 ScheduleCurrentPage++; //현재 페이지 증가(다음 페이지 요청)
 
@@ -337,12 +337,12 @@
                         var scrollHeight = $(this).prop('scrollHeight'); //스크롤 높이 계산
 
                         if(scrollTop + innerHeight >= scrollHeight) { //스크롤 바닥에 닿을 때
-                            isLoading=true; //로딩 중으로 설정
-                            $(".search_loading-Bar").show();//로딩창 출력
-
                             if(searchCurrentPage==[[${searchTotalPageCount}]]) { //현재 마지막 페이지일 경우
                                 return; //함수 끝
                             }
+
+                            isLoading=true; //로딩 중으로 설정
+                            $(".search_loading-Bar").show();//로딩창 출력
 
                             searchCurrentPage++; //현재 페이지 증가(다음 페이지 요청)
 
@@ -398,12 +398,12 @@
             var scrollHeight = $(this).prop('scrollHeight'); //스크롤 높이 계산
 
             if(scrollTop + innerHeight >= scrollHeight) { //스크롤 바닥에 닿을 때
-                isLoading=true; //로딩 중으로 설정
-                $(".recyclebin_loading-Bar").show();//로딩창 출력
-
                 if(recyclebinCurrentPage==[[${recyclebinTotalPageCount}]]) { //현재 마지막 페이지일 경우
                     return; //함수 끝
                 }
+
+                isLoading=true; //로딩 중으로 설정
+                $(".recyclebin_loading-Bar").show();//로딩창 출력
 
                 recyclebinCurrentPage++; //현재 페이지 증가(다음 페이지 요청)
 
@@ -485,12 +485,12 @@
                         var scrollHeight = $(this).prop('scrollHeight'); //스크롤 높이 계산
 
                         if(scrollTop + innerHeight >= scrollHeight) { //스크롤 바닥에 닿을 때
-                            isLoading=true; //로딩 중으로 설정
-                            $(".recyclebin_loading-Bar").show();//로딩창 출력
-
                             if(recyclebinCurrentPage==[[${recyclebinTotalPageCount}]]) { //현재 마지막 페이지일 경우
                                 return; //함수 끝
                             }
+
+                            isLoading=true; //로딩 중으로 설정
+                            $(".recyclebin_loading-Bar").show();//로딩창 출력
 
                             recyclebinCurrentPage++; //현재 페이지 증가(다음 페이지 요청)
 
