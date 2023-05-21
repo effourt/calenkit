@@ -1,7 +1,6 @@
 package com.effourt.calenkit.controller;
 
 import com.effourt.calenkit.domain.Member;
-
 import com.effourt.calenkit.repository.MemberRepository;
 import com.effourt.calenkit.service.AdminService;
 import com.effourt.calenkit.service.MyPageService;
@@ -11,77 +10,24 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.List;
 
 @Slf4j
 @Controller
 @RequiredArgsConstructor
-public class MemberController2 {
+public class MypageController {
     private final MyPageService myPageService;
-    private final AdminService adminService;
     private final MemberRepository memberRepository;
     private final ImageUpload imageUploadService;
     private final PasswordEncoder passwordEncoder;
     private final HttpSession session;
-
-    /** 관리자(/members/admin) */
-    // Admin 페이지 이동
-    @GetMapping ("/members/admin")
-    public String admin() {
-        return "member/admin";
-    }
-
-    /** 관리자(/members/admin) */
-    // 로그인 멤버 제외한 멤버 검색(SELECT)
-    // keyword(Form) 통해 검색 후 멤버 리스트 출력
-    @GetMapping ("/members/admin/List")
-    @ResponseBody
-    public List<Member> adminIdList(@RequestParam(required = false) String keyword) {
-        String loginId=(String)session.getAttribute("loginId");
-        List<Member> memberList = memberRepository.findAllByMemId(keyword);
-
-        //로그인아이디 출력 제외
-        memberList.removeIf(member -> member.getMemId().equals(loginId));
-
-        return memberList;
-    }
-
-    /** 관리자(/members/admin) */
-    // 멤버 권한 변경(UPDATE)
-    // 셀렉트박스로 변경된 memId,memStatus 전달받아 상태 변경
-    @PatchMapping ("/members/admin/update")
-    public String adminModify(@RequestParam("selectedValue") Integer memStatus, String memId) {
-        Member member = memberRepository.findByMemId(memId);
-        member.setMemStatus(memStatus);
-        adminService.modifyStatus(member);
-        return "member/admin";
-    }
-
-    /** 관리자(/members/admin) */
-    // 멤버 삭제(DELETE)
-    // 1.체크박스가 선택된 memIdList를 가져옴
-    // 2.for문을 memId 객체 분리
-    // 3.memId를 통해  Schedule 검색 후 모든 scNo 가져옴
-    // 4.scNo와 memId를 통해 Team 검색 후 teamLevel=9,그 외 경우 분류
-    // 5.teamLevel=9일 경우는 scNo를 통해 TEAM MEMBER 검색 후 ALARM,TEAM정보 삭제 후 SCHEDULE,MEMBER 정보 삭제
-    // 6.teamLevel=0,1일 경우는 나의 ALARM,TEAM,SCHEDULE,MEMBER 정보 차례대로 삭제
-    @DeleteMapping(value ="/members/admin/delete")
-    public String adminDelete(@RequestParam("memIdList") List<String> memIdList) {
-        //체크 된 멤버리스트 삭제하기 위해 for문 사용.
-        for (String originMemId : memIdList) {
-            //리스트로 객체 받아올 경우 [,],"가 포함되어있는데 이걸 제거하기 위해 사용함.
-            String originalString =originMemId.toString();
-            String memId = originalString.replaceAll("[\\[\\]\",]", "");
-            adminService.removeMember(memId);
-       }
-        return "member/admin";
-    }
-
     /** 마이 페이지 (/members/myPage)*/
     //MyPage 이동
     @GetMapping(value = "/members/myPage")
@@ -99,16 +45,16 @@ public class MemberController2 {
     // 2.파일 업로드 처리 후 파일 미리보기 처리
     @PostMapping(value = "/members/myPage/modify_image")
     public String saveImage(@RequestParam MultipartFile memImage) throws IOException {
-            String loginId = (String) session.getAttribute("loginId");
-            Member loginMember = memberRepository.findByMemId(loginId);
-            // 이미지 업로드 후 파일명 반환
-            String fileName = imageUploadService.uploadImage(memImage);
-            // Member 객체에 이미지 파일명 저장
-            loginMember.setMemImage(fileName);
-            // Member 객체를 인자로 받는 modifyMe() 메소드 호출
-            myPageService.modifyMe(loginMember);
+        String loginId = (String) session.getAttribute("loginId");
+        Member loginMember = memberRepository.findByMemId(loginId);
+        // 이미지 업로드 후 파일명 반환
+        String fileName = imageUploadService.uploadImage(memImage);
+        // Member 객체에 이미지 파일명 저장
+        loginMember.setMemImage(fileName);
+        // Member 객체를 인자로 받는 modifyMe() 메소드 호출
+        myPageService.modifyMe(loginMember);
 
-            return "redirect:";
+        return "redirect:";
 
 
     }
@@ -122,13 +68,13 @@ public class MemberController2 {
     @ResponseBody
     public int nameCheck(String memName) {
         int cnt=0;
-            if (memName.matches("^[a-zA-Z가-힣0-9]{2,10}$")) {
-                cnt = memberRepository.findByMemName(memName);
-                return cnt;
-            } else {
-                cnt = 2;
-                return cnt;
-            }
+        if (memName.matches("^[a-zA-Z가-힣0-9]{2,10}$")) {
+            cnt = memberRepository.findByMemName(memName);
+            return cnt;
+        } else {
+            cnt = 2;
+            return cnt;
+        }
     }
 
     /** 마이 페이지 (/members/myPage)*/
@@ -251,7 +197,7 @@ public class MemberController2 {
     public String myPageDelete(){
         return "member/myPageDelete";
     }
-    
+
     /** 마이 페이지 삭제 (/members/myPageDelete)*/
     // 아이디 일치 Ajax 검사(GET)
     // 일치 여부 확인 (일치 cnt=1, 불일치 cnt=0)
@@ -269,16 +215,16 @@ public class MemberController2 {
 
         return cnt;
     }
-    
+
     /** 마이 페이지 삭제 (/members/myPageDelete)*/
     // 멤버 상태 변경(Post)
-    // 아이디값 비교 후 멤버 상태 0 변경 
+    // 아이디값 비교 후 멤버 상태 0 변경
     @PostMapping(value = "/members/myPageDelete/delete")
     public String myPageDelete(String memId) {
         Integer memStatus=0;
         String loginId=(String)session.getAttribute("loginId");
         Member member=memberRepository.findByMemId(loginId);
-      if(member.getMemId().equals(memId)) {
+        if(member.getMemId().equals(memId)) {
             member.setMemStatus(memStatus);
             myPageService.removeMe(member);
             session.removeAttribute("loginId");
@@ -288,4 +234,5 @@ public class MemberController2 {
             return "login";
         }
     }
+
 }
