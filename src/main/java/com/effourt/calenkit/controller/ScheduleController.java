@@ -54,18 +54,23 @@ public class ScheduleController {
         return "calendar/detail";
     }
 
-    /**
+    /** 일정 UPDATE
      *
      * @param schedule
      * @return
      */
     @ResponseBody
-    @PatchMapping("/write")
+    @PatchMapping("/write") //$.ajax - url:"/schedules/write"
     public String writeSchedule(@ModelAttribute Schedule schedule) {
         scheduleRepository.update(schedule);
         return "success";
     }
 
+    /** 일정 상세페이지 내용 출력
+     *
+     * @param scNo
+     * @return
+     */
     @ResponseBody
     @GetMapping("/load")
     public String loadSchedule(@RequestParam Integer scNo) {
@@ -91,8 +96,8 @@ public class ScheduleController {
      * @param scNo
      * @return 메인페이지로 redirect
      */
-    @GetMapping("/goToRecycleBin")
-    public String goToRecycleBin(@RequestParam Integer scNo) {
+    @GetMapping("/recyclebin")
+    public String recyclebinSchedule(@RequestParam Integer scNo) {
         myScheduleService.goToRecycleBin(scNo); //일정 휴지통 이동
         alarmService.addAlarmByDeleteSchedule(scNo); //관련 알람 미출력, 일정 삭제 알람 추가
         return "redirect:/";
@@ -143,8 +148,8 @@ public class ScheduleController {
      * @return
      */
     @ResponseBody
-    @GetMapping("/bookmark_scroll")
-    public Map<String, Object> bookmarkScroll(String bookmarkCurrentPage) {
+    @GetMapping("/scroll-bookmark")
+    public Map<String, Object> scrollBookmark(String bookmarkCurrentPage) {
         String loginId = (String)session.getAttribute("loginId"); //session으로 현재 아이디 받아오기
         Map<String, Object> map=new HashMap<>();
         List<Integer> scNoList=teamRepository.findByid(loginId);
@@ -178,8 +183,8 @@ public class ScheduleController {
      * @return
      */
     @ResponseBody
-    @GetMapping("/schedule_scroll")
-    public Map<String, Object> scheduleScroll(String ScheduleCurrentPage) {
+    @GetMapping("/scroll-schedule")
+    public Map<String, Object> scrollSchedule(String ScheduleCurrentPage) {
         String loginId = (String)session.getAttribute("loginId"); //session으로 현재 아이디 받아오기
         Map<String, Object> map=new HashMap<>();
         List<Integer> scNoList=teamRepository.findByid(loginId);
@@ -215,8 +220,8 @@ public class ScheduleController {
      * @return
      */
     @ResponseBody
-    @PostMapping("/search_schedule")
-    public Map<String, Object> searchScroll(@RequestParam(required = false) String keyword,
+    @PostMapping("/search-schedule")
+    public Map<String, Object> searchSchedule(@RequestParam(required = false) String keyword,
                                             @RequestParam(required = false) String filter,
                                             String searchCurrentPage) {
         String loginId = (String)session.getAttribute("loginId"); //session으로 현재 아이디 받아오기
@@ -259,8 +264,8 @@ public class ScheduleController {
      * @return
      */
     @ResponseBody
-    @PostMapping("/search_recyclebin")
-    public Map<String, Object> searchRecyclebinScroll(@RequestParam(required = false) String keyword,
+    @PostMapping("/search-recyclebin")
+    public Map<String, Object> searchRecyclebin(@RequestParam(required = false) String keyword,
                                                       @RequestParam(required = false) String filter,
                                                       String recyclebinCurrentPage) {
         String loginId = (String)session.getAttribute("loginId"); //session으로 현재 아이디 받아오기
