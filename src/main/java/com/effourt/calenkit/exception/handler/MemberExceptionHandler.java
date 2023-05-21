@@ -1,6 +1,6 @@
 package com.effourt.calenkit.exception.handler;
 
-import com.effourt.calenkit.controller.MemberController;
+import com.effourt.calenkit.controller.LoginController;
 import com.effourt.calenkit.exception.CodeMismatchException;
 import com.effourt.calenkit.exception.MemberNotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @Slf4j
-@RestControllerAdvice(assignableTypes = {MemberController.class})
+@RestControllerAdvice(assignableTypes = {LoginController.class})
 public class MemberExceptionHandler {
 
     @ExceptionHandler(MemberNotFoundException.class)
