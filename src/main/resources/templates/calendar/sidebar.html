@@ -11,17 +11,16 @@
 <body>
 <div th:fragment="sidebar">
     <div class="menu text-white" tabindex="0">
-        <header class="avatar">
-            <a th:href="@{/members/myPage}" style="text-decoration: none">
-                <img class="img-fluid" th:src="${loginMember?.memImage}" src="https://images.unsplash.com/photo-1533738363-b7f9aef128ce?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80" />
-                <p class="mt-3">[[${loginMember.memId}]]</p>
-            </a>
+        <header id="mypageBtn" class="avatar" style="cursor:pointer;">
+            <img class="img-fluid" th:if="${loginMember?.memImage.startsWith('http')}" th:src="${loginMember?.memImage}" src="https://images.unsplash.com/photo-1533738363-b7f9aef128ce?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80" />
+            <img class="img-fluid" th:if="${!loginMember?.memImage.startsWith('http')}" th:src="@{/img/} + ${loginMember?.memImage}" src="https://images.unsplash.com/photo-1533738363-b7f9aef128ce?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80" />
+            <p class="mt-3">[[${loginMember.memId}]]</p>
         </header>
         <div class="ul">
             <!-- alarm -->
             <div tabindex="0" class="icon-alarm li" data-bs-toggle="collapse" data-bs-target="#alarmBox">
                 <span id="alarm" class="w-75">알림</span>&nbsp;&nbsp;&nbsp;
-                <span class="badge bg-secondary">4</span>
+<!--                <span class="badge bg-secondary">4</span>-->
             </div>
 
             <div id="alarmBox" class="collapse">
@@ -88,7 +87,7 @@
                 <!-- trash -->
                 <div tabindex="0" class="icon-trash li" id="trash" data-bs-toggle="modal" data-bs-target="#trashbox"><span class="m-auto">휴지통</span></div>
                 <!-- login -->
-                <span tabindex="0" class="icon-logout li"><span><a th:href="@{/member/logout}">로그아웃</a></span></span>
+                <span tabindex="0" class="icon-logout li" id="logoutBtn">로그아웃</span>
             </div>
         </div>
     </div>
@@ -201,12 +200,12 @@
             var scrollHeight = $(this).prop('scrollHeight'); //스크롤 높이 계산
 
             if(scrollTop + innerHeight >= scrollHeight) { //스크롤 바닥에 닿을 때
-                isLoading=true; //로딩 중으로 설정
-                $(".bookmark_loading-Bar").show();//로딩창 출력
-
                 if(bookmarkCurrentPage==[[${bookmarkTotalPageCount}]]) { //현재 마지막 페이지일 경우
                     return; //함수 끝
                 }
+
+                isLoading=true; //로딩 중으로 설정
+                $(".bookmark_loading-Bar").show();//로딩창 출력
 
                 bookmarkCurrentPage++; //현재 페이지 증가(다음 페이지 요청)
 
@@ -255,12 +254,12 @@
             var scrollHeight = $(this).prop('scrollHeight'); //스크롤 높이 계산
 
             if(scrollTop + innerHeight >= scrollHeight) { //스크롤 바닥에 닿을 때
-                isLoading=true; //로딩 중으로 설정
-                $(".schedule_loading-Bar").show();//로딩창 출력
-
                 if(ScheduleCurrentPage==[[${totalPageCount}]]) { //현재 마지막 페이지일 경우
                     return; //함수 끝
                 }
+
+                isLoading=true; //로딩 중으로 설정
+                $(".schedule_loading-Bar").show();//로딩창 출력
 
                 ScheduleCurrentPage++; //현재 페이지 증가(다음 페이지 요청)
 
@@ -339,12 +338,12 @@
                         var scrollHeight = $(this).prop('scrollHeight'); //스크롤 높이 계산
 
                         if(scrollTop + innerHeight >= scrollHeight) { //스크롤 바닥에 닿을 때
-                            isLoading=true; //로딩 중으로 설정
-                            $(".search_loading-Bar").show();//로딩창 출력
-
                             if(searchCurrentPage==[[${searchTotalPageCount}]]) { //현재 마지막 페이지일 경우
                                 return; //함수 끝
                             }
+
+                            isLoading=true; //로딩 중으로 설정
+                            $(".search_loading-Bar").show();//로딩창 출력
 
                             searchCurrentPage++; //현재 페이지 증가(다음 페이지 요청)
 
@@ -400,12 +399,12 @@
             var scrollHeight = $(this).prop('scrollHeight'); //스크롤 높이 계산
 
             if(scrollTop + innerHeight >= scrollHeight) { //스크롤 바닥에 닿을 때
-                isLoading=true; //로딩 중으로 설정
-                $(".recyclebin_loading-Bar").show();//로딩창 출력
-
                 if(recyclebinCurrentPage==[[${recyclebinTotalPageCount}]]) { //현재 마지막 페이지일 경우
                     return; //함수 끝
                 }
+
+                isLoading=true; //로딩 중으로 설정
+                $(".recyclebin_loading-Bar").show();//로딩창 출력
 
                 recyclebinCurrentPage++; //현재 페이지 증가(다음 페이지 요청)
 
@@ -487,12 +486,12 @@
                         var scrollHeight = $(this).prop('scrollHeight'); //스크롤 높이 계산
 
                         if(scrollTop + innerHeight >= scrollHeight) { //스크롤 바닥에 닿을 때
-                            isLoading=true; //로딩 중으로 설정
-                            $(".recyclebin_loading-Bar").show();//로딩창 출력
-
                             if(recyclebinCurrentPage==[[${recyclebinTotalPageCount}]]) { //현재 마지막 페이지일 경우
                                 return; //함수 끝
                             }
+
+                            isLoading=true; //로딩 중으로 설정
+                            $(".recyclebin_loading-Bar").show();//로딩창 출력
 
                             recyclebinCurrentPage++; //현재 페이지 증가(다음 페이지 요청)
 
@@ -542,6 +541,15 @@
 
 
         /*]]>*/
+
+        //로그아웃
+        $("#logoutBtn").click(function() {
+            location.href = "/member/logout"
+        });
+
+        $("#mypageBtn").click(function() {
+            location.href = "/members/myPage";
+        });
     </script>
 </div>
 

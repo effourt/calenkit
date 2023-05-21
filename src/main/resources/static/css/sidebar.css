@@ -3,17 +3,16 @@ body {
   font-family: "Open Sans", Helvetica Neue, Helvetica, Arial, sans-serif;
   padding-left: 240px;
 }
-li a {
-  color: #fff;
+li a, span span a, header a {
   text-decoration: none;
   outline: none
 }
 a:hover, a:active{
+  !important;
   text-decoration: none;
   color:#fff;
   background-color:rgba(0,0,0,0.1);
 }
-
 .myBtn{
   color: black;
 }
