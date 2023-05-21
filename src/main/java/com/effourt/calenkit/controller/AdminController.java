@@ -13,15 +13,17 @@ import java.util.List;
 
 @Slf4j
 @Controller
+@RequestMapping("/admin")
 @RequiredArgsConstructor
 public class AdminController {
+
     private final AdminService adminService;
     private final MemberRepository memberRepository;
     private final HttpSession session;
 
     /** 관리자(/members/admin) */
     // Admin 페이지 이동
-    @GetMapping("/members/admin")
+    @GetMapping
     public String admin() {
         return "admin/admin";
     }
@@ -29,7 +31,7 @@ public class AdminController {
     /** 관리자(/members/admin) */
     // 로그인 멤버 제외한 멤버 검색(SELECT)
     // keyword(Form) 통해 검색 후 멤버 리스트 출력
-    @GetMapping ("/members/admin/List")
+    @GetMapping ("/list")
     @ResponseBody
     public List<Member> adminIdList(@RequestParam(required = false) String keyword) {
         String loginId=(String)session.getAttribute("loginId");
@@ -44,12 +46,12 @@ public class AdminController {
     /** 관리자(/members/admin) */
     // 멤버 권한 변경(UPDATE)
     // 셀렉트박스로 변경된 memId,memStatus 전달받아 상태 변경
-    @PatchMapping("/members/admin/update")
+    @PatchMapping("/update")
     public String adminModify(@RequestParam("selectedValue") Integer memStatus, String memId) {
         Member member = memberRepository.findByMemId(memId);
         member.setMemStatus(memStatus);
         adminService.modifyStatus(member);
-        return "redirect:/members/admin";
+        return "redirect:/admin";
     }
 
     /** 관리자(/members/admin) */
@@ -60,7 +62,7 @@ public class AdminController {
     // 4.scNo와 memId를 통해 Team 검색 후 teamLevel=9,그 외 경우 분류
     // 5.teamLevel=9일 경우는 scNo를 통해 TEAM MEMBER 검색 후 ALARM,TEAM정보 삭제 후 SCHEDULE,MEMBER 정보 삭제
     // 6.teamLevel=0,1일 경우는 나의 ALARM,TEAM,SCHEDULE,MEMBER 정보 차례대로 삭제
-    @DeleteMapping(value ="/members/admin/delete")
+    @DeleteMapping(value ="/delete")
     public String adminDelete(@RequestParam("memIdList") List<String> memIdList) {
         //체크 된 멤버리스트 삭제하기 위해 for문 사용.
         for (String originMemId : memIdList) {
@@ -69,7 +71,7 @@ public class AdminController {
             String memId = originalString.replaceAll("[\\[\\]\",]", "");
             adminService.removeMember(memId);
         }
-        return "redirect:/members/admin";
+        return "redirect:/admin";
     }
 
 }

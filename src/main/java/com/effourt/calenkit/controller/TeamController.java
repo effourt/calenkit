@@ -25,14 +25,13 @@ import java.util.Map;
 
 @Slf4j
 @Controller
+@RequestMapping("/teams/share")
 @RequiredArgsConstructor
 public class TeamController {
 
     private final TeamScheduleService teamScheduleService;
     private final AlarmService alarmService;
-
     private final MemberRepository memberRepository;
-
     private final MessageSource ms;
     private final EmailSend emailSend;
 
@@ -40,8 +39,8 @@ public class TeamController {
      * 이메일 받은 동행이 링크 클릭할 시 이동될 페이지 - teamShareConfirm.html
      */
     //http://localhost:8080/teams/share/confirm/111/jhla456@kakao.com
-    @GetMapping("/teams/share/confirm/{scNo}/{memId}")
-    public String showTeamShareAuth(@PathVariable int scNo, @PathVariable String memId, Model model) {
+    @GetMapping("/confirm/{scNo}/{memId}")
+    public String moveTeamShareConfirm(@PathVariable int scNo, @PathVariable String memId, Model model) {
         model.addAttribute("memId", memId);
         model.addAttribute("scNo", scNo);
         return "calendar/teamShareConfirm";
@@ -51,7 +50,7 @@ public class TeamController {
      * 동행에게 초대 이메일 발송
      */
     // http://localhost:8080/teams/share/send-link/57  : teamId:jhla456@naver.com
-    @PostMapping("/teams/share/send-link/{scNo}")
+    @PostMapping("/send-link/{scNo}")
     @ResponseBody
     public String sendCode(@PathVariable int scNo, @RequestBody Map<String, String> map, HttpSession session) {
         String loginId = (String) session.getAttribute("loginId"); //초대하는 호스트 아이디
@@ -95,7 +94,7 @@ public class TeamController {
      * 동행 조회
      * */
     // http://localhost:8080/teams/share/1
-    @GetMapping ("/teams/share/{scNo}")
+    @GetMapping ("/{scNo}")
     @ResponseBody
     public List<TeamShare> searchMyTeam(@PathVariable int scNo) throws TeamNotFoundException, ScheduleNotFoundException{
         return teamScheduleService.getTeam(scNo);
@@ -105,7 +104,7 @@ public class TeamController {
      * 동행 추가 (동행추가 + 알람서비스)
      * */
     // http://localhost:8080/teams/share/1  : memId=test@test.com
-    @PostMapping ("/teams/share/{scNo}")
+    @PostMapping ("/{scNo}")
     @ResponseBody
     public String shareTeam(@PathVariable int scNo, @RequestBody Map<String,Object> map, HttpSession session) throws ExistsTeamException, MemberNotFoundException, ScheduleNotFoundException{
         String loginId = (String) session.getAttribute("loginId");
