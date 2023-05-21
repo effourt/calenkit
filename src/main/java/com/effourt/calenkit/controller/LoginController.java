@@ -34,6 +34,14 @@ public class LoginController {
     private final PasswordEncoder passwordEncoder;
 
     /**
+     * 로그인 페이지로 이동
+     */
+    @GetMapping("/form")
+    public String login() {
+        return "login/login";
+    }
+
+    /**
      * 로그인 후 Redirect 할 경로 지정
      * @param session
      * @return
@@ -118,7 +126,7 @@ public class LoginController {
 
         session.setAttribute("loginId", userInfo.getEmail());
         loginService.updateLastLogin(userInfo.getEmail());
-        return "redirect:/return-uri";
+        return "redirect:/login/return-uri";
     }
     
     /**

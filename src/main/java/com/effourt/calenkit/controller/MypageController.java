@@ -47,6 +47,7 @@ public class MypageController {
         model.addAttribute("loginMember", loginMember);
         return "mypage/myPageModify";
     }
+
     /**
      * 계정 삭제 페이지 이동
      */
@@ -128,6 +129,22 @@ public class MypageController {
     }
 
     /**
+     * 패스워드 변경 페이지 - 새 비밀번호 형식 유효성 검사
+     */
+    // password1 유효성 검사 여부 Ajax 검사(GET)
+    // 유효성 확인 (일치 cnt=1, 불일치 cnt=0)
+    @GetMapping(value = "/check-password2")
+    @ResponseBody
+    public int passwordCheck2(String password1) {
+        int cnt = 0;
+        if (password1.matches("(?=.*\\d)(?=.*[a-z])(?=.*[!@#])[\\da-zA-Z!@#]{8,15}")) {
+            cnt++;
+            return cnt; //1 출력
+        }
+        return cnt; //0 출력
+    }
+
+    /**
      * 패스워드 변경 페이지 - 새 비밀번호 재입력 확인
      */
     // password1,password2 일치 여부 Ajax 검사(GET)
@@ -203,8 +220,8 @@ public class MypageController {
             if (member != null) {
                 cnt++;
                 return cnt;
-            }}
-
+            }
+        }
         return cnt;
     }
 
