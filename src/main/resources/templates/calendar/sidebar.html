@@ -175,7 +175,7 @@
                                 <input id="scNo" th:value="${schedule.scNo}" type="hidden"/>
                                 <Strong>([[${schedule.getScNo}]])</Strong>
                                 [[${schedule.getScSdate}]] ~ [[${schedule.getScEdate}]] / [[${schedule.getScTitle}]]
-                                <a class="myBtn" th:href="@{restore?scNo={scNo}(scNo=${schedule.getScNo()})}">복원</a> <a
+                                <a class="myBtn" th:href="@{/schedules/restore?scNo={scNo}(scNo=${schedule.getScNo()})}">복원</a> <a
                                     class="myBtn" onclick="deleteSchedule();">삭제</a>
                             </li>
                         </th:block>
@@ -195,7 +195,7 @@
             var scNo = $('#scNo').val();
             var con_test = confirm("정말 삭제하시겠습니까?");
             if (con_test == true) {
-                location.href = "delete?scNo=" + scNo;
+                location.href = "/schedules/delete?scNo=" + scNo;
             }
         }
 
@@ -239,7 +239,7 @@
 
                 //ajax로 받아올 페이지 요청
                 $.ajax({
-                    url:"bookmark_scroll",
+                    url:"/schedules/scroll-bookmark",
                     method:"get",
                     data:{"bookmarkCurrentPage" : bookmarkCurrentPage}, //페이지 전달
                     success:function (result) {
@@ -293,7 +293,7 @@
 
                 //ajax로 받아올 페이지 요청
                 $.ajax({
-                    url:"schedule_scroll",
+                    url:"/schedules/scroll-schedule",
                     method:"get",
                     data:{"ScheduleCurrentPage" : ScheduleCurrentPage}, //페이지 전달
                     success:function (result) {
@@ -335,7 +335,7 @@
             var queryString=$("#searchForm").serialize();
 
             $.ajax({
-                url: "search_schedule",
+                url: "/schedules/search-schedule",
                 method: "post",
                 data: queryString, //form으로 queryString 전달
                 success: function (result) { //queryString 받아 map 반환
@@ -377,7 +377,7 @@
 
                             //ajax로 받아올 페이지 요청
                             $.ajax({
-                                url:"search_schedule",
+                                url:"/schedules/search-schedule",
                                 method:"post",
                                 data:{"searchCurrentPage" : searchCurrentPage,
                                     queryString
@@ -424,7 +424,7 @@
         //휴지통 초기페이지
         function recyclebinAJAX() {
             $.ajax({
-                url:"recyclebin",
+                url:"/schedules/search-recyclebin",
                 method:"post",
                 success: function (result) {
                     var recyclebinList=result.recyclebinList;
@@ -438,7 +438,7 @@
                             html+="<strong>("+schedule.scNo+")</strong>";
                             html+=schedule.scSdate+" ~ "+schedule.scEdate+" / ";
                             html+="<a href='schedules?scNo="+schedule.scNo+"'>"+schedule.scTitle+"</a>";
-                            html+="<a class='myBtn' onclick=location.href='restore?scNo="+schedule.scNo+"'>복원</a>";
+                            html+="<a class='myBtn' onclick=location.href='/schedules/restore?scNo="+schedule.scNo+"'>복원</a>";
                             html+="<a className='myBtn' onClick='deleteSchedule();'>삭제</a>";
                             html+="</li>";
                         });
@@ -462,7 +462,7 @@
             isSearch=1;
 
             $.ajax({
-                url: "recyclebin",
+                url: "/schedules/search-recyclebin",
                 method: "post",
                 data: queryString, //form으로 queryString 전달
                 success: function (result) { //queryString 받아 map 반환
@@ -518,7 +518,7 @@
 
                     //ajax로 받아올 페이지 요청
                     $.ajax({
-                        url:"recyclebin",
+                        url:"/schedules/search-recyclebin",
                         method:"post",
                         data:{"recyclebinCurrentPage" : recyclebinCurrentPage,
                             "queryString":queryString
