@@ -15,6 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Slf4j
@@ -29,7 +30,39 @@ public class ScheduleController {
     private final AlarmService alarmService;
     private final HttpSession session;
 
-    /** 일정 상세페이지로 이동
+    //http://localhost:8080/
+    //http://localhost:8080/main
+
+    /** 권한 있는 일정 전체 출력
+     *
+     * @return 캘린더 라이브러리에 필요한 필드명 : 일정값 을 매핑한 맵리스트
+     */
+    @GetMapping("/main_ajax")
+    @ResponseBody
+    public List<Map> mainAJAX() {
+        String loginId = (String)session.getAttribute("loginId"); //session으로 현재 아이디 받아오기
+        Date temp=new Date(); //출력 기준 월 받아오기
+        SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM");
+        String date=simpleDateFormat.format(temp).toString();
+
+        List<Schedule> scheduleList = myScheduleService.getMySchedule(loginId,null, null, null); //일정 리스트 저장
+
+        List<Map> mapList=new ArrayList<>();
+
+        for(Schedule schedule:scheduleList) { //일정 리스트에서 일정 뽑아내기
+            if(schedule.getScStatus()!=0) {
+                Map<String, String> map=new HashMap<>(); //일정 저장할 map
+                map.put("title", schedule.getScTitle());
+                map.put("start", schedule.getScSdate());
+                map.put("end", schedule.getScEdate());
+                map.put("url", "schedules?scNo=" + schedule.getScNo());
+                mapList.add(map); //map에 일정 저장
+            }
+        }
+        return mapList; //일정이 저장된 mapList값 보내기
+    }
+
+    /** 일정 상세페이지 이동
      *
      * @param scNo
      * @return 일정 상세 페이지 HTML
@@ -113,6 +146,7 @@ public class ScheduleController {
         String loginId = (String)session.getAttribute("loginId"); //session으로 현재 아이디 받아오기
         alarmService.removeAlarmByScno(scNo);
         myScheduleService.removeSchedule(scNo, loginId);
+
         return "redirect:/";
     }
 
@@ -165,6 +199,9 @@ public class ScheduleController {
         Integer startRowNum=0+(pageNum-1)*rowCount;
 
         List<Schedule> bookmarkList=myScheduleService.getBookmark(loginId, null, startRowNum, rowCount);
+        if(bookmarkList.isEmpty()) {
+            bookmarkList=null;
+        }
         map.put("bookmarkList", bookmarkList);
 
         //일정 총 갯수
@@ -200,6 +237,9 @@ public class ScheduleController {
         Integer startRowNum=0+(pageNum-1)*rowCount;
 
         List<Schedule> scheduleList=myScheduleService.getMySchedule(loginId, null, startRowNum, rowCount);
+        if(scheduleList.isEmpty()) {
+            scheduleList=null;
+        }
         map.put("scheduleList", scheduleList);
 
         //일정 총 갯수
@@ -256,7 +296,7 @@ public class ScheduleController {
         return map;
     }
 
-    /** 휴지통 검색(+무한 스크롤) - 스크롤은 두번째 페이지 이후로
+    /** 휴지통 검색(+무한 스크롤)
      *
      * @param keyword
      * @param filter
@@ -295,6 +335,11 @@ public class ScheduleController {
         Integer search_recyclebinTotalPageCount=(int)Math.ceil(totalRow/(double)rowCount);
         map.put("search_recyclebinTotalPageCount", search_recyclebinTotalPageCount);
 
+        System.out.println("keyword = "+keyword);
+        System.out.println("filter = "+filter);
+        System.out.println("pageNum = "+pageNum);
+        System.out.println("totalRow = "+totalRow);
+        System.out.println("totalPage = "+search_recyclebinTotalPageCount);
         return map;
     }
 }
