@@ -23,7 +23,7 @@ public class AdminController {
     // Admin 페이지 이동
     @GetMapping("/members/admin")
     public String admin() {
-        return "member/admin";
+        return "admin/admin";
     }
 
     /** 관리자(/members/admin) */
@@ -49,7 +49,7 @@ public class AdminController {
         Member member = memberRepository.findByMemId(memId);
         member.setMemStatus(memStatus);
         adminService.modifyStatus(member);
-        return "member/admin";
+        return "redirect:/members/admin";
     }
 
     /** 관리자(/members/admin) */
@@ -69,7 +69,7 @@ public class AdminController {
             String memId = originalString.replaceAll("[\\[\\]\",]", "");
             adminService.removeMember(memId);
         }
-        return "member/admin";
+        return "redirect:/members/admin";
     }
 
 }

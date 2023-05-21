@@ -2,7 +2,6 @@ package com.effourt.calenkit.controller;
 
 import com.effourt.calenkit.domain.Member;
 import com.effourt.calenkit.repository.MemberRepository;
-import com.effourt.calenkit.service.AdminService;
 import com.effourt.calenkit.service.MyPageService;
 import com.effourt.calenkit.util.ImageUpload;
 import lombok.RequiredArgsConstructor;
@@ -85,7 +84,7 @@ public class MypageController {
         Member loginMember=memberRepository.findByMemId(loginId);
         loginMember.setMemName(memName);
         myPageService.modifyMe(loginMember);
-        return "redirect:";
+        return "redirect:/";
     }
 
 

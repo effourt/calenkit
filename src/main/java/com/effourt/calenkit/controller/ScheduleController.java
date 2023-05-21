@@ -77,10 +77,9 @@ public class ScheduleController {
         //휴지통 리스트 출력(스크롤) - 초기 페이지
         Map<String, Object>recyclebinMap= searchRecyclebinScroll(null, null, null);
         model.addAttribute("recyclebinList", recyclebinMap.get("recyclebinList"));
-        System.out.println("recyclebinList = "+recyclebinMap.get("recyclebinList"));
-        model.addAttribute("recyclebinTotalPageCount", recyclebinMap.get("recyclebinTotalPageCount"));
+        model.addAttribute("recyclebinTotalPageCount", myScheduleService.countRecyclebin(loginId, null, null));
 
-        return "main";
+        return "calendar/main";
     }
 
     /** 권한 있는 일정 전체 출력
@@ -134,7 +133,7 @@ public class ScheduleController {
         model.addAttribute("teamShareList",teamShareList); //team + image
         log.debug("teamShareList = {}", teamShareList.get(0).getTeamLevel());
 
-        return "detail";
+        return "calendar/detail";
     }
 
     /**
@@ -371,8 +370,8 @@ public class ScheduleController {
         Integer totalRow= myScheduleService.countRecyclebin(loginId, keyword, filter);
 
         //전체 페이지 갯수
-        Integer recyclebinTotalPageCount=(int)Math.ceil(totalRow/(double)rowCount);
-        map.put("recyclebinTotalPageCount", recyclebinTotalPageCount);
+        Integer search_recyclebinTotalPageCount=(int)Math.ceil(totalRow/(double)rowCount);
+        map.put("search_recyclebinTotalPageCount", search_recyclebinTotalPageCount);
 
         return map;
     }

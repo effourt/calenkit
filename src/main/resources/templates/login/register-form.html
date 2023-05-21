@@ -5,7 +5,7 @@
     <title>Title</title>
     <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css'>
     <link rel='stylesheet' href='https://unicons.iconscout.com/release/v2.1.9/css/unicons.css'>
-    <link rel="stylesheet" th:href="@{/css/login-form-style.css}" href="../static/css/login-form-style.css">
+    <link rel="stylesheet" th:href="@{/css/login-form-style.css}" href="../../static/css/login-form-style.css">
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <style>
@@ -51,7 +51,7 @@
                                                             <label for="profileImage" class="form-label">
                                                                 <img id="imageContainer" class="img-fluid rounded-circle img-thumbnail"
                                                                      th:src="@{/img/basic_profile.png}"
-                                                                     src="../static/img/basic_profile.png" alt="..."
+                                                                     src="../../static/img/basic_profile.png" alt="..."
                                                                      style="cursor: pointer; object-fit: cover">
                                                                 <div id="profileImageName">사진 추가</div>
                                                             </label>
@@ -89,6 +89,6 @@
     </div>
 </div>
 
-<script th:src="@{/js/registerForm.js}" src="../static/js/registerForm.js"></script>
+<script th:src="@{/js/registerForm.js}" src="../../static/js/registerForm.js"></script>
 </body>
 </html>

@@ -44,6 +44,24 @@ public class LoginController {
     private final ImageUpload imageUpload;
     private final PasswordEncoder passwordEncoder;
 
+    /**
+     * 로그인 후 Redirect 할 경로 지정
+     * @param session
+     * @return
+     */
+    @GetMapping("/return-uri")
+    public String returnURI(HttpSession session) {
+        String returnURI = (String)session.getAttribute("returnURI");
+        log.info("returnURI = {}",returnURI);
+        if (returnURI == null) {
+            return "redirect:/";
+        } else if (returnURI != null || !returnURI.equals("")) {
+            session.removeAttribute("returnURI");
+            return "redirect:"+returnURI;
+        }
+
+        return "redirect:/";
+    }
 
     /**
      * 회원가입 페이지로 이동
@@ -54,7 +72,7 @@ public class LoginController {
     @PostMapping("/join/form")
     public String joinForm(@RequestParam String memId, Model model) {
         model.addAttribute("memId", memId);
-        return "register";
+        return "register-form";
     }
 
     /**
@@ -75,7 +93,64 @@ public class LoginController {
      */
     @GetMapping("/login/form")
     public String login() {
-        return "login";
+        return "login/login-form";
+    }
+
+    /**
+     * 소셜 로그인
+     * @param code
+     * @param session
+     * @return
+     */
+    @GetMapping("/login/kakao")
+    public String loginByKakao(@RequestParam String code, HttpSession session) {
+        log.info("code={}", code);
+        AccessTokenRequest accessTokenRequest = AccessTokenRequest.builder()
+                .clientId("ce578a556d58e95706684b75a588e1b5")
+                .grantType("authorization_code")
+                .redirectUri("http://localhost:8080/login/kakao")
+                .code(code)
+                .build();
+        //Access 토큰 발급
+        AccessTokenResponse accessToken = loginService.getAccessToken(accessTokenRequest);
+        //Access 토큰으로 카카오 리소스 서버에서 사용자 정보 가져오기
+        AuthUserInfoResponse userInfo = loginService.getAuthUserInfo(accessToken.getAccessToken());
+        log.info("userEmail={}", userInfo.getEmail());
+
+        //사용자 이메일이 DB에 존재하지 않으면 Access 토큰, Refresh 토큰 저장 후 회원가입 실시
+        //사용자 이메일이 DB에 존재하지만 Access 토큰, Refresh 토큰이 설정되어 있지 않으면 저장 후 로그인
+        //사용자 이메일이 DB에 존재하고 Access 토큰, Refresh 토큰이 존재하는 경우 토큰 UPDATE
+        Member member = loginService.getMemberById(userInfo.getEmail());
+        if (member == null) {
+            //사용자 이메일이 DB에 존재하지 않은 경우 회원가입 후 로그인
+            joinService.joinBySns(userInfo, accessToken);
+            log.info("카카오 - 회원가입 후 로그인");
+        } else {
+            if (member.getMemAuthId() == null) {
+                //사용자 이메일이 DB에 존재하지만 Access 토큰, Refresh 토큰이 설정되어 있지 않는 경우
+                Auth auth = loginService.saveToken(accessToken);
+                member.setMemAuthId(auth.getAuthId());
+                //탈퇴회원인 경우, 일반 회원으로 권한 변경
+                if (member.getMemStatus() == 0) {
+                    member.setMemStatus(1);
+                }
+                loginService.update(member);
+                log.info("카카오 - 토큰 저장 후 로그인");
+            } else if (member.getMemAuthId() != null) {
+                //사용자 이메일이 DB에 존재하고 Access 토큰, Refresh 토큰이 존재하는 경우
+                loginService.updateToken(member.getMemAuthId(), accessToken);
+                //탈퇴회원인 경우, 일반 회원으로 권한 변경
+                if (member.getMemStatus() == 0) {
+                    member.setMemStatus(1);
+                    loginService.update(member);
+                }
+                log.info("카카오 - 토큰 갱신 후 로그인");
+            }
+        }
+
+        session.setAttribute("loginId", userInfo.getEmail());
+        loginService.updateLastLogin(userInfo.getEmail());
+        return "redirect:/return-uri";
     }
     
     /**
@@ -257,81 +332,5 @@ public class LoginController {
         session.setAttribute("loginId", member.getMemId());
         loginService.updateLastLogin(member.getMemId());
         return "OK";
-    }
-
-    /**
-     * 소셜 로그인
-     * @param code
-     * @param session
-     * @return
-     */
-    @GetMapping("/login/kakao")
-    public String loginByKakao(@RequestParam String code, HttpSession session) {
-        log.info("code={}", code);
-        AccessTokenRequest accessTokenRequest = AccessTokenRequest.builder()
-                .clientId("ce578a556d58e95706684b75a588e1b5")
-                .grantType("authorization_code")
-                .redirectUri("http://localhost:8080/login/kakao")
-                .code(code)
-                .build();
-        //Access 토큰 발급
-        AccessTokenResponse accessToken = loginService.getAccessToken(accessTokenRequest);
-        //Access 토큰으로 카카오 리소스 서버에서 사용자 정보 가져오기
-        AuthUserInfoResponse userInfo = loginService.getAuthUserInfo(accessToken.getAccessToken());
-        log.info("userEmail={}", userInfo.getEmail());
-
-        //사용자 이메일이 DB에 존재하지 않으면 Access 토큰, Refresh 토큰 저장 후 회원가입 실시
-        //사용자 이메일이 DB에 존재하지만 Access 토큰, Refresh 토큰이 설정되어 있지 않으면 저장 후 로그인
-        //사용자 이메일이 DB에 존재하고 Access 토큰, Refresh 토큰이 존재하는 경우 토큰 UPDATE
-        Member member = loginService.getMemberById(userInfo.getEmail());
-        if (member == null) {
-            //사용자 이메일이 DB에 존재하지 않은 경우 회원가입 후 로그인
-            joinService.joinBySns(userInfo, accessToken);
-            log.info("카카오 - 회원가입 후 로그인");
-        } else {
-            if (member.getMemAuthId() == null) {
-                //사용자 이메일이 DB에 존재하지만 Access 토큰, Refresh 토큰이 설정되어 있지 않는 경우
-                Auth auth = loginService.saveToken(accessToken);
-                member.setMemAuthId(auth.getAuthId());
-                //탈퇴회원인 경우, 일반 회원으로 권한 변경
-                if (member.getMemStatus() == 0) {
-                    member.setMemStatus(1);
-                }
-                loginService.update(member);
-                log.info("카카오 - 토큰 저장 후 로그인");
-            } else if (member.getMemAuthId() != null) {
-                //사용자 이메일이 DB에 존재하고 Access 토큰, Refresh 토큰이 존재하는 경우
-                loginService.updateToken(member.getMemAuthId(), accessToken);
-                //탈퇴회원인 경우, 일반 회원으로 권한 변경
-                if (member.getMemStatus() == 0) {
-                    member.setMemStatus(1);
-                    loginService.update(member);
-                }
-                log.info("카카오 - 토큰 갱신 후 로그인");
-            }
-        }
-
-        session.setAttribute("loginId", userInfo.getEmail());
-        loginService.updateLastLogin(userInfo.getEmail());
-        return "redirect:/return-uri";
-    }
-
-    /**
-     * 로그인 후 Redirect 할 경로 지정
-     * @param session
-     * @return
-     */
-    @GetMapping("/return-uri")
-    public String returnURI(HttpSession session) {
-        String returnURI = (String)session.getAttribute("returnURI");
-        log.info("returnURI = {}",returnURI);
-        if (returnURI == null) {
-            return "redirect:/";
-        } else if (returnURI != null || !returnURI.equals("")) {
-            session.removeAttribute("returnURI");
-            return "redirect:"+returnURI;
-        }
-
-        return "redirect:/";
     }
 }
