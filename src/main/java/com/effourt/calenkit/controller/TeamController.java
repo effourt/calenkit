@@ -37,8 +37,52 @@ public class TeamController {
     private final EmailSend emailSend;
 
     /**
+     * 이메일 받은 동행이 링크 클릭할 시 이동될 페이지 - teamShareConfirm.html
+     */
+    //http://localhost:8080/teams/share/confirm/111/jhla456@kakao.com
+    @GetMapping("/teams/share/confirm/{scNo}/{memId}")
+    public String showTeamShareAuth(@PathVariable int scNo, @PathVariable String memId, Model model) {
+        model.addAttribute("memId", memId);
+        model.addAttribute("scNo", scNo);
+        return "calendar/teamShareConfirm";
+    }
+
+    /**
+     * 동행에게 초대 이메일 발송
+     */
+    // http://localhost:8080/teams/share/send-link/57  : teamId:jhla456@naver.com
+    @PostMapping("/teams/share/send-link/{scNo}")
+    @ResponseBody
+    public String sendCode(@PathVariable int scNo, @RequestBody Map<String, String> map, HttpSession session) {
+        String loginId = (String) session.getAttribute("loginId"); //초대하는 호스트 아이디
+        String teamMid = map.get("teamMid"); //메세지 보낼 동행 아이디(이메일)
+
+        String subject = ms.getMessage(
+                "mail.share-code.subject",
+                new Object[]{loginId},
+                null);
+
+        String message = ms.getMessage(
+                "mail.share-code.message",
+                new Object[]{"http://localhost:8080/teams/share/confirm/"+scNo+"/"+teamMid},
+                null);
+
+        EmailMessage emailMessage = EmailMessage.builder()
+                .recipient(teamMid)
+                .subject(subject)
+                .message(message)
+                .build();
+
+        //이메일 전송
+        emailSend.sendMail(emailMessage);
+        log.info("email id={}", teamMid);
+        log.info("subject={}", subject);
+        log.info("message={}", message);
+        return "OK";
+    }
+
+    /**
      * 회원 조회 (실시간 회원 검색)
-     * @param memId
      */
     // http://localhost:8080/members?memId=Test3@test3.com
     @GetMapping("/members")
@@ -84,8 +128,7 @@ public class TeamController {
 
     /***
      * 동행의 권한 상태 변경 (권한상태변경 + 알람서비스)
-     * @param map -> teamLevel은 무조건 - 읽기권한:0, 수정권한:1
-     * @return
+     * teamLevel은 무조건 - 읽기권한:0, 수정권한:1
      */
     // http://localhost:8080/teams/share/1  : teamMid=member?teamLevel=0
     @PatchMapping("/teams/share/{scNo}")
@@ -115,51 +158,4 @@ public class TeamController {
         return "deleteMyTeam ok";
     }
 
-    /**
-     * 동행에게 초대 이메일 발송
-     */
-    // http://localhost:8080/teams/share/send-link/57  : teamId:jhla456@naver.com
-    @PostMapping("/teams/share/send-link/{scNo}")
-    @ResponseBody
-    public String sendCode(@PathVariable int scNo, @RequestBody Map<String, String> map, HttpSession session) {
-        String loginId = (String) session.getAttribute("loginId"); //초대하는 호스트 아이디
-        String teamMid = map.get("teamMid"); //메세지 보낼 동행 아이디(이메일)
-
-        String subject = ms.getMessage(
-                "mail.share-code.subject",
-                new Object[]{loginId},
-                null);
-
-        String message = ms.getMessage(
-                "mail.share-code.message",
-                new Object[]{"http://localhost:8080/teams/share/confirm/"+scNo+"/"+teamMid},
-                null);
-
-        EmailMessage emailMessage = EmailMessage.builder()
-                .recipient(teamMid)
-                .subject(subject)
-                .message(message)
-                .build();
-
-        //이메일 전송
-        emailSend.sendMail(emailMessage);
-        log.info("email id={}", teamMid);
-        log.info("subject={}", subject);
-        log.info("message={}", message);
-        return "OK";
-    }
-
-    /**
-     * 이메일 받은 동행이 링크 클릭할 시 이동될 페이지 - teamShareConfirm.html
-     * @param scNo
-     * @param memId
-     * @param model
-     */
-    //http://localhost:8080/teams/share/confirm/111/jhla456@kakao.com
-    @GetMapping("/teams/share/confirm/{scNo}/{memId}")
-    public String showTeamShareAuth(@PathVariable int scNo, @PathVariable String memId, Model model) {
-        model.addAttribute("memId", memId);
-        model.addAttribute("scNo", scNo);
-        return "teamShareConfirm";
-    }
 }

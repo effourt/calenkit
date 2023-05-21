@@ -27,16 +27,35 @@ public class MypageController {
     private final ImageUpload imageUploadService;
     private final PasswordEncoder passwordEncoder;
     private final HttpSession session;
-    /** 마이 페이지 (/members/myPage)*/
-    //MyPage 이동
+
+    /**
+     * 마이 페이지 이동 (/members/myPage)
+     * */
     @GetMapping(value = "/members/myPage")
     public String myPage(Model model) {
         String loginId=(String)session.getAttribute("loginId");
         Member loginMember=memberRepository.findByMemId(loginId);
         model.addAttribute("loginMember",loginMember);
-        return "member/myPage";
+        return "mypage/myPage";
     }
 
+    /**
+     * 패스워드 변경 페이지 이동 (/members/myPageModify)
+     * */
+    @GetMapping(value = "/members/myPageModify/pwModify")
+    public String savePw(Model model){
+        String loginId=(String)session.getAttribute("loginId");
+        Member loginMember=memberRepository.findByMemId(loginId);
+        model.addAttribute("loginMember",loginMember);
+        return "mypage/myPageModify";
+    }
+    /**
+     * 삭제 페이지 이동 (/members/myPageDelete)
+     * */
+    @GetMapping(value = "/members/myPageDelete/delete")
+    public String myPageDelete(){
+        return "mypage/myPageDelete";
+    }
 
     /** 마이 페이지 (/members/myPage)*/
     // memImage Ajax 유효성 Ajax 검사&변경(UPDATE)
@@ -53,9 +72,7 @@ public class MypageController {
         // Member 객체를 인자로 받는 modifyMe() 메소드 호출
         myPageService.modifyMe(loginMember);
 
-        return "redirect:";
-
-
+        return "redirect:/";
     }
 
 
@@ -89,16 +106,6 @@ public class MypageController {
 
 
     /** 마이 페이지 패스워드 변경 (/members/myPageModify)*/
-    // memPw 변경 페이지 이동(Get)
-    @GetMapping(value = "/members/myPageModify/pwModify")
-    public String savePw(Model model){
-        String loginId=(String)session.getAttribute("loginId");
-        Member loginMember=memberRepository.findByMemId(loginId);
-        model.addAttribute("loginMember",loginMember);
-        return "member/myPageModify";
-    }
-
-    /** 마이 페이지 패스워드 변경 (/members/myPageModify)*/
     // memPw 변경(Post)
     // 1.현재 비밀번호가 null인 경우 검증없이 비밀번호 등록
     // 2.현재 비밀번호가 존재 할 경우 passwordEncoder 검증 후 비밀번호 등록
@@ -110,19 +117,18 @@ public class MypageController {
         //비밀번호 없을 경우
         if(loginMember.getMemPw()==null){
             myPageService.modifyPassword(loginMember,password1);
-            return "member/endPage";
+            return "mypage/endPage";
         }
         //기존 비밀번호 있을 경우
         else {
             if (passwordEncoder.matches(memPw, loginMember.getMemPw())) {
                 myPageService.modifyPassword(loginMember, password1);
-                return "member/endPage";
+                return "mypage/endPage";
             } else {
-                return "member/myPage";
+                return "mypage/myPage";
             }
         }
     }
-
 
     /** 마이 페이지 패스워드 변경 (/members/myPageModify)*/
     // memPw 일치 여부 Ajax 검사(GET)
@@ -191,13 +197,6 @@ public class MypageController {
     }
 
     /** 마이 페이지 삭제 (/members/myPageDelete)*/
-    //myPageDelete 이동(GET)
-    @GetMapping(value = "/members/myPageDelete/delete")
-    public String myPageDelete(){
-        return "member/myPageDelete";
-    }
-
-    /** 마이 페이지 삭제 (/members/myPageDelete)*/
     // 아이디 일치 Ajax 검사(GET)
     // 일치 여부 확인 (일치 cnt=1, 불일치 cnt=0)
     @GetMapping(value = "/members/myPageDelete/idCheck")
@@ -227,10 +226,10 @@ public class MypageController {
             member.setMemStatus(memStatus);
             myPageService.removeMe(member);
             session.removeAttribute("loginId");
-            return "member/endPage";
+            return "mypage/endPage";
         }
         else{
-            return "login";
+            return "redirect:/login/form";
         }
     }
 
