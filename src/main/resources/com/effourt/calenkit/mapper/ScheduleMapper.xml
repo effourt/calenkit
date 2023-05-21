@@ -68,6 +68,7 @@
             AND DATE_FORMAT(SC_SDATE, '%Y-%m') &lt;= DATE_FORMAT(#{date}, '%Y-%m')
             AND DATE_FORMAT(SC_EDATE, '%Y-%m') &gt;= DATE_FORMAT(#{date}, '%Y-%m')
         </if>
+        AND SC_STATUS=1
         <if test="startRowNum != null and rowCount != null">
             LIMIT #{startRowNum}, #{rowCount}
         </if>
