@@ -344,8 +344,8 @@ public class ScheduleController {
     @ResponseBody
     @PostMapping("/search_recyclebin")
     public Map<String, Object> searchRecyclebinScroll(@RequestParam(required = false) String keyword,
-                                            @RequestParam(required = false) String filter,
-                                            String recyclebinCurrentPage) {
+                                                      @RequestParam(required = false) String filter,
+                                                      String recyclebinCurrentPage) {
         String loginId = (String)session.getAttribute("loginId"); //session으로 현재 아이디 받아오기
         Map<String, Object> map=new HashMap<>();
 
