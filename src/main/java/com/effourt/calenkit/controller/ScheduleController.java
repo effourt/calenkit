@@ -1,9 +1,6 @@
 package com.effourt.calenkit.controller;
 
-import com.effourt.calenkit.domain.Alarm;
-import com.effourt.calenkit.domain.Member;
 import com.effourt.calenkit.domain.Schedule;
-import com.effourt.calenkit.domain.Team;
 import com.effourt.calenkit.dto.TeamShare;
 import com.effourt.calenkit.exception.ScheduleNotFoundException;
 import com.effourt.calenkit.exception.TeamNotFoundException;
@@ -17,13 +14,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Slf4j
 @Controller
+@RequestMapping("/schedules")
 @RequiredArgsConstructor
 public class ScheduleController {
     private final MyScheduleService myScheduleService;
@@ -33,14 +29,14 @@ public class ScheduleController {
     private final AlarmService alarmService;
     private final HttpSession session;
 
-    /** 일정 상세페이지 이동
+    /** 일정 상세페이지로 이동
      *
      * @param scNo
      * @return 일정 상세 페이지 HTML
      */
     //http://localhost:8080/schedules?scNo=1
-    @GetMapping("/schedules")
-    public String getMyTeam(@RequestParam int scNo, Model model) throws TeamNotFoundException, ScheduleNotFoundException {
+    @GetMapping
+    public String getDetailSchedule(@RequestParam int scNo, Model model) throws TeamNotFoundException, ScheduleNotFoundException {
         String loginId = (String)session.getAttribute("loginId");
         List<TeamShare> teamShareList = teamScheduleService.getTeam(scNo);
 
@@ -112,7 +108,6 @@ public class ScheduleController {
         String loginId = (String)session.getAttribute("loginId"); //session으로 현재 아이디 받아오기
         alarmService.removeAlarmByScno(scNo);
         myScheduleService.removeSchedule(scNo, loginId);
-
         return "redirect:/";
     }
 

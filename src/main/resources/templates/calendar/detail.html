@@ -250,7 +250,7 @@
       $("#typedText").text(typedText);
 
       $.ajax({
-        url: "/members?memId="+typedText,
+        url: "/teams/share/members?memId="+typedText,
         type: "GET",
         success: function(result) {
           let button = "<button class='btn btn-sm btn-outline-dark' ";
