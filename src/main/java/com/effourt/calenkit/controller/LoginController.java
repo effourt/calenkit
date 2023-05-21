@@ -31,7 +31,7 @@ import java.util.Map;
 @Slf4j
 @Controller
 @RequiredArgsConstructor
-public class MemberController {
+public class LoginController {
 
     private final LoginService loginService;
     private final JoinService joinService;
@@ -45,6 +45,39 @@ public class MemberController {
     private final PasswordEncoder passwordEncoder;
 
 
+    /**
+     * 회원가입 페이지로 이동
+     * @param memId
+     * @param model
+     * @return
+     */
+    @PostMapping("/join/form")
+    public String joinForm(@RequestParam String memId, Model model) {
+        model.addAttribute("memId", memId);
+        return "register";
+    }
+
+    /**
+     * 로그아웃
+     * @param session
+     * @return
+     */
+    @GetMapping("/member/logout")
+    public String logout(HttpSession session) {
+        log.info("로그아웃 시작");
+        session.invalidate();
+        log.info("로그아웃 종료");
+        return "redirect:/login/form";
+    }
+
+    /**
+     * 로그인 페이지로 이동
+     */
+    @GetMapping("/login/form")
+    public String login() {
+        return "login";
+    }
+    
     /**
      * 아이디, 비밀번호 존재 여부 체크
      * 아이디 존재 O, 비밀번호 O : PASSWORD_LOGIN
@@ -88,15 +121,6 @@ public class MemberController {
         log.info("subject={}", subject);
         log.info("message={}", message);
         return "OK";
-    }
-
-
-    /**
-     * 로그인창으로 이동
-     */
-    @GetMapping("/login/form")
-    public String login() {
-        return "login";
     }
 
     /**
@@ -211,12 +235,6 @@ public class MemberController {
         return "OK";
     }
 
-    @PostMapping("/join/form")
-    public String joinForm(@RequestParam String memId, Model model) {
-        model.addAttribute("memId", memId);
-        return "register";
-    }
-
     /**
      * 이메일 회원가입
      * @param member 아이디(이메일), 비밀번호, 닉네임, 프로필 이미지(선택) 정보 저장 객체
@@ -315,18 +333,5 @@ public class MemberController {
         }
 
         return "redirect:/";
-    }
-
-    /**
-     * 로그아웃
-     * @param session
-     * @return
-     */
-    @GetMapping("/member/logout")
-    public String logout(HttpSession session) {
-        log.info("로그아웃 시작");
-        session.invalidate();
-        log.info("로그아웃 종료");
-        return "redirect:/login/form";
     }
 }
