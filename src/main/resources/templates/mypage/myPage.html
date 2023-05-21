@@ -1,16 +1,19 @@
 <!doctype html>
-<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/layout :: layout (~{::link}, ~{::script}, ~{::style}, ~{::title}, ~{::form})}">
+<html th:replace="~{layout/layout :: layout (~{::link}, ~{::script}, ~{::style}, ~{::title}, ~{::form})}"
+      xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="utf-8">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <!-- Bootstrap -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.19.1/css/mdb.min.css" rel="stylesheet">
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+    <script crossorigin="anonymous"
+            integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+            src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <title>Discord Profile Card</title>
     <style>
 
-        .name{
+        .name {
             color: white;
             font-size: 20px;
         }
@@ -28,14 +31,17 @@
             margin-left: 10px;
             display: none;
         }
+
         .name_ok {
             color: green;
-            margin-top:20px;
+            margin-top: 20px;
         }
-        .name_already,.name_not-ready {
+
+        .name_already, .name_not-ready {
             color: red;
         }
-        .btn{
+
+        .btn {
             width: 200px;
         }
 
@@ -45,59 +51,66 @@
 <body style="background-color :#f5f5f5;">
 <br>
 <br>
-<form id="ajaxform" method="post" enctype="multipart/form-data">
-<div class="container text-center align-items-stretch" >
+<form enctype="multipart/form-data" id="ajaxform" method="post">
+    <div class="container text-center align-items-stretch">
         <div class="card" style="background-color: #333333">
-            <p style="font-size: 1px; margin-left: 1500px" ></p>
-            <h1 class="name" style="font-size: 20px;" >회원 정보</h1>
-                <br>
-                <div class="second">
-                    <table style="margin-left: 350px;">
-                        <tr>
-                            <td/>
-                            <td>
-                                <!-- 이미지 파일 업로드 input -->
-                                <!-- http 경로-->
-                                <img id="image-preview" th:if="${loginMember?.memImage.startsWith('http')}" th:src="${loginMember?.memImage}"
-                                     alt="Image Preview" class="rounded-circle" width="200px" height="200px" onclick="document.getElementById('memImage').click()" />
-                                <!-- 로컬 경로-->
-                                <img id="image-preview2" th:if="${!loginMember?.memImage.startsWith('http')}" th:src="@{/img/} + ${loginMember?.memImage} "
-                                     alt="Image Preview2" class="rounded-circle" width="200px" height="200px" onclick="document.getElementById('memImage').click()" />
-                                <input type="file" id="memImage" name="memImage" accept="image/gif,image/png,image/jpeg">
-                                <div><input type="button" id="files_send" value="이미지 변경"  ></div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="name">계정 :</td>
-                            <td class="name">[[${loginMember.memId}]]</td>
-                        </tr>
-                        <tr>
-                            <td class="name">닉네임 : </td>
-                            <td>
-                                <input class="name" type="text" id="memName" name="memName" oninput="checkName()" th:value="${loginMember?.memName}" style="background-color: #333333 ">
-                            </td>
-                        </tr>
-                    </table>
-                    <button class="name_ok" type="submit" formaction="/members/myPage/modify_name">닉네임 사용하기</button>
-                    <span class="name_already" >사용 중 닉네임입니다.</span>
-                    <span class="name_not-ready" >숫자,영문,한글로 작성해주세요(2~10글자)</span>
+            <p style="font-size: 1px; margin-left: 1500px"></p>
+            <h1 class="name" style="font-size: 20px;">회원 정보</h1>
+            <br>
+            <div class="second">
+                <table style="margin-left: 350px;">
+                    <tr>
+                        <td/>
+                        <td>
+                            <!-- 이미지 파일 업로드 input -->
+                            <!-- http 경로-->
+                            <img alt="Image Preview" class="rounded-circle"
+                                 height="200px"
+                                 id="image-preview" onclick="document.getElementById('memImage').click()" th:if="${loginMember?.memImage.startsWith('http')}" th:src="${loginMember?.memImage}"
+                                 width="200px"/>
+                            <!-- 로컬 경로-->
+                            <img alt="Image Preview2" class="rounded-circle"
+                                 height="200px"
+                                 id="image-preview2" onclick="document.getElementById('memImage').click()" th:if="${!loginMember?.memImage.startsWith('http')}" th:src="@{/img/} + ${loginMember?.memImage} "
+                                 width="200px"/>
+                            <input accept="image/gif,image/png,image/jpeg" id="memImage" name="memImage" type="file">
+                            <div><input id="files_send" type="button" value="이미지 변경"></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="name">계정 :</td>
+                        <td class="name">[[${loginMember.memId}]]</td>
+                    </tr>
+                    <tr>
+                        <td class="name">닉네임 :</td>
+                        <td>
+                            <input class="name" id="memName" name="memName" oninput="checkName()" style="background-color: #333333 "
+                                   th:value="${loginMember?.memName}" type="text">
+                        </td>
+                    </tr>
+                </table>
+                <button class="name_ok" formaction="/mypage/modify-name" type="submit">닉네임 사용하기</button>
+                <span class="name_already">사용 중 닉네임입니다.</span>
+                <span class="name_not-ready">숫자,영문,한글로 작성해주세요(2~10글자)</span>
 
-                    <br>
-                    <button type="button" class="btn btn-outline-primary" onclick="openPwModifyPopup()">비밀번호 변경</button>
-                    <br>
-                    <button type="button" class="btn btn-outline-danger" onclick="openDeletePopup()">계정 삭제</button>
-                    <br>
-                    <a th:href="@{/static}"> <button type="button" class="btn btn-light ">메인 페이지 이동</button></a>
-                </div>
-            <p style="font-size: 1px; margin-top: 1200px" ></p>
+                <br>
+                <button class="btn btn-outline-primary" onclick="openPwModifyPopup()" type="button">비밀번호 변경</button>
+                <br>
+                <button class="btn btn-outline-danger" onclick="openDeletePopup()" type="button">계정 삭제</button>
+                <br>
+                <a th:href="@{/static}">
+                    <button class="btn btn-light " type="button">메인 페이지 이동</button>
+                </a>
+            </div>
+            <p style="font-size: 1px; margin-top: 1200px"></p>
         </div>
-</div>
+    </div>
 </form>
 
 
 </body>
 
 
-<script th:src="@{/js/myPage.js}" src="../static/js/myPage.js"></script>
+<script src="../static/js/myPage.js" th:src="@{/js/myPage.js}"></script>
 
 </html>

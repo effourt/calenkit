@@ -30,86 +30,8 @@ public class ScheduleController {
     private final TeamScheduleService teamScheduleService;
     private final TeamRepository teamRepository;
     private final ScheduleRepository scheduleRepository;
-    private final MemberRepository memberRepository;
-    private final AlarmRepository alarmRepository;
     private final AlarmService alarmService;
     private final HttpSession session;
-
-    //http://localhost:8080/
-    //http://localhost:8080/main
-    /**
-     * 달력에 일정 출력(메인페이지)
-     */
-    @RequestMapping(value={"/","/main"}, method = {RequestMethod.GET, RequestMethod.POST})
-    public String main(Model model) {
-
-        //세션에서 로그인아이디 반환받아 저장
-        String loginId = (String)session.getAttribute("loginId");
-        Member loginMember  = memberRepository.findByMemId(loginId);
-
-        //개인 조회 (로그인 멤버)
-        model.addAttribute("loginMember", loginMember);
-
-        //개인 알람리스트 조회
-        List<Alarm> alarmList = alarmRepository.findByAlMid(loginId);
-        List<String> titleList = new ArrayList<>();
-        for(int i=0; i<alarmList.size(); i++){
-            titleList.add(scheduleRepository.findByScNo(alarmList.get(i).getAlScno()).getScTitle());
-        }
-        if(alarmList.size()!=0){
-            model.addAttribute("alarmList", alarmList);
-        }
-        model.addAttribute("titleList", titleList);
-
-        //권한(아이디 기준)을 가진 일정 목록
-        List<Integer> scNoList=teamRepository.findByid(loginId);
-
-        //개인 즐겨찾기리스트 출력(스크롤) - 초기 페이지
-        Map<String, Object>bookmarkMap= bookmarkScroll(null);
-        model.addAttribute("bookmarkList", bookmarkMap.get("bookmarkList"));
-        model.addAttribute("bookmarkTotalPageCount", bookmarkMap.get("bookmarkTotalPageCount"));
-
-        //일정 리스트 출력(스크롤) - 초기 페이지
-        Map<String, Object>scheduleMap= scheduleScroll(null);
-        model.addAttribute("scheduleList", scheduleMap.get("scheduleList"));
-        model.addAttribute("totalPageCount", scheduleMap.get("totalPageCount"));
-
-        //휴지통 리스트 출력(스크롤) - 초기 페이지
-        Map<String, Object>recyclebinMap= searchRecyclebinScroll(null, null, null);
-        model.addAttribute("recyclebinList", recyclebinMap.get("recyclebinList"));
-        model.addAttribute("recyclebinTotalPageCount", myScheduleService.countRecyclebin(loginId, null, null));
-
-        return "calendar/main";
-    }
-
-    /** 권한 있는 일정 전체 출력
-     *
-     * @return 캘린더 라이브러리에 필요한 필드명 : 일정값 을 매핑한 맵리스트
-     */
-    @GetMapping("/main_ajax")
-    @ResponseBody
-    public List<Map> mainAJAX() {
-        String loginId = (String)session.getAttribute("loginId"); //session으로 현재 아이디 받아오기
-        Date temp=new Date(); //출력 기준 월 받아오기
-        SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM");
-        String date=simpleDateFormat.format(temp).toString();
-
-        List<Schedule> scheduleList = myScheduleService.getMySchedule(loginId,null, null, null); //일정 리스트 저장
-
-        List<Map> mapList=new ArrayList<>();
-
-        for(Schedule schedule:scheduleList) { //일정 리스트에서 일정 뽑아내기
-            if(schedule.getScStatus()!=0) {
-                Map<String, String> map=new HashMap<>(); //일정 저장할 map
-                map.put("title", schedule.getScTitle());
-                map.put("start", schedule.getScSdate());
-                map.put("end", schedule.getScEdate());
-                map.put("url", "schedules?scNo=" + schedule.getScNo());
-                mapList.add(map); //map에 일정 저장
-            }
-        }
-        return mapList; //일정이 저장된 mapList값 보내기
-    }
 
     /** 일정 상세페이지 이동
      *
@@ -149,8 +71,8 @@ public class ScheduleController {
     }
 
     @ResponseBody
-    @GetMapping("load")
-    public String load(@RequestParam Integer scNo) {
+    @GetMapping("/load")
+    public String loadSchedule(@RequestParam Integer scNo) {
         Schedule schedule=scheduleRepository.findByScNo(scNo);
         System.out.println("(load)scContent = "+schedule.getScContent());
         return schedule.getScContent();

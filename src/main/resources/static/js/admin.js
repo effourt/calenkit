@@ -5,7 +5,7 @@ $(window).on('load', function() {
     console.log(keyword);
     // Ajax를 이용해 memberList 데이  터를 가져온 후 렌더링하는 코드
     $.ajax({
-        url: "/members/admin/List",
+        url: "/admin/list",
         data:{keyword:keyword},
         success: function (data) {
             // 가져온 member 데이터를 통해 tbody 내부에 새로운 tr을 추가하는 코드
@@ -72,7 +72,7 @@ function remove() {
         if (confirm("회원 정보를 삭제 하시겠습니까?")) {
             $.ajax({
                 type: "DELETE",
-                url: "/members/admin/delete",
+                url: "/admin/delete",
                 data: {memIdList: JSON.stringify(removeArray)},
                 dataType: "text",
                 success: function (response) {
@@ -94,7 +94,7 @@ function handleSelectChange(selectedValue, memId) {
     selectedValue = parseInt(selectedValue);
     // AJAX로 데이터 업데이트
     $.ajax({
-        url: "/members/admin/update",
+        url: "/admin/update",
         type: "patch",
         data: {
             memId: memId,

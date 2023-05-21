@@ -8,40 +8,29 @@ import com.effourt.calenkit.dto.AuthUserInfoResponse;
 import com.effourt.calenkit.dto.EmailMessage;
 import com.effourt.calenkit.exception.CodeMismatchException;
 import com.effourt.calenkit.exception.MemberNotFoundException;
-import com.effourt.calenkit.repository.AuthRepository;
-import com.effourt.calenkit.repository.MemberRepository;
 import com.effourt.calenkit.service.JoinService;
 import com.effourt.calenkit.service.LoginService;
 import com.effourt.calenkit.util.EmailSend;
-import com.effourt.calenkit.util.ImageUpload;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
-import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
 import java.util.Map;
 
 @Slf4j
 @Controller
+@RequestMapping("/login")
 @RequiredArgsConstructor
 public class LoginController {
 
     private final LoginService loginService;
     private final JoinService joinService;
-
-    private final MemberRepository memberRepository;
-    private final AuthRepository authRepository;
-
     private final MessageSource ms;
     private final EmailSend emailSend;
-    private final ImageUpload imageUpload;
     private final PasswordEncoder passwordEncoder;
 
     /**
@@ -55,24 +44,11 @@ public class LoginController {
         log.info("returnURI = {}",returnURI);
         if (returnURI == null) {
             return "redirect:/";
-        } else if (returnURI != null || !returnURI.equals("")) {
+        } else if (!returnURI.equals("")) {
             session.removeAttribute("returnURI");
             return "redirect:"+returnURI;
         }
-
         return "redirect:/";
-    }
-
-    /**
-     * 회원가입 페이지로 이동
-     * @param memId
-     * @param model
-     * @return
-     */
-    @PostMapping("/join/form")
-    public String joinForm(@RequestParam String memId, Model model) {
-        model.addAttribute("memId", memId);
-        return "register-form";
     }
 
     /**
@@ -80,7 +56,7 @@ public class LoginController {
      * @param session
      * @return
      */
-    @GetMapping("/member/logout")
+    @GetMapping("/logout")
     public String logout(HttpSession session) {
         log.info("로그아웃 시작");
         session.invalidate();
@@ -89,20 +65,12 @@ public class LoginController {
     }
 
     /**
-     * 로그인 페이지로 이동
-     */
-    @GetMapping("/login/form")
-    public String login() {
-        return "login/login-form";
-    }
-
-    /**
      * 소셜 로그인
      * @param code
      * @param session
      * @return
      */
-    @GetMapping("/login/kakao")
+    @GetMapping("/kakao")
     public String loginByKakao(@RequestParam String code, HttpSession session) {
         log.info("code={}", code);
         AccessTokenRequest accessTokenRequest = AccessTokenRequest.builder()
@@ -161,7 +129,7 @@ public class LoginController {
      * @param idMap
      * @return
      */
-    @PostMapping("/login/check")
+    @PostMapping("/check")
     @ResponseBody
     public String checkId(@RequestBody Map<String, String> idMap) {
         String memId = idMap.get("id");
@@ -174,7 +142,7 @@ public class LoginController {
         return loginType;
     }
 
-    @PostMapping("/login/send-code")
+    @PostMapping("/send-code")
     @ResponseBody
     public String sendCode(@RequestBody Map<String, String> idMap, HttpSession session) {
         String memId = idMap.get("id");
@@ -204,7 +172,7 @@ public class LoginController {
      * @param session
      * @return
      */
-    @PostMapping("/login/password")
+    @PostMapping("/password")
     @ResponseBody
     public String loginByPassword(@RequestBody Member member, HttpSession session) {
         log.info("회원 아이디 = {}", member.getMemId());
@@ -232,7 +200,7 @@ public class LoginController {
      * @param session
      * @return
      */
-    @PostMapping("/login/login-code")
+    @PostMapping("/login-code")
     @ResponseBody
     public String loginByCode(@RequestBody Map<String, String> loginCodeMap, HttpSession session) {
         String memId = loginCodeMap.get("id");
@@ -259,7 +227,7 @@ public class LoginController {
      * @param session
      * @return
      */
-    @PostMapping("/login/register-code")
+    @PostMapping("/register-code")
     @ResponseBody
     public String loginByJoin(@RequestBody Map<String, String> registerMap, HttpSession session) {
         String memId = registerMap.get("id");
@@ -287,7 +255,7 @@ public class LoginController {
      * @param session
      * @return
      */
-    @PostMapping("/login/initialize-code")
+    @PostMapping("/initialize-code")
     @ResponseBody
     public String loginByInitialize(@RequestBody Map<String, String> initializeCodeMap, HttpSession session) {
         String memId = initializeCodeMap.get("id");
@@ -307,30 +275,6 @@ public class LoginController {
             session.setAttribute("loginId", memId);
             loginService.updateLastLogin(memId);
         }
-        return "OK";
-    }
-
-    /**
-     * 이메일 회원가입
-     * @param member 아이디(이메일), 비밀번호, 닉네임, 프로필 이미지(선택) 정보 저장 객체
-     * @return
-     */
-    @PostMapping(value = "/join", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
-    @ResponseBody
-    public String join(@RequestPart Member member, @RequestPart MultipartFile profileImage, HttpSession session) {
-        //비밀번호를 암호화
-        member.setMemPw(passwordEncoder.encode(member.getMemPw()));
-        try {
-            String filename = imageUpload.uploadImage(profileImage);
-            member.setMemImage(filename);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        //아이디(이메일), 프로필 이미지, 닉네임, 비밀번호를 회원 테이블에 저장
-        joinService.joinByEmail(member);
-        session.setAttribute("loginId", member.getMemId());
-        loginService.updateLastLogin(member.getMemId());
         return "OK";
     }
 }
