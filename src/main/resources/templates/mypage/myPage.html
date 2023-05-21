@@ -1,5 +1,5 @@
 <!doctype html>
-<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout (~{::link}, ~{::script}, ~{::style}, ~{::title}, ~{::form})}">
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/layout :: layout (~{::link}, ~{::script}, ~{::style}, ~{::title}, ~{::form})}">
 
 <head>
     <meta charset="utf-8">
@@ -61,7 +61,7 @@
                                 <img id="image-preview" th:if="${loginMember?.memImage.startsWith('http')}" th:src="${loginMember?.memImage}"
                                      alt="Image Preview" class="rounded-circle" width="200px" height="200px" onclick="document.getElementById('memImage').click()" />
                                 <!-- 로컬 경로-->
-                                <img id="image-preview2" th:if="${!loginMember?.memImage.startsWith('http')}" th:src="@{/img} + ${loginMember?.memImage} "
+                                <img id="image-preview2" th:if="${!loginMember?.memImage.startsWith('http')}" th:src="@{/img/} + ${loginMember?.memImage} "
                                      alt="Image Preview2" class="rounded-circle" width="200px" height="200px" onclick="document.getElementById('memImage').click()" />
                                 <input type="file" id="memImage" name="memImage" accept="image/gif,image/png,image/jpeg">
                                 <div><input type="button" id="files_send" value="이미지 변경"  ></div>
