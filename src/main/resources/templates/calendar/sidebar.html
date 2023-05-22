@@ -60,12 +60,9 @@
                         일정이 없습니다.
                     </th:block>
                     <th:block th:each="bookmark : ${bookmarkList}">
-                        <th:block th:if="${bookmark.scStatus}==1">
-                            <li><Strong>([[${bookmark.getScNo}]])</Strong>[[${bookmark.getScSdate()}]] ~
-                                [[${bookmark.getScEdate()}]] / <a
-                                        th:href="@{/schedules?scNo={scNo}(scNo=${bookmark.getScNo})}">[[${bookmark.getScTitle()}]]</a>
-                            </li>
-                        </th:block>
+                        <li><Strong>([[${bookmark.getScNo}]])</Strong>[[${bookmark.getScSdate()}]] ~
+                            [[${bookmark.getScEdate()}]] / <a th:href="@{/schedules?scNo={scNo}(scNo=${bookmark.getScNo})}">[[${bookmark.getScTitle()}]]</a>
+                        </li>
                     </th:block>
                     <div class="bookmark_loading-Bar" style="display: none;">
                         <img src="/img/loading.png"/>
@@ -85,12 +82,10 @@
                         일정이 없습니다.
                     </th:block>
                     <th:block th:each="schedule : ${scheduleList}">
-                        <th:block th:if="${schedule.getScStatus}==1">
-                            <li><Strong>([[${schedule.getScNo}]])</Strong>[[${schedule.getScSdate}]] ~
-                                [[${schedule.getScEdate}]] / <a
-                                        th:href="@{/schedules?scNo={scNo}(scNo=${schedule.getScNo})}">[[${schedule.getScTitle}]]</a>
-                            </li>
-                        </th:block>
+                        <li><Strong>([[${schedule.getScNo}]])</Strong>[[${schedule.getScSdate}]] ~
+                            [[${schedule.getScEdate}]] / <a
+                                    th:href="@{/schedules?scNo={scNo}(scNo=${schedule.getScNo})}">[[${schedule.getScTitle}]]</a>
+                        </li>
                     </th:block>
                     <div class="schedule_loading-Bar" style="display: none;">
                         <img src="/img/loading.png"/>
@@ -175,8 +170,8 @@
                                 <input id="scNo" th:value="${schedule.scNo}" type="hidden"/>
                                 <Strong>([[${schedule.getScNo}]])</Strong>
                                 [[${schedule.getScSdate}]] ~ [[${schedule.getScEdate}]] / [[${schedule.getScTitle}]]
-                                <a class="myBtn" th:href="@{/schedules/restore?scNo={scNo}(scNo=${schedule.getScNo()})}">복원</a> <a
-                                    class="myBtn" onclick="deleteSchedule();">삭제</a>
+                                <a class="myBtn" th:href="@{/schedules/restore?scNo={scNo}(scNo=${schedule.getScNo()})}">복원</a>
+                                <a class="myBtn" onclick="deleteSchedule();">삭제</a>
                             </li>
                         </th:block>
                     </div>
@@ -478,7 +473,7 @@
                             html+="<strong>("+schedule.scNo+")</strong>";
                             html+=schedule.scSdate+" ~ "+schedule.scEdate+" / ";
                             html+="<a href='schedules?scNo="+schedule.scNo+"'>"+schedule.scTitle+"</a>";
-                            html+="<a class='myBtn' onclick=location.href='restore?scNo="+schedule.scNo+"'>복원</a>";
+                            html+="<a class='myBtn' onclick=location.href='/schedules/restore?scNo="+schedule.scNo+"'>복원</a>";
                             html+="<a className='myBtn' onClick='deleteSchedule();'>삭제</a>";
                             html+="</li>";
                         });
@@ -540,7 +535,7 @@
                                     html+="<strong>("+schedule.scNo+")</strong>";
                                     html+=schedule.scSdate+" ~ "+schedule.scEdate+" / ";
                                     html+="<a href='schedules?scNo="+schedule.scNo+"'>"+schedule.scTitle+"</a>";
-                                    html+="<a class='myBtn' onclick=location.href='restore?scNo="+schedule.scNo+"'>복원</a>";
+                                    html+="<a class='myBtn' onclick=location.href='/schedules/restore?scNo="+schedule.scNo+"'>복원</a>";
                                     html+="<a className='myBtn' onClick='deleteSchedule();'>삭제</a>";
                                     html+="</li>";
                                 });

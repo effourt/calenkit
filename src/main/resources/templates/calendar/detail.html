@@ -218,7 +218,7 @@
       console.log("progress="+scProgress);
 
       $.ajax({
-        url:"write/?scNo="+scNo,
+        url:"/schedules/write/?scNo="+scNo,
         method: "patch",
         data:{
           "scNo":scNo,

@@ -66,6 +66,7 @@ public class ScheduleController {
     @ResponseBody
     @PatchMapping("/write") //$.ajax - url:"/schedules/write"
     public String writeSchedule(@ModelAttribute Schedule schedule) {
+        System.out.println("(write)scContent = "+schedule.getScContent());
         scheduleRepository.update(schedule);
         return "success";
     }
