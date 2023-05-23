@@ -3,8 +3,6 @@ package com.effourt.calenkit.service;
 import com.effourt.calenkit.domain.Alarm;
 import com.effourt.calenkit.domain.Team;
 import com.effourt.calenkit.dto.AlarmCate;
-import com.effourt.calenkit.exception.ScheduleNotFoundException;
-import com.effourt.calenkit.exception.TeamNotFoundException;
 import com.effourt.calenkit.repository.AlarmRepository;
 import com.effourt.calenkit.repository.ScheduleRepository;
 import com.effourt.calenkit.repository.TeamRepository;
@@ -13,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 // 알람서비스는 myScheduleService 혹은 teamScheduleService에 의존하고 있으므로

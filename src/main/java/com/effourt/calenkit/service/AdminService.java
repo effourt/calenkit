@@ -2,7 +2,6 @@ package com.effourt.calenkit.service;
 
 import com.effourt.calenkit.domain.Alarm;
 import com.effourt.calenkit.domain.Member;
-import com.effourt.calenkit.domain.Schedule;
 import com.effourt.calenkit.domain.Team;
 import com.effourt.calenkit.exception.MemberNotFoundException;
 import com.effourt.calenkit.repository.AlarmRepository;
@@ -12,7 +11,6 @@ import com.effourt.calenkit.repository.TeamRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -24,11 +22,7 @@ public class AdminService {
     private final ScheduleRepository scheduleRepository;
 
     private final AlarmRepository alarmRepository;
-    private final AlarmService alarmService;
-    private final MyScheduleService myScheduleService;
 
-    // [회원 검색 행위] : findMember()
-    // => MemberRepository.find
     @Transactional
     public void findMember(String memId) throws MemberNotFoundException {
         if(memberRepository.findByMemId(memId)==null) {
@@ -36,16 +30,13 @@ public class AdminService {
         }
         memberRepository.findByMemId(memId);
     }
-    // [회원 상태 변경 행위] : modifyMember()
-    // => MemberRepository.delete
+
     @Transactional
     public void modifyStatus(Member member){
 
         memberRepository.updateStatus(member);
     }
 
-    // [회원 말소 행위] : removeMember()
-    // => MemberRepository.delete
     @Transactional
     public void removeMember(String memId){
 

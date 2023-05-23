@@ -17,20 +17,12 @@ import javax.servlet.http.HttpSession;
 public class MyPageService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
-    // [내정보 변경 행위] : modifyMe()
-    // => MemberRepository.find
-    // => MemberRepository.update
+
     @Transactional
     public void modifyMe(Member member) {
 
         memberRepository.update(member);
     }
-
-
-    // [비밀번호 변경 행위] : modifyPassword()
-    // => MemberRepository.find
-    // => EmailSendService
-    // => MemberRepository.update
 
     @Transactional
     public void modifyPassword(Member loginMember,String password1){
@@ -38,8 +30,7 @@ public class MyPageService {
         memberRepository.updatePassword(loginMember);
     }
 
-    // [회원탈퇴 행위] : removeMe()
-    // => MemberRepository.update
+    @Transactional
     public void removeMe(Member member) {
         memberRepository.updateStatus(member);
     }

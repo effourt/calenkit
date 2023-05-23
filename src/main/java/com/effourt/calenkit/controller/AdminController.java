@@ -21,14 +21,12 @@ public class AdminController {
     private final MemberRepository memberRepository;
     private final HttpSession session;
 
-    /** 관리자(/members/admin) */
     // Admin 페이지 이동
     @GetMapping
     public String admin() {
         return "admin/admin";
     }
 
-    /** 관리자(/members/admin) */
     // 로그인 멤버 제외한 멤버 검색(SELECT)
     // keyword(Form) 통해 검색 후 멤버 리스트 출력
     @GetMapping ("/list")
@@ -43,7 +41,6 @@ public class AdminController {
         return memberList;
     }
 
-    /** 관리자(/members/admin) */
     // 멤버 권한 변경(UPDATE)
     // 셀렉트박스로 변경된 memId,memStatus 전달받아 상태 변경
     @PatchMapping("/update")
@@ -54,7 +51,6 @@ public class AdminController {
         return "redirect:/admin";
     }
 
-    /** 관리자(/members/admin) */
     // 멤버 삭제(DELETE)
     // 1.체크박스가 선택된 memIdList를 가져옴
     // 2.for문을 memId 객체 분리
