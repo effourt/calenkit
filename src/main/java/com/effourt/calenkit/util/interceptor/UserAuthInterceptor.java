@@ -30,7 +30,7 @@ public class UserAuthInterceptor implements HandlerInterceptor {
         log.info("UserAuthInterceptor status={}", findMember.getMemStatus());
 
         if (findMember.getMemStatus() == 9) {
-            response.sendRedirect(request.getContextPath() + "/members/admin");
+            response.sendRedirect(request.getContextPath() + "/admin");
             return false;
         } else if (findMember.getMemStatus() == 0) {
             session.invalidate();
