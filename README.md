@@ -68,8 +68,9 @@
 - [**TEST]** 테스트 코드 추가 삭제 변경 - 테스트 코드 관련 모든 변경사항들
 - [**ETC]** 기타 애매한 경우
 
-
 ## ✔ERD Diagram
+![calenkit ERD](https://github.com/effourt/calenkit/assets/107570140/a2914f34-ab48-41f9-91d4-5c1ce705121c)
+## ✔DB Diagram
 ![calenkit](https://github.com/effourt/calenkit/assets/107570140/d1ac1e72-9562-407a-aaf3-cfd441b4ff00)
 ## 🗓️구현
 
