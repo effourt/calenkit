@@ -118,7 +118,7 @@
                     <button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
                 </div>
                 <div ; class="modal-body" id="search-modal-body" style="height: 150px; overflow: auto">
-                    <form id="searchForm" method="post">
+                    <form id="searchForm" method="post" name="searchForm">
                         <div class="input-group">
                             <input class="form-control" id="inputBox" name="keyword" style="width: 60%; height: 45px;"
                                    type="text">
@@ -151,7 +151,7 @@
                     <button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
                 </div>
                 <div ; class="modal-body" id="recyclebin-modal-body" style="height: 150px; overflow: auto">
-                    <form id="recyclebinForm" method="post">
+                    <form id="recyclebinForm" name="recyclebinForm" method="post">
                         <div class="input-group">
                             <input class="form-control" id="recyclebin_inputBox" name="keyword"
                                    style="width: 60%; height: 45px;" type="text">
@@ -317,6 +317,12 @@
 
         let searchCurrentPage=1;
         //일정 검색+스크롤
+        document.searchForm.addEventListener("keydown", evt => { //엔터 방지
+            if (evt.code === "Enter") {
+                console.log("code = "+evt.code);
+                evt.preventDefault();
+            }
+        });
         function searchSchedule() {
             //seriallize() = form 데이터를 자동으로 queryString으로 변환 해서 전달
             var queryString=$("#searchForm").serialize();
@@ -441,6 +447,12 @@
         }
 
         //휴지통 검색
+        document.recyclebinForm.addEventListener("keydown", evt => { //엔터 방지
+            if (evt.code === "Enter") {
+                console.log("code = "+evt.code);
+                evt.preventDefault();
+            }
+        });
         function searchRecyclebin() {
             //seriallize() = form 데이터를 자동으로 queryString으로 변환 해서 전달
             var queryString=$("#recyclebinForm").serialize();
