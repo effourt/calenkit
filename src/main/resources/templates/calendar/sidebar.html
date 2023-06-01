@@ -457,8 +457,6 @@
             //seriallize() = form 데이터를 자동으로 queryString으로 변환 해서 전달
             var queryString=$("#recyclebinForm").serialize();
 
-            isSearch=1;
-
             $.ajax({
                 url: "/schedules/search-recyclebin",
                 method: "post",
