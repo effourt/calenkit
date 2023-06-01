@@ -30,10 +30,17 @@
 <div id="writeDiv" style="width: 70%; margin: 0 auto;">
   <div class="card rounded" style="width:100%; margin: 30px auto 10px;background-color:#2C3E50 ">
     <div class="card-header text-lg-end">
-      <button type="button" class="btn btn-sm btn-secondary"><a th:href="@{/schedules/recyclebin?scNo={scNo}(scNo=${schedules.getScNo()})}">휴지통 이동</a></button>
-      <button type="button" class="btn btn-sm btn-secondary" onclick="location.href='/'">메인가기</button>
-      <button type="button" id="myTeam" class="btn btn-sm btn-secondary"  data-bs-toggle="modal" data-bs-target="#teamShare">일정공유</button>
-      <button type="button" class="btn btn-sm btn-secondary"><a th:href="@{/schedules/bookmark?scNo={scNo}(scNo=${schedules.getScNo()})}">즐겨찾기</a></button>
+      <button type="button" class="btn btn-sm btn-secondary"><a th:href="@{/schedules/recyclebin?scNo={scNo}(scNo=${schedules.getScNo()})}"><img src="/img/recyclebin.png" /></a></button>
+      <button type="button" class="btn btn-sm btn-secondary" onclick="location.href='/'"><img src="/img/home.png" /></a></button>
+      <button type="button" id="myTeam" class="btn btn-sm btn-secondary"  data-bs-toggle="modal" data-bs-target="#teamShare"><img src="/img/group.png" /></a></button>
+      <button type="button" class="btn btn-sm btn-secondary"><a th:href="@{/schedules/bookmark?scNo={scNo}(scNo=${schedules.getScNo()})}">
+        <th:block th:if="${teams.getTeamBookmark()==0}">
+          <img src="/img/bookmark0.png" />
+        </th:block>
+        <th:block th:if="${teams.getTeamBookmark()==1}">
+          <img src="/img/bookmark1.png" />
+        </th:block>
+      </a></button>
     </div>
     <ul class="list-group list-group-flush">
       <li class="list-group-item">
