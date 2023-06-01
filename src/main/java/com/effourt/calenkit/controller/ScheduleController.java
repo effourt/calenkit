@@ -1,6 +1,7 @@
 package com.effourt.calenkit.controller;
 
 import com.effourt.calenkit.domain.Schedule;
+import com.effourt.calenkit.domain.Team;
 import com.effourt.calenkit.dto.TeamShare;
 import com.effourt.calenkit.exception.ScheduleNotFoundException;
 import com.effourt.calenkit.exception.TeamNotFoundException;
@@ -50,8 +51,10 @@ public class ScheduleController {
             }
         }
         Schedule schedules = scheduleRepository.findByScNo(scNo); //일정 데이터
+        Team teams = teamRepository.findBySnoAndMid(scNo, loginId);
 
         model.addAttribute("schedules",schedules);
+        model.addAttribute("teams", teams);
         model.addAttribute("teamShareList",teamShareList); //team + image
         log.debug("teamShareList = {}", teamShareList.get(0).getTeamLevel());
 
