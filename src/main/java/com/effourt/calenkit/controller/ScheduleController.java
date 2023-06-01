@@ -307,11 +307,6 @@ public class ScheduleController {
         Integer search_recyclebinTotalPageCount=(int)Math.ceil(totalRow/(double)rowCount);
         map.put("search_recyclebinTotalPageCount", search_recyclebinTotalPageCount);
 
-        System.out.println("keyword = "+keyword);
-        System.out.println("filter = "+filter);
-        System.out.println("pageNum = "+pageNum);
-        System.out.println("totalRow = "+totalRow);
-        System.out.println("totalPage = "+search_recyclebinTotalPageCount);
         return map;
     }
 }

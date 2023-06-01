@@ -67,7 +67,7 @@
                     <div class="bookmark_loading-Bar" style="display: none;">
                         <img src="/img/loading.png"/>
                     </div>
-                    <div id="bookmarkschedule">
+                    <div id="bookmarkSchedule">
                     </div>
                 </ul>
             </div>
@@ -98,7 +98,8 @@
 
             <div class="position-absolute bottom-0">
                 <!-- trash -->
-                <div class="icon-trash li" data-bs-target="#trashbox" data-bs-toggle="modal" id="trash" tabindex="0">
+                <div class="icon-trash li" data-bs-target="#trashbox" data-bs-toggle="modal" id="trash" tabindex="0"
+                onclick="recyclebinAJAX()">
                     <span class="m-auto">휴지통</span></div>
                 <!-- login -->
                 <span class="icon-logout li" id="logoutBtn" tabindex="0">로그아웃</span>
@@ -165,15 +166,6 @@
                         </div>
                     </form>
                     <div id="recyclebinList">
-                        <th:block th:each="schedule : ${recyclebinList}">
-                            <li>
-                                <input id="scNo" th:value="${schedule.scNo}" type="hidden"/>
-                                <Strong>([[${schedule.getScNo}]])</Strong>
-                                [[${schedule.getScSdate}]] ~ [[${schedule.getScEdate}]] / [[${schedule.getScTitle}]]
-                                <a class="myBtn" th:href="@{/schedules/restore?scNo={scNo}(scNo=${schedule.getScNo()})}">복원</a>
-                                <a class="myBtn" onclick="deleteSchedule();">삭제</a>
-                            </li>
-                        </th:block>
                     </div>
                     <div class="recyclebin_loading-Bar" style="display: none;">
                         <img src="/img/loading.png"/>
@@ -498,10 +490,7 @@
                 var queryString=$("#recyclebinForm").serialize();
 
                 if(scrollTop + innerHeight >= scrollHeight) { //스크롤 바닥에 닿을 때
-                    alert("iswork?");
                     if(recyclebinCurrentPage>[[${recyclebinTotalPageCount}]] || isLoading) { //현재 마지막 페이지일 경우
-                        alert("currentPage = "+recyclebinCurrentPage);
-                        alert("TotalPage = "+[[${recyclebinTotalPageCount}]]);
                         return; //함수 끝
                     }
 
@@ -509,7 +498,6 @@
                     $(".recyclebin_loading-Bar").show();//로딩창 출력
 
                     recyclebinCurrentPage++; //현재 페이지 증가(다음 페이지 요청)
-                    alert("recyclebinCurrentPage = "+recyclebinCurrentPage);
 
                     //ajax로 받아올 페이지 요청
                     $.ajax({
@@ -519,7 +507,6 @@
                             "queryString":queryString
                         }, //페이지와 쿼리스트링 전달
                         success:function (result) {
-                            alert("scroll-success");
                             isLoading=false; //로딩 중 여부
                             $(".recyclebin_loading-Bar").hide(); //로딩창 미출력
 
@@ -527,7 +514,6 @@
 
                             var html="<div>"; //내용 입력
                             if(recyclebinList==null) {
-                                alert("search recyclebinList is null");
                                 return;
                             } else {
                                 recyclebinList.forEach(function(schedule) {
