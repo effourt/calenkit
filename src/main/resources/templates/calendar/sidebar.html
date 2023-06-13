@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <title>Title</title>
+    <link href='../../static/css/sidebar.css' rel='stylesheet'/>
+    <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" rel="stylesheet">
+    <script crossorigin="anonymous"
+            integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+<div th:fragment="sidebar">
+    <div class="menu text-white" tabindex="0">
+        <header class="avatar" id="mypageBtn" style="cursor:pointer;">
+            <img class="img-fluid" src="https://images.unsplash.com/photo-1533738363-b7f9aef128ce?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80" th:if="${loginMember?.memImage.startsWith('http')}"
+                 th:src="${loginMember?.memImage}"/>
+            <img class="img-fluid" src="https://images.unsplash.com/photo-1533738363-b7f9aef128ce?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80"
+                 th:if="${!loginMember?.memImage.startsWith('http')}"
+                 th:src="@{/img/} + ${loginMember?.memImage}"/>
+            <p class="mt-3">[[${loginMember.memId}]]</p>
+        </header>
+        <div class="ul">
+            <!-- alarm -->
+            <div class="icon-alarm li" data-bs-target="#alarmBox" data-bs-toggle="collapse" tabindex="0">
+                <span class="w-75" id="alarm">알림</span>&nbsp;&nbsp;&nbsp;
+                <!--                <span class="badge bg-secondary">4</span>-->
+            </div>
+
+            <div class="collapse" id="alarmBox">
+                <ul style="height: 80px; overflow: scroll;">
+                    <li th:each="alarm : ${alarmList}">
+                        <span th:if="${alarm.alCate}==0"><strong>[[${titleList.get(alarmStat.index)}]]</strong>의 일정이 삭제 되었습니다.</span>
+                        <span th:if="${alarm.alCate}==1"><a
+                                th:href="@{/schedules?scNo={scNo}(scNo=${alarm.alScno})}"><strong>[[${titleList.get(alarmStat.index)}]]</strong></a>의 일정이 수정 되었습니다.</span>
+                        <span th:if="${alarm.alCate}==2"><a
+                                th:href="@{/schedules?scNo={scNo}(scNo=${alarm.alScno})}"><strong>[[${titleList.get(alarmStat.index)}]]</strong></a>의 일정에 초대 되었습니다.</span>
+                        <span th:if="${alarm.alCate}==3"><strong>[[${titleList.get(alarmStat.index)}]]</strong>의 일정에서 삭제되었습니다.</span>
+                        <span th:if="${alarm.alCate}==4"><a
+                                th:href="@{/schedules?scNo={scNo}(scNo=${alarm.alScno})}"><strong>[[${titleList.get(alarmStat.index)}]]</strong></a>의 일정의 귀하의 권한이 읽기로 변경되었습니다.</span>
+                        <span th:if="${alarm.alCate}==5"><a
+                                th:href="@{/schedules?scNo={scNo}(scNo=${alarm.alScno})}"><strong>[[${titleList.get(alarmStat.index)}]]</strong></a>의 일정의 귀하의 권한이 쓰기로 변경되었습니다.</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- search -->
+            <div class="icon-search li" data-bs-target="#searchbox" data-bs-toggle="modal" id="search" tabindex="0">
+                <span>검색</span>
+            </div>
+
+            <!-- bookmark -->
+            <div class="icon-bookmark li" data-bs-target="#bookmark" data-bs-toggle="collapse" tabindex="0">
+                <span>즐겨찾기</span></div>
+            <div class="collapse" id="bookmark">
+                <ul style="height: 80px; overflow: scroll;">
+                    <th:block th:if="${bookmarkList == null}">
+                        일정이 없습니다.
+                    </th:block>
+                    <th:block th:each="bookmark : ${bookmarkList}">
+                        <li><Strong>([[${bookmark.getScNo}]])</Strong>[[${bookmark.getScSdate()}]] ~
+                            [[${bookmark.getScEdate()}]] / <a th:href="@{/schedules?scNo={scNo}(scNo=${bookmark.getScNo})}">[[${bookmark.getScTitle()}]]</a>
+                        </li>
+                    </th:block>
+                    <div class="bookmark_loading-Bar" style="display: none;">
+                        <img src="/img/loading.png"/>
+                    </div>
+                    <div id="bookmarkSchedule">
+                    </div>
+                </ul>
+            </div>
+
+
+            <!-- schedule -->
+            <div class="icon-schedule li" data-bs-target="#schedule" data-bs-toggle="collapse" tabindex="0">
+                <span>일정</span></div>
+            <div class="collapse" id="schedule">
+                <ul style="height: 80px; overflow: scroll;">
+                    <th:block th:if="${scheduleList == null}">
+                        일정이 없습니다.
+                    </th:block>
+                    <th:block th:each="schedule : ${scheduleList}">
+                        <li><Strong>([[${schedule.getScNo}]])</Strong>[[${schedule.getScSdate}]] ~
+                            [[${schedule.getScEdate}]] / <a
+                                    th:href="@{/schedules?scNo={scNo}(scNo=${schedule.getScNo})}">[[${schedule.getScTitle}]]</a>
+                        </li>
+                    </th:block>
+                    <div class="schedule_loading-Bar" style="display: none;">
+                        <img src="/img/loading.png"/>
+                    </div>
+                    <div id="addScheduleScroll">
+                    </div>
+                </ul>
+            </div>
+
+
+            <div class="position-absolute bottom-0">
+                <!-- trash -->
+                <div class="icon-trash li" data-bs-target="#trashbox" data-bs-toggle="modal" id="trash" tabindex="0"
+                onclick="recyclebinAJAX()">
+                    <span class="m-auto">휴지통</span></div>
+                <!-- login -->
+                <span class="icon-logout li" id="logoutBtn" tabindex="0">로그아웃</span>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- searchbox -->
+    <div aria-hidden="true" aria-labelledby="search" class="modal" data-bs-backdrop="static" id="searchbox"
+         tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content" style="width: 600px;">
+                <div class="modal-header">
+                    <h5 class="modal-title">검색어를 입력해주세요</h5>
+                    <button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+                </div>
+                <div ; class="modal-body" id="search-modal-body" style="height: 150px; overflow: auto">
+                    <form id="searchForm" method="post" name="searchForm">
+                        <div class="input-group">
+                            <input class="form-control" id="inputBox" name="keyword" style="width: 60%; height: 45px;"
+                                   type="text">
+                            <select aria-label="Default select example"
+                                    class="form-select" name="filter" style="background-color: gray; color:white; width: 10%; height: 45px;">
+                                <option selected value="title">제목</option>
+                                <option value="content">내용</option>
+                            </select>
+                            <button onclick="searchSchedule();" style="height: 45px; margin-left: 10px;" type="button">
+                                검색
+                            </button>
+                        </div>
+                    </form>
+                    <div class="search_loading-Bar" style="display: none;">
+                        <img src="/img/loading.png"/>
+                    </div>
+                    <div id="searchSchedule">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- trashbox -->
+    <div aria-hidden="true" aria-labelledby="trash" class="modal" id="trashbox" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content" style="width: 600px;">
+                <div class="modal-header">
+                    <h5 class="modal-title">휴지통</h5>
+                    <button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+                </div>
+                <div ; class="modal-body" id="recyclebin-modal-body" style="height: 150px; overflow: auto">
+                    <form id="recyclebinForm" name="recyclebinForm" method="post">
+                        <div class="input-group">
+                            <input class="form-control" id="recyclebin_inputBox" name="keyword"
+                                   style="width: 60%; height: 45px;" type="text">
+                            <select aria-label="Default select example"
+                                    class="form-select" name="filter" style="background-color: gray; color:white; width: 10%; height: 45px;">
+                                <option selected value="title">제목</option>
+                                <option value="content">내용</option>
+                            </select>
+                            <button onclick="searchRecyclebin()" style="height: 45px; margin-left: 10px;" type="button">
+                                검색
+                            </button>
+                        </div>
+                    </form>
+                    <div id="recyclebinList">
+                    </div>
+                    <div class="recyclebin_loading-Bar" style="display: none;">
+                        <img src="/img/loading.png"/>
+                    </div>
+                    <div id="searchRecyclebinAdd">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        //휴지통 삭제 클릭 시
+        function deleteSchedule() {
+            var scNo = $('#scNo').val();
+            var con_test = confirm("정말 삭제하시겠습니까?");
+            if (con_test == true) {
+                location.href = "/schedules/delete?scNo=" + scNo;
+            }
+        }
+
+        document.getElementById("inputBox").onkeyup = function () {
+            let typedText = this.value;
+            if (typedText == "") {
+                document.getElementById("resultBox").style.display = "none";
+                return;
+            }
+            //입력값을 typedText 변수에 담아 AJAX 요청으로 DB에 저장된 스케줄 출력될 수 있도록 구현하기
+            document.getElementById('typedText').textContent = typedText;
+            document.getElementById('resultBox').style.display = 'block';
+        };
+
+        document.getElementById("alarm").onclick = function () {
+            document.getElementById('alarmBox').style.display = 'block';
+        };
+    </script>
+
+    <!-- 스크롤 파트 -->
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        let bookmarkCurrentPage=1;
+        let isLoading=false;
+
+        //즐겨찾기 스크롤
+        $("#bookmark ul").on("scroll", function () {
+            var scrollTop = $(this).scrollTop(); //스크롤을 아래로 내릴수록 값 증가
+            var innerHeight = $(this).innerHeight(); //해당 태그 높이 계산
+            var scrollHeight = $(this).prop('scrollHeight'); //스크롤 높이 계산
+
+            if(scrollTop + innerHeight >= scrollHeight) { //스크롤 바닥에 닿을 때
+                if(bookmarkCurrentPage==[[${bookmarkTotalPageCount}]]) { //현재 마지막 페이지일 경우
+                    return; //함수 끝
+                }
+
+                isLoading=true; //로딩 중으로 설정
+                $(".bookmark_loading-Bar").show();//로딩창 출력
+
+                bookmarkCurrentPage++; //현재 페이지 증가(다음 페이지 요청)
+
+                //ajax로 받아올 페이지 요청
+                $.ajax({
+                    url:"/schedules/scroll-bookmark",
+                    method:"get",
+                    data:{"bookmarkCurrentPage" : bookmarkCurrentPage}, //페이지 전달
+                    success:function (result) {
+                        isLoading=false; //로딩 중 여부
+                        $(".bookmark_loading-Bar").hide(); //로딩창 미출력
+
+                        var bookmarkList=result.bookmarkList; //ajax 문법으로 result 중 bookmarkList 선택
+
+                        var html="<div>"; //내용 입력
+                        if(bookmarkList==null) {
+                            return;
+                        } else {
+                            bookmarkList.forEach(function(schedule) {
+                                html+="<li>";
+                                html+="<strong>("+schedule.scNo+")</strong>";
+                                html+=schedule.scSdate+" ~ ";
+                                html+=schedule.scEdate+" / ";
+                                html+="<a href='schedules?scNo="+schedule.scNo+"'>"+schedule.scTitle+"</a>";
+                                html+="</li>";
+                            });
+                        }
+                        html+="</div>";
+
+                        $("#bookmarkSchedule").append(html);
+
+                    },
+                    error:function (xhr) {
+                        location.href="error/400";
+                    }
+                });
+            }
+        });
+
+        let ScheduleCurrentPage=1; //즐겨찾기와 현재 페이지 공유하지 않게 초기화
+
+        //일정 스크롤
+        $("#schedule ul").on("scroll", function () {
+            var scrollTop = $(this).scrollTop(); //스크롤을 아래로 내릴수록 값 증가
+            var innerHeight = $(this).innerHeight(); //해당 태그 높이 계산
+            var scrollHeight = $(this).prop('scrollHeight'); //스크롤 높이 계산
+
+            if(scrollTop + innerHeight >= scrollHeight) { //스크롤 바닥에 닿을 때
+                if(ScheduleCurrentPage==[[${totalPageCount}]]) { //현재 마지막 페이지일 경우
+                    return; //함수 끝
+                }
+
+                isLoading=true; //로딩 중으로 설정
+                $(".schedule_loading-Bar").show();//로딩창 출력
+
+                ScheduleCurrentPage++; //현재 페이지 증가(다음 페이지 요청)
+
+                //ajax로 받아올 페이지 요청
+                $.ajax({
+                    url:"/schedules/scroll-schedule",
+                    method:"get",
+                    data:{"ScheduleCurrentPage" : ScheduleCurrentPage}, //페이지 전달
+                    success:function (result) {
+                        isLoading=false; //로딩 중 여부
+                        $(".schedule_loading-Bar").hide(); //로딩창 미출력
+
+                        var scheduleList=result.scheduleList; //ajax 문법으로 result 중 scheduleList 선택
+
+                        var html="<div>"; //내용 입력
+                        if(scheduleList==null) {
+                            return;
+                        } else {
+                            scheduleList.forEach(function(schedule) {
+                                html+="<li>";
+                                html+="<strong>("+schedule.scNo+")</strong>";
+                                html+=schedule.scSdate+" ~ ";
+                                html+=schedule.scEdate+" / ";
+                                html+="<a href='schedules?scNo="+schedule.scNo+"'>"+schedule.scTitle+"</a>";
+                                html+="</li>";
+                            });
+                        }
+                        html+="</div>";
+
+                        $("#addScheduleScroll").append(html);
+                    },
+                    error:function (xhr) {
+                        location.href="error/400";
+                    }
+                });
+
+            }
+        });
+
+
+        let searchCurrentPage=1;
+        //일정 검색+스크롤
+        document.searchForm.addEventListener("keydown", evt => { //엔터 방지
+            if (evt.code === "Enter") {
+                console.log("code = "+evt.code);
+                evt.preventDefault();
+            }
+        });
+        function searchSchedule() {
+            //seriallize() = form 데이터를 자동으로 queryString으로 변환 해서 전달
+            var queryString=$("#searchForm").serialize();
+
+            $.ajax({
+                url: "/schedules/search-schedule",
+                method: "post",
+                data: queryString, //form으로 queryString 전달
+                success: function (result) { //queryString 받아 map 반환
+                    searchCurrentPage=1; //재검색 시 현재 페이지값 초기화
+                    var searchList=result.searchList;
+
+                    var html="<div>";
+                    if(searchList==null) {
+                        html+="<li>검색 결과가 없습니다</li>";
+                    } else {
+                        searchList.forEach(function (schedule) {
+                            html+="<li>";
+                            html+="<strong>("+schedule.scNo+")</strong>";
+                            html+=schedule.scSdate+" ~ ";
+                            html+=schedule.scEdate+" / ";
+                            html+="<a href='schedules?scNo="+schedule.scNo+"'>"+schedule.scTitle+"</a>";
+                            html+="</li>";
+                        });
+                    }
+                    html+="</div>";
+
+                    $("#searchSchedule").html(html); //태그에 내용 추가
+
+
+                    $("#search-modal-body").on("scroll", function () {
+                        var scrollTop = $(this).scrollTop(); //스크롤을 아래로 내릴수록 값 증가
+                        var innerHeight = $(this).innerHeight(); //해당 태그 높이 계산
+                        var scrollHeight = $(this).prop('scrollHeight'); //스크롤 높이 계산
+
+                        if(scrollTop + innerHeight >= scrollHeight) { //스크롤 바닥에 닿을 때
+                            if(searchCurrentPage==[[${searchTotalPageCount}]]) { //현재 마지막 페이지일 경우
+                                return; //함수 끝
+                            }
+
+                            isLoading=true; //로딩 중으로 설정
+                            $(".search_loading-Bar").show();//로딩창 출력
+
+                            searchCurrentPage++; //현재 페이지 증가(다음 페이지 요청)
+
+                            //ajax로 받아올 페이지 요청
+                            $.ajax({
+                                url:"/schedules/search-schedule",
+                                method:"post",
+                                data:{"searchCurrentPage" : searchCurrentPage,
+                                    queryString
+                                }, //페이지와 쿼리스트링 전달
+                                success:function (result) {
+                                    isLoading=false; //로딩 중 여부
+                                    $(".search_loading-Bar").hide(); //로딩창 미출력
+
+                                    var searchList=result.searchList; //ajax 문법으로 result 중 searchList 선택
+
+                                    var html="<div>"; //내용 입력
+                                    if(searchList==null) {
+                                        return;
+                                    } else {
+                                        searchList.forEach(function(schedule) {
+                                            html+="<li>";
+                                            html+="<strong>("+schedule.scNo+")</strong>";
+                                            html+=schedule.scSdate+" ~ ";
+                                            html+=schedule.scEdate+" / ";
+                                            html+="<a href='schedules?scNo="+schedule.scNo+"'>"+schedule.scTitle+"</a>";
+                                            html+="</li>";
+                                        });
+                                    }
+                                    html+="</div>";
+
+                                    $("#searchSchedule").append(html);
+                                },
+                                error:function (xhr) {
+                                    console.log("상태코드 = "+xhr.status);
+                                }
+                            });
+
+                        }//스크롤 바닥에 닿을 때
+
+                    }); //modal-body
+                },
+                error: function (xhr) {
+                    console.log("상태코드 = "+xhr.status);
+                }
+            });
+        }
+
+        let recyclebinCurrentPage=1;
+        //휴지통 초기페이지
+        function recyclebinAJAX() {
+            $.ajax({
+                url:"/schedules/search-recyclebin",
+                method:"post",
+                success: function (result) {
+                    var recyclebinList=result.recyclebinList;
+
+                    var html="<div>";
+                    if(recyclebinList==null) {
+                        html+="<li>검색 결과가 없습니다</li>";
+                    } else {
+                        recyclebinList.forEach(function (schedule) {
+                            html+="<li>";
+                            html+="<strong>("+schedule.scNo+")</strong>";
+                            html+=schedule.scSdate+" ~ "+schedule.scEdate+" / ";
+                            html+="<a href='schedules?scNo="+schedule.scNo+"'>"+schedule.scTitle+"</a>";
+                            html+="<a class='myBtn' onclick=location.href='/schedules/restore?scNo="+schedule.scNo+"'>복원</a>";
+                            html+="<a className='myBtn' onClick='deleteSchedule();'>삭제</a>";
+                            html+="</li>";
+                        });
+                    }
+                    html+="</div>";
+                    $("#recyclebinList").html(html); //태그에 내용 추가
+                },
+                error: function (xhr) {
+                    console.log("상태코드 = "+xhr.status);
+                }
+            });
+            scrollRecyclebin();
+        }
+
+        //휴지통 검색
+        document.recyclebinForm.addEventListener("keydown", evt => { //엔터 방지
+            if (evt.code === "Enter") {
+                console.log("code = "+evt.code);
+                evt.preventDefault();
+            }
+        });
+        function searchRecyclebin() {
+            //seriallize() = form 데이터를 자동으로 queryString으로 변환 해서 전달
+            var queryString=$("#recyclebinForm").serialize();
+
+            $.ajax({
+                url: "/schedules/search-recyclebin",
+                method: "post",
+                data: queryString, //form으로 queryString 전달
+                success: function (result) { //queryString 받아 map 반환
+                    recyclebinCurrentPage=1; //검색 시 현재 페이지값 초기화
+                    var recyclebinList=result.recyclebinList;
+
+                    var html="<div>";
+                    if(recyclebinList==null) {
+                        html+="<li>검색 결과가 없습니다</li>";
+                    } else {
+                        recyclebinList.forEach(function (schedule) {
+                            html+="<li>";
+                            html+="<strong>("+schedule.scNo+")</strong>";
+                            html+=schedule.scSdate+" ~ "+schedule.scEdate+" / ";
+                            html+="<a href='schedules?scNo="+schedule.scNo+"'>"+schedule.scTitle+"</a>";
+                            html+="<a class='myBtn' onclick=location.href='/schedules/restore?scNo="+schedule.scNo+"'>복원</a>";
+                            html+="<a className='myBtn' onClick='deleteSchedule();'>삭제</a>";
+                            html+="</li>";
+                        });
+                    }
+                    html+="</div>";
+
+                    $("#recyclebinList").html(html); //태그에 내용 추가
+                },
+                error: function (xhr) {
+                    console.log("상태코드 = "+xhr.status);
+                }
+            });
+            scrollRecyclebin();
+        }
+
+        //휴지통 스크롤
+        function scrollRecyclebin() {
+            $("#recyclebin-modal-body").on("scroll", function () {
+                var scrollTop = $(this).scrollTop(); //스크롤을 아래로 내릴수록 값 증가
+                var innerHeight = $(this).innerHeight(); //해당 태그 높이 계산
+                var scrollHeight = $(this).prop('scrollHeight'); //스크롤 높이 계산
+                var queryString=$("#recyclebinForm").serialize();
+
+                if(scrollTop + innerHeight >= scrollHeight) { //스크롤 바닥에 닿을 때
+                    if(recyclebinCurrentPage>[[${recyclebinTotalPageCount}]] || isLoading) { //현재 마지막 페이지일 경우
+                        return; //함수 끝
+                    }
+
+                    isLoading=true; //로딩 중으로 설정
+                    $(".recyclebin_loading-Bar").show();//로딩창 출력
+
+                    recyclebinCurrentPage++; //현재 페이지 증가(다음 페이지 요청)
+
+                    //ajax로 받아올 페이지 요청
+                    $.ajax({
+                        url:"/schedules/search-recyclebin",
+                        method:"post",
+                        data:{"recyclebinCurrentPage" : recyclebinCurrentPage,
+                            "queryString":queryString
+                        }, //페이지와 쿼리스트링 전달
+                        success:function (result) {
+                            isLoading=false; //로딩 중 여부
+                            $(".recyclebin_loading-Bar").hide(); //로딩창 미출력
+
+                            var recyclebinList=result.recyclebinList; //ajax 문법으로 result 중 recyclebinList 선택
+
+                            var html="<div>"; //내용 입력
+                            if(recyclebinList==null) {
+                                return;
+                            } else {
+                                recyclebinList.forEach(function(schedule) {
+                                    html+="<li>";
+                                    html+="<strong>("+schedule.scNo+")</strong>";
+                                    html+=schedule.scSdate+" ~ "+schedule.scEdate+" / ";
+                                    html+="<a href='schedules?scNo="+schedule.scNo+"'>"+schedule.scTitle+"</a>";
+                                    html+="<a class='myBtn' onclick=location.href='/schedules/restore?scNo="+schedule.scNo+"'>복원</a>";
+                                    html+="<a className='myBtn' onClick='deleteSchedule();'>삭제</a>";
+                                    html+="</li>";
+                                });
+                            }
+                            html+="</div>";
+
+                            $("#recyclebinList").append(html);
+                        },
+                        error:function (xhr) {
+                            console.log("상태코드 = "+xhr.status);
+                        }
+                    });
+
+                }//스크롤 바닥에 닿을 때
+
+            }); //modal-body
+        }
+
+
+        /*]]>*/
+
+        //로그아웃
+        $("#logoutBtn").click(function () {
+            location.href = "/login/logout"
+        });
+
+        $("#mypageBtn").click(function () {
+            location.href = "/mypage";
+        });
+    </script>
+</div>
+
+
+</body>
+</html>

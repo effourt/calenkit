@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>회원 관리</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.2/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- jQuery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+
+    <link rel="stylesheet" th:href="@{/css/admin.css}" href="../static/css/admin.css">
+
+</head>
+
+<body>
+<div class="container">
+    <h1> 회원 관리</h1>
+    <!-- 검색창 추가 -->
+    <form class="row g-3" th:action="@{/admin}" method="get">
+        <div class="col-auto">
+            <input type="text" class="form-control" name="keyword" placeholder="ID를 입력해 주세요">
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-primary mb-3">검색</button>
+        </div>
+    </form>
+
+    <div style="overflow-y: scroll; min-height: 300px; max-height: 400px;">
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th><input type='checkbox' id="all_checkbox"></th>
+            <th>ID</th>
+            <th>닉네임</th>
+            <th>최근 로그인 일자</th>
+            <th>상태</th>
+        </tr>
+        </thead>
+        <tbody id="memberTableBody">
+        <!-- memberList를 통해 내용이 들어갈 부분 -->
+        </tbody>
+    </table>
+    </div>
+
+    <button id="delete_btn" onclick="remove()">선택 회원 삭제</button>
+</div>
+
+<!-- Bootstrap 5 JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.2/js/bootstrap.min.js"></script>
+
+<!-- Ajax를 이용해 memberList 데이터를 가져와서 렌더링하는 스크립트 -->
+<script th:src="@{/js/admin.js}" src="../static/js/admin.js"></script>
+
+
+</body>
+</html>

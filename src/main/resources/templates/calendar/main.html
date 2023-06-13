@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/layout :: layout (~{::link}, ~{::script}, ~{::style}, ~{::title}, ~{::div})}">
+<head>
+    <meta charset='utf-8' />
+    <title>메인 페이지</title>
+    <link th:href="@{/library/packages/core/main.css}" href='../../static/library/packages/core/main.css' rel='stylesheet' />
+    <link th:href="@{/library/packages/daygrid/main.css}" href='../../static/library/packages/daygrid/main.css' rel='stylesheet' />
+    <link th:href="@{/library/packages/timegrid/main.css}" href='../../static/library/packages/timegrid/main.css' rel='stylesheet' />
+    <link th:href="@{/library/packages/list/main.css}" href='../../static/library/packages/list/main.css' rel='stylesheet' />
+    <script th:src="@{/library/packages/core/main.js}" src='../../static/library/packages/core/main.js'></script>
+    <script th:src="@{/library/packages/interaction/main.js}" src='../../static/library/packages/interaction/main.js'></script>
+    <script th:src="@{/library/packages/daygrid/main.js}" src='../../static/library/packages/daygrid/main.js'></script>
+    <script th:src="@{/library/packages/timegrid/main.js}" src='../../static/library/packages/timegrid/main.js'></script>
+    <script th:src="@{/library/packages/list/main.js}" src='../../static/library/packages/list/main.js'></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
+            //AJAX로 Controller에서 List 받아오기
+            $.ajax({
+                type:'GET',
+                url:'/list',
+                success: function (result) {
+                    var events=result; //받아온 list 저장
+
+                    var year=new Date().getFullYear();
+                    var month=new Date().getMonth();
+                    var date;
+                    if(month<10) { //날짜 형식(yyyy-dd)을 맞추기 위한 조건문
+                        date=year+"-0"+month; //현재 날짜 저장
+                    } else {
+                        date=year+"-"+month; //현재 날짜 저장
+                    }
+
+                    var calendarEl = document.getElementById('calendar'); //calendar div 태그 설정
+
+                    var calendar = new FullCalendar.Calendar(calendarEl, { //calendar 설정
+                        plugins: ['dayGrid', 'interaction'], //daygrid = 월별 달력 plugin, interaction = 클릭 이벤트 plugin
+                        height: 'parent',
+                        header: {
+                            left: '',
+                            center: '',
+                            right: 'prev,next today'
+                        },
+                        defaultView: 'dayGridMonth',
+                        defaultDate: date,
+                        navLinks: true, // can click day/week names to navigate views
+                        editable: true,
+                        events: events, //받아온 List로 일정 등록
+                    });
+
+                    calendar.on('dateClick', function(info) {
+                        var date=info.dateStr;
+                        location.href="/schedules/add?date="+date;
+                    });
+
+                    calendar.render();
+                },
+                error: function (xhr){
+                    location.href="/error"; //에러페이지로 이동
+                }
+            });
+        });
+    </script>
+    <style>
+        #calendar-container {
+            margin: 30px auto;
+            width: 90%;
+            height: 90vh;
+        }
+
+        td .fc-day:hover {
+            background-color: pink;
+        }
+        .fc-day-number {
+            all: unset;
+        }
+    </style>
+</head>
+<body>
+<div id='calendar-container'>
+    <span style="margin-top: 500px;">2023-05</span>
+    <div id="calendar"></div>
+</div>
+</body>
+</html>

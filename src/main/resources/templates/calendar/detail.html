@@ -1,0 +1,354 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <title>CKEditor</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="/webjars/jquery/jquery.min.js"></script>
+  <script src="/webjars/sockjs-client/sockjs.min.js"></script>
+  <script src="/webjars/stomp-websocket/stomp.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css" integrity="sha512-3pIirOrwegjM6erE5gPSwkUzO+3cTjpnV9lexlNZqvupR64iZBnOOTiiLPb9M36zpMScbmUNIcHUqKD47M719g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    .ck-editor__editable {
+      height: 800px;
+    }
+    .ck-content {
+      font-size: 12px;
+    }
+    a, a:hover{
+      text-decoration: none;
+      color:white;
+    }
+  </style>
+</head>
+
+<body style="background-color: #6c757d" class="d-flex align-items-center justify-content-center">
+
+
+<div id="writeDiv" style="width: 70%; margin: 0 auto;">
+  <div class="card rounded" style="width:100%; margin: 30px auto 10px;background-color:#2C3E50 ">
+    <div class="card-header text-lg-end">
+      <button type="button" class="btn btn-sm btn-secondary"><a th:href="@{/schedules/recyclebin?scNo={scNo}(scNo=${schedules.getScNo()})}"><img src="/img/recyclebin.png" /></a></button>
+      <button type="button" class="btn btn-sm btn-secondary" onclick="location.href='/'"><img src="/img/home.png" /></a></button>
+      <button type="button" id="myTeam" class="btn btn-sm btn-secondary"  data-bs-toggle="modal" data-bs-target="#teamShare"><img src="/img/group.png" /></a></button>
+      <button type="button" class="btn btn-sm btn-secondary"><a th:href="@{/schedules/bookmark?scNo={scNo}(scNo=${schedules.getScNo()})}">
+        <th:block th:if="${teams.getTeamBookmark()==0}">
+          <img src="/img/bookmark0.png" />
+        </th:block>
+        <th:block th:if="${teams.getTeamBookmark()==1}">
+          <img src="/img/bookmark1.png" />
+        </th:block>
+      </a></button>
+    </div>
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item">
+        제목 : <input type="text" class="form-control-plaintext d-inline" style="width: 90%" id="inputTitle"
+                    th:value="${schedules.getScTitle()}" th:readonly="${loginTeam.teamLevel!=9}" th:disabled="${loginTeam.teamLevel!=9}">
+      </li>
+      <li class="list-group-item">
+        <p class="d-inline">동행 :</p>
+        <span class="d-flex" th:each="teamShare : ${teamShareList}">
+           <span style="display: flex; width: 24px; line-height: 30px; height: 30px; border: 1px solid gray; border-radius: 30px; overflow: hidden;">
+            <img style="width: 100%; height: 100%; object-fit: cover;" th:if="${teamShare.image!=null}" th:src="${teamShare.image}" src="/img/basic_profile.png"/>
+           </span>&nbsp
+        </span>
+      </li>
+      <li class="row w-100 m-auto">
+        <div class="list-group-item col">시작일 : <input type="date" id="sDate" th:value="${schedules.getScSdate()}" th:readonly="${loginTeam.teamLevel!=9}" th:disabled="${loginTeam.teamLevel!=9}" /></div>
+        <div class="list-group-item col">종료일 : <input type="date" id="eDate" th:value="${schedules.getScEdate() }" th:readonly="${loginTeam.teamLevel!=9}" th:disabled="${loginTeam.teamLevel!=9}" /></div>
+        <div class="list-group-item col">상태 : <select id="progress">
+            <option class="btn-secondary" value="0" th:readonly="${loginTeam.teamLevel!=9}" th:disabled="${loginTeam.teamLevel!=9}" th:selected="${schedules.scProgress==0}">미실행</option>
+            <option class="btn-secondary" value="1" th:readonly="${loginTeam.teamLevel!=9}" th:disabled="${loginTeam.teamLevel!=9}" th:selected="${schedules.scProgress==1}">진행 중</option>
+            <option class="btn-secondary" value="2" th:readonly="${loginTeam.teamLevel!=9}" th:disabled="${loginTeam.teamLevel!=9}" th:selected="${schedules.scProgress==2}">완료</option>
+          </select>
+        </div>
+      </li>
+    </ul>
+  </div>
+  <textarea name="text" id="editor"></textarea>
+</div>
+
+<!-- 일정공유팝업창 -->
+<div class="modal" tabindex="-1" id="teamShare" aria-labelledby="trash" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title m-lg-3">Select People</h5>
+        <p class="modal-title" th:if="${loginTeam.teamLevel==9}">호스트 입니다.</p>
+        <p class="modal-title" th:if="${loginTeam.teamLevel!=9}">동행 입니다.</p>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"/>
+      </div>
+      <!-- 모달 헤더 끝 --->
+      <!-- 모달 바디 시작 -->
+      <div class="modal-body">
+        <!-- 1.검색창-->
+        <div class="input-group">
+          <input type="text" class="form-control"style="width:80%;" id="inputBox" th:readonly="${loginTeam.teamLevel!=9}">
+          <button class="btn btn-outline-dark">search</button>
+        </div>
+        <!-- 2.검색시 출력될 박스 -->
+        <div style="height: 30px;">
+          <div class="alert alert-success" id="resultBox" style="display: none;">
+            <span id="typedText"></span>
+          </div>
+        </div>
+        <!-- 3.동행 리스트 -->
+        <div class="card mt-5" style="width: 100%">
+          <ul class="list-group list-group-flush" id="teamList">
+            <!-- 동행 -->
+            <th:block th:each="teamShare : ${teamShareList}">
+              <li class="list-group-item d-flex justify-content-between" th:id="${teamShare.teamNo}">
+                <!-- 동행 이미지 & 아이디 -->
+                <span class="d-flex">
+                    <img th:if="${loginTeam.teamLevel==9 && teamShare.teamLevel!=9}" th:id="'remove'+${teamShare.teamNo}" src="https://icongr.am/entypo/remove-user.svg?size=15&color=ababab">&nbsp;&nbsp;
+                    <span style="display: flex; width: 24px; border: 1px solid gray; border-radius: 50px; overflow: hidden;">
+                        <img style="width: 100%; height: 100%; object-fit: cover;" th:if="${teamShare.image!=null}" th:src="${teamShare.image}" src="/img/basic_profile.png"/>
+                    </span> &nbsp;&nbsp;[[${teamShare.teamMid}]]
+                </span>
+                <!-- 권한 변경 dropdown -->
+                <div class="btn-group">
+                  <select id="team" th:id="'team'+${teamShare.teamNo}">
+                    <option class="btn-secondary" value="0" th:readonly="${loginTeam.teamLevel!=9}" th:selected="${teamShare.teamLevel==0}" th:disabled="${teamShare.teamLevel==9 || loginTeam.teamLevel!=9}">읽기권한</option>
+                    <option class="btn-secondary" value="1" th:readonly="${loginTeam.teamLevel!=9}" th:selected="${teamShare.teamLevel==1}" th:disabled="${teamShare.teamLevel==9 || loginTeam.teamLevel!=9}">쓰기권한</option>
+                    <hr>
+                    <option class="btn-secondary" value="9" th:readonly="${loginTeam.teamLevel!=9}" th:selected="${teamShare.teamLevel==9}" th:disabled="${teamShare.teamLevel!=9 || loginTeam.teamLevel!=9}">호스트</option>
+                  </select>
+                </div>
+              </li>
+            </th:block>
+          </ul>
+        </div>
+        <!-- 모달 바디 끝 -->
+        <!-- 모달 푸터 시작 --->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+  <script src="https://cdn.ckeditor.com/ckeditor5/34.0.0/classic/ckeditor.js"></script>
+  <script src="https://cdn.ckeditor.com/ckeditor5/34.0.0/classic/translations/ko.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
+  <script th:src="@{/js/websocket.js}" src="../../static/js/websocket.js"></script>
+  <script th:inline="javascript">
+    receiveAlarm();
+    const queryString = window.location.search; //?scNo=1
+    const scNo = new URLSearchParams(queryString).get('scNo'); //1
+
+    const socket = new SockJS("/schedule");
+    socket.onopen = function() {
+      console.log('WebSocket connection opened');
+    };
+    socket.onclose = function() {
+      console.log('WebSocket connection closed');
+    }
+
+    // ~~~ CKEditor DB연동 파트 ~~~
+    $.ajax({
+      url: "/schedules/load?scNo="+scNo,
+      method: "GET",
+      success: function(result) { //load API에서 DB값(scContent) 받아오기
+        ClassicEditor
+                .create(document.querySelector("#editor")) //CKEditor 입력창 생성
+                .then(editor => { //CKEditor 이벤트 감지 메소드
+                  let text = null;
+                  let data = null;
+
+                  socket.onmessage = function(text) {
+                    console.log("웹소켓 메시지 받기");
+                    editor.setData(text.data);
+                    console.log("editor 사본");
+                  }
+
+                  //else(default - DB값)
+                  editor.setData(result);
+
+                  //write - UPDATE
+                  editor.model.document.on('change:data', () => { //입력 감지
+                    data = editor.getData(); //입력데이터 받아오기
+                    text = {
+                      "content":data,
+                      "scNo":scNo
+                    }
+                  }) //data change
+
+                  editor.editing.view.document.on('keydown', (event, k) => { //enter event
+                    if(k.keyCode==13) {
+                      socket.send(JSON.stringify(text));
+                      console.log("웹소켓 전송")
+                      console.log('Editor data:', data);
+
+                      $.ajax({
+                        url: "/schedules/write?scNo="+scNo,
+                        method: "patch",
+                        data: {"scContent": data}, //데이터 scContent로 전송
+                        success: function (result) {
+                          if(result="success"){
+                            console.log("content write SUCCESS status = " + result.status);
+                          }
+                        },
+                        error: function (xhr) {
+                          console.log("content write ERROR status = " + xhr.status);
+                        }
+                      });//ajax
+                    }
+                  }); //enter event
+                })
+                .catch(error => {
+                  console.error(error.stack);
+                });
+      },
+      error: function () {
+        alert("ERROR");
+      }
+    }); //ajax
+
+    //scContent를 제외한 나머지 부분
+    $('#writeDiv').change(function() {
+      var scTitle=$("#inputTitle").val();
+      var scSdate=$("#sDate").val();
+      var scEdate=$("#eDate").val();
+      var scProgress=$("#progress").val();
+
+      var queryString=window.location.href; //쿼리스트링 받기
+      var scNo=new URL(queryString).searchParams.get('scNo'); //쿼리스트링에서 값 추출
+
+      console.log("scno="+scNo);
+      console.log("title="+scTitle);
+      console.log("sDate="+scSdate);
+      console.log("eDate="+scEdate);
+      console.log("progress="+scProgress);
+
+      $.ajax({
+        url:"/schedules/write/?scNo="+scNo,
+        method: "patch",
+        data:{
+          "scNo":scNo,
+          "scTitle":scTitle,
+          "scSdate":scSdate,
+          "scEdate":scEdate,
+          "scProgress":scProgress,
+        },
+        success: function (result) {
+          console.log("success status = "+result.status);
+        },
+        error: function (xhr) {
+          console.log("fail status = "+xhr.status);
+        }
+      });
+    });
+
+
+
+    //#inputBox의 키이벤트 발생 시 호출
+    $("#inputBox").on("keyup", function() {
+      let typedText = this.value;
+      if (typedText == "") {
+        $("#resultBox").hide();
+        return;
+      }
+      $("#resultBox").show();
+      $("#typedText").show();
+      $("#typedText").text(typedText);
+
+      $.ajax({
+        url: "/teams/share/members?memId="+typedText,
+        type: "GET",
+        success: function(result) {
+          let button = "<button class='btn btn-sm btn-outline-dark' ";
+          if(result.memId==typedText){
+            button += "onclick='addTeam(\""+result.memId+"\")'>"+result.memId+"</button>";
+          } else{
+            button += "onclick='addTeam()'></button>";
+          }
+          if(result.memId==typedText){
+            $('#typedText').text("");
+            $("#typedText").append(button);
+          }
+        },
+      });
+    });
+
+    //일정 초대 이벤트 함수
+    // => 이메일 전송 >> 동행의 링크 확인 >> 동행 추가
+    function addTeam(memId){
+      const loginId = [[${loginTeam.teamMid}]];
+      if(memId == loginId) {
+        alert("귀하의 아이디 "+memId+"를 입력하셔서 초대가 불가능 합니다.");
+        return;
+      }
+      if(confirm(memId+"님을 일정에 초대하시겠습니까? 확인을 누를 시 동행에게 일정 초대 메일이 발송됩니다.")){
+          //이메일 전송
+          $.ajax({
+            url: "/teams/share/send-link/"+scNo,
+            method: "POST",
+            contentType: "application/json",
+            dataType: "text",
+            data: JSON.stringify({"teamMid": memId}),
+            success: function(result) {
+              //웹소켓 송신
+              sendAlarm(scNo, memId, "SAVE_TEAM");
+            },
+            error: function(error) {
+              alert("이메일 전송 API 호출 중 에러 발생 : " + error.status);
+            }
+          });
+        }
+      }
+
+    [# th:each="teamShare : ${teamShareList}"]
+      //권한변경 이벤트 처리 함수
+      $("#team"+[[${teamShare.teamNo}]]).on("change", function() {
+        const teamLevel = $("#team"+[[${teamShare.teamNo}]]).val(); //선택된 권한레벨 값
+        const teamMId = [[${teamShare.teamMid}]];
+        $.ajax({ //동행 권한 변경
+          url: "/teams/share/"+scNo,
+          type: "PATCH",
+          contentType: "application/json",
+          dataType: "text",
+          data: JSON.stringify({"teamMid": teamMId, "teamLevel":teamLevel} ),
+          success: function(result) {
+            //웹소켓 송신
+            let alCate = null;
+            if(teamLevel == 0) alCate = "UPDATE_TEAMLEVEL_READ";
+            if(teamLevel == 1) alCate = "UPDATE_TEAMLEVEL_WRITE";
+            sendAlarm(scNo, teamMId, alCate);
+          },
+          error: function(xhr, status, error) {
+            console.error("error: ", status, ", ", error);
+          }
+        });
+      });
+
+      //권한 삭제 이벤트 처리 함수
+      $("#remove"+[[${teamShare.teamNo}]]).on("click", function() {
+        const teamMId = [[${teamShare.teamMid}]];
+        if(confirm(teamMId+"님을 일정에서 삭제하시겠습니까?")){
+          $.ajax({//동행 권한 삭제
+            url: "/teams/share/"+scNo,
+            type: "DELETE",
+            contentType: "application/json",
+            dataType: "text",
+            data: JSON.stringify({"teamMid": teamMId}),
+            success: function(result) {
+              //웹소켓 송신
+              sendAlarm(scNo, teamMId, "REMOVE_TEAM");
+              location.href= "/schedules?scNo="+scNo;
+            },
+            error: function(xhr, status, error) {
+              console.error("error: ", status, ", ", error);
+            }
+      });}
+    });
+[/]
+
+
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js" integrity="sha512-VEd+nq25CkR676O+pLBnDW09R7VQX9Mdiij052gVCp5yVH3jGtH70Ho/UUv4mJDsEdTvqRCFZg0NKGiojGnUCw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</body>
+</html>

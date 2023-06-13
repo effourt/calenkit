@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.effourt.calenkit.mapper.TeamMapper">
+    <!-- INSERT -->
+    <!-- 일정상세 삽입 시 함께 호출 - 권한레벨로 호스트와 동행 구분(1,0,9) -->
+    <insert id="save">
+        INSERT INTO TEAM(TEAM_MID, TEAM_SNO, TEAM_LEVEL, TEAM_BOOKMARK) VALUES( #{teamMid}, #{teamSno}, #{teamLevel}, 0)
+    </insert>
+
+    <!-- UPDATE -->
+    <!-- 일정번호와 아이디를 전달받아 팀의 권한레벨, 즐겨찾기 변경 -->
+    <update id="update">
+        UPDATE TEAM
+        <set>
+            <if test="teamLevel == 0 or teamLevel == 1">
+                TEAM_LEVEL=#{teamLevel},
+            </if>
+            <if test="teamBookmark == 0 or teamBookmark == 1">
+                TEAM_BOOKMARK=#{teamBookmark},
+            </if>
+        </set>
+        WHERE TEAM_SNO=#{teamSno} AND TEAM_MID=#{teamMid}
+    </update>
+
+    <!-- DELETE -->
+    <delete id="delete">
+        DELETE FROM TEAM WHERE TEAM_SNO=#{teamSno} AND TEAM_MID=#{teamMid}
+    </delete>
+
+    <!-- SELECT -->
+    <!-- id를 기준으로 권한있는 일정의 일정 번호를 검색 -->
+    <select id="findByMid" resultType="Team">
+        SELECT TEAM_SNO FROM TEAM
+        WHERE TEAM_MID=#{teamMid}
+    </select>
+
+    <select id="findByid" resultType="Integer">
+        SELECT TEAM_SNO FROM TEAM
+        WHERE TEAM_MID=#{teamMid}
+    </select>
+
+    <select id="findBySnoAndMid" resultType="Team">
+        SELECT * FROM TEAM
+        WHERE TEAM_SNO=#{teamSno} AND TEAM_MID=#{teamMid}
+    </select>
+
+    <!-- teamBookmark가 1일 경우 즐겨찾기 일정 번호 출력 -->
+    <select id="findByBookmark" resultType="Integer">
+        SELECT TEAM_SNO FROM TEAM
+        WHERE TEAM_MID=#{teamMid} AND TEAM_BOOKMARK=1
+    </select>
+
+    <!-- SELECT -->
+    <!-- Sno를 기준으로 디수의 행 출력 -->
+    <select id="findBySno" resultType="Team">
+        SELECT TEAM_NO,TEAM_MID,TEAM_SNO,TEAM_LEVEL,TEAM_BOOKMARK
+        FROM TEAM
+        WHERE TEAM_SNO=#{teamSno}
+    </select>
+</mapper>

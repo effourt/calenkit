@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Calenkit</title>
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css'>
+    <link rel='stylesheet' href='https://unicons.iconscout.com/release/v2.1.9/css/unicons.css'>
+    <link rel="stylesheet" th:href="@{/css/login-form-style.css}" href="../../static/css/login-form-style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+</head>
+<body>
+<div>
+    <div class="section">
+        <div class="container">
+            <div class="row full-height justify-content-center">
+                <div class="col-12 text-center align-self-center py-5">
+                    <div class="section pb-5 pt-5 pt-sm-2 text-center">
+                        <div class="card-3d-wrap mx-auto">
+                            <div class="card-3d-wrapper">
+                                <div class="card-front">
+                                    <div class="center-wrap">
+                                        <div class="section text-center">
+                                            <h4 class="mb-4 pb-3">로그인</h4>
+                                            <div style="height: 65px;">
+                                                <img id="kakaoLogin" th:src="@{/img/kakao_login_medium_wide.png}" src="../../static/img/kakao_login_medium_wide.png" style="cursor: pointer"/>
+                                            </div>
+                                            <form id="loginForm" method="post">
+                                                <!-- 이메일 입력창 -->
+                                                <div class="form-group">
+                                                    <input type="email" id="loginId" name="memId" class="form-style" placeholder="이메일을 입력하세요" autocomplete="off">
+                                                    <input type="email" id="findPasswordId" class="form-style" placeholder="이메일을 입력하세요" autocomplete="off" style="display: none;">
+                                                    <i class="input-icon uil uil-at"></i>
+                                                </div>
+                                                <!-- 패스워드 입력창 -->
+                                                <div id="passwordDiv" class="form-group mt-2" style="display: none;">
+                                                    <input type="password" name="memPw" class="form-style" placeholder="비밀번호를 입력하세요" id="loginPw" autocomplete="off">
+                                                    <i class="input-icon uil uil-lock-alt"></i>
+                                                    <button type="button" id="passwordBtn" class="btn mt-4">비밀번호로 로그인</button>
+                                                </div>
+                                                <!-- 로그인 코드 입력창 -->
+                                                <div id="loginCodeDiv" class="form-group mt-2" style="display: none;">
+                                                    <input type="password" name="loginCode" class="form-style" placeholder="로그인 코드를 입력하세요" id="loginCode" autocomplete="off">
+                                                    <i class="input-icon uil uil-lock-alt"></i>
+                                                    <button type="button" id="loginCodeBtn" class="btn mt-4">로그인 코드로 로그인</button>
+                                                </div>
+                                                <!-- 회원가입 코드 입력창 -->
+                                                <div id="registerCodeDiv" class="form-group mt-2" style="display: none;">
+                                                    <input type="password" name="registerCode" class="form-style" placeholder="회원가입 코드를 입력하세요" id="registerCode" autocomplete="off">
+                                                    <i class="input-icon uil uil-lock-alt"></i>
+                                                    <button type="button" id="registerCodeBtn" class="btn mt-4">이메일로 회원가입</button>
+                                                </div>
+                                                <!-- 초기화 코드 입력창 -->
+                                                <div id="initializeCodeDiv" class="form-group mt-2" style="display: none;">
+                                                    <input type="password" name="initializeCode" class="form-style" placeholder="초기화 코드를 입력하세요" id="initializeCode" autocomplete="off">
+                                                    <i class="input-icon uil uil-lock-alt"></i>
+                                                    <button type="button" id="initializeCodeBtn" class="btn mt-4">초기화 코드로 로그인</button>
+                                                </div>
+                                                <p id="message" class="mb-0 mt-4 text-center"></p>
+
+                                                <p class="mb-0 mt-4 text-center" id="checkId">
+                                                    <button type="button" id="checkIdBtn" class="btn mt-4">이메일로 계속하기</button>
+                                                </p>
+                                                <p class="mb-0 mt-4 text-center" id="initializePassword" style="display: none;">
+                                                    <button type="button" id="initializePasswordBtn" class="btn mt-4">초기화 코드 보내기</button>
+                                                </p>
+                                            </form>
+                                            <p class="mb-0 mt-4 text-center" id="findPassword"><button type="button" id="findPasswordBtn">비밀번호 찾기</button></p>
+                                            <p class="mb-0 mt-4 text-center" id="login" style="display: none;"><button type="button" id="loginBtn">로그인 입력창</button></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/js/loginForm.js}" src="../../static/js/loginForm.js"></script>
+</body>
+</html>

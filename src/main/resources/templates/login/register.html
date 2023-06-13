@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css'>
+    <link rel='stylesheet' href='https://unicons.iconscout.com/release/v2.1.9/css/unicons.css'>
+    <link rel="stylesheet" th:href="@{/css/login-form-style.css}" href="../../static/css/login-form-style.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <style>
+        .card-front {
+            height: 140%;
+        }
+        #message {
+            height: 10px;
+        }
+        #imageContainer {
+            width: 100px;
+            height: 100px;
+        }
+        #profileImage {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div>
+    <div class="section">
+        <div class="container">
+            <div class="row full-height justify-content-center">
+                <div class="col-12 text-center py-5">
+                    <div class="section pb-5 pt-5 pt-sm-2 text-center">
+                        <div class="card-3d-wrap mx-auto">
+                            <div class="card-3d-wrapper">
+                                <div class="card-front">
+                                    <div class="center-wrap">
+                                        <div class="section text-center">
+                                            <h4 class="mb-4 pb-3">회원가입</h4>
+                                            <form id="registerForm" method="post" enctype="multipart/form-data">
+                                                <div class="form-group">
+                                                    <input type="hidden" name="memId" id="loginId" th:value="${memId}">
+                                                </div>
+                                                <!-- 프로필 이미지 입력창 -->
+                                                <div class="form-group mt-2">
+<!--                                                    <input type="file" name="profileImage" class="form-style" id="profileImage" accept="image/jpg, image/jpeg, image/png" autocomplete="off">-->
+<!--                                                    <i class="input-icon uil uil-lock-alt"></i>-->
+                                                    <div class="mb-3">
+                                                        <div class="pb-1">
+                                                            <label for="profileImage" class="form-label">
+                                                                <img id="imageContainer" class="img-fluid rounded-circle img-thumbnail"
+                                                                     th:src="@{/img/basic_profile.png}"
+                                                                     src="../../static/img/basic_profile.png" alt="..."
+                                                                     style="cursor: pointer; object-fit: cover">
+                                                                <div id="profileImageName">사진 추가</div>
+                                                            </label>
+                                                            <input type="file" id="profileImage" class="form-control form-control-sm" name="profileImage" accept="image/jpg, image/jpeg, image/png">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!-- 닉네임 입력창 -->
+                                                <div class="form-group mt-2">
+                                                    <input type="text" name="memName" class="form-style" placeholder="닉네임을 입력하세요" id="nickname" autocomplete="off">
+                                                    <i class="input-icon uil uil-lock-alt"></i>
+                                                </div>
+                                                <!-- 비밀번호 입력창 -->
+                                                <div class="form-group mt-2">
+                                                    <input type="password" name="memPw" class="form-style" placeholder="설정할 비밀번호를 입력하세요" id="loginPw" autocomplete="off">
+                                                    <i class="input-icon uil uil-lock-alt"></i>
+                                                </div>
+                                                <!-- 비밀번호 확인 입력창 -->
+                                                <div class="form-group mt-2">
+                                                    <input type="password" class="form-style" placeholder="동일한 비밀번호를 입력하세요" id="loginPwCheck" autocomplete="off">
+                                                    <i class="input-icon uil uil-lock-alt"></i>
+                                                </div>
+                                                <div id="message" class="mb-0 mt-4 text-center">테스트</div>
+                                                <button type="button" id="registerBtn" class="btn mt-4">회원가입 후 로그인</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/js/registerForm.js}" src="../../static/js/registerForm.js"></script>
+</body>
+</html>

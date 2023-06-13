@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.effourt.calenkit.mapper.AuthMapper">
+    <!-- INSERT -->
+    <!-- -->
+    <insert id="save" parameterType="Auth" useGeneratedKeys="true" keyProperty="authId">
+        INSERT INTO AUTH(AUTH_REFRESH, AUTH_ACCESS) VALUES(#{authRefresh}, #{authAccess})
+    </insert>
+
+    <!-- UPDATE -->
+    <!--  -->
+    <update id="update">
+        UPDATE AUTH
+        <set>
+            <if test="authAccess != null and authAccess != ''">
+                AUTH_ACCESS=#{authAccess},
+            </if>
+            <if test="authRefresh != null and authRefresh != ''">
+                AUTH_REFRESH=#{authRefresh},
+            </if>
+        </set>
+        WHERE AUTH_ID=#{authId}
+    </update>
+
+    <!-- DELETE -->
+    <!--  -->
+    <delete id="delete">
+        DELETE FROM AUTH WHERE AUTH_ID=#{authId}
+    </delete>
+
+    <!-- SELECT -->
+    <select id="findByAuthId" resultType="Auth">
+        SELECT AUTH_ID, AUTH_REFRESH, AUTH_ACCESS FROM AUTH WHERE AUTH_ID=#{authId}
+    </select>
+</mapper>

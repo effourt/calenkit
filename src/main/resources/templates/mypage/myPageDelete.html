@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link href="../static/css/myPageDelete.css" rel="stylesheet" th:href="@{/css/myPageDelete.css}">
+</head>
+</head>
+<body>
+<form action="/mypage/delete" method="post">
+    <h1>계정 삭제</h1>
+    <p>모든 개인 워크스페이스가 삭제되고 </p>
+    <p>모든 공유 워크스페이스에서 이 계정이 제거됩니다.</p>
+    <hr>
+    <input id="memId" name="memId" oninput="checkId()" placeholder="계정 삭제를 원하시면 이메일을 입력해주세요." type="text">
+    <!-- memId ajax 중복체크 -->
+    <span class="id_ok">이메일이 일치합니다.</span>
+    <span class="id_already">이메일이 일치하지 않습니다.</span>
+    <button class="deleteButton" style="display: none">계정 및 워크스페이스 삭제</button>
+</form>
+
+</body>
+<script type="text/javascript">
+
+
+    function checkId() {
+        var memId = $('#memId').val(); //memId값이 "memId"인 입력란의 값을 저장
+
+        $.ajax({
+            url: '/mypage/check-id', //Controller에서 요청 받을 주소
+            type: 'get', //GET 방식으로 전달
+            data: {memId: memId},
+            success: function (cnt) { //컨트롤러에서 넘어온 cnt값을 받는다
+                if (cnt == 0) { //cnt가 1이 아니면(=0일 경우) -> 일치하지 않는 아이디
+                    $('.id_already').css("display", "inline-block");
+                    $('.id_ok').css("display", "none");
+                    $('.deleteButton').css("display", "none");
+                } else { // cnt가 1일 경우 -> 일치하는 아이디
+                    $('.id_ok').css("display", "inline-block");
+                    $('.id_already').css("display", "none");
+                    $('.deleteButton').css("display", "inline-block");
+                }
+            },
+            error: function () {
+
+            }
+        });
+    };
+
+
+</script>
+</html>
