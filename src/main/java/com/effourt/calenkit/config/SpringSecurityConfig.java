@@ -15,7 +15,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.httpBasic().disable();
-        http.csrf().disable(); //csrf 방지 기능 비활성화 -- 테스트용 - 배포 시에 삭제할 것
+//        http.csrf().disable(); //csrf 방지 기능 비활성화 -- 테스트용 - 배포 시에 삭제할 것
     }
 
     @Bean
